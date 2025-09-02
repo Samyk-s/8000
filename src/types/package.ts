@@ -8,6 +8,7 @@ export interface MediaFile {
 }
 
 export interface Package {
+  slug: string;
   id: number;
   title: string;
   image: MediaFile;

@@ -1,14 +1,9 @@
 "use client";
-import React, { useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 import { useRouter } from "next/navigation";
-import { BookingItem } from "@/types/booking";
 import { useBookings } from "@/hooks/useBookings";
-import { formatDate } from "@/utils/bookingUtils";
-import { StatusBadge, ViewedBadge } from "@/components/ui/StatusBadge";
 import {
-  EyeIcon,
   EditIcon,
-  TrashIcon,
   SearchIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -23,9 +18,13 @@ import usePackages from "@/hooks/usePackages";
 import { Package } from "@/types/package";
 import Image from "next/image";
 import Link from "next/link";
+import Entry from "../adminComponents/entry/entry";
+import Search from "../adminComponents/search/search";
+import Breadcrumb from "../adminComponents/beadcrumb/bedvrumb";
 
 const PackageTable: React.FC = () => {
   const router = useRouter();
+  const [value, setValue] = useState(10);
   const {
     data,
     loading,
@@ -55,6 +54,10 @@ const PackageTable: React.FC = () => {
       alert(error instanceof Error ? error.message : "Error deleting booking");
     }
   };
+
+  function handleSearchPackage(value: string | number) {
+    setValue(Number(value));
+  }
 
   if (loading) {
     return (
@@ -95,22 +98,13 @@ const PackageTable: React.FC = () => {
       <div className="min-h-screen p-1">
         {/* Breadcrumb */}
         <div className="mb-4 px-6">
-          <nav className="text-sm text-gray-500">
-            <ol className="list-reset flex">
-              <li>
-                <a
-                  href="/admin/dashboard"
-                  className="text-blue-600 hover:underline"
-                >
-                  Dashboard
-                </a>
-              </li>
-              <li>
-                <span className="mx-2">{">"}</span>
-              </li>
-              <li className="text-gray-700">Packages</li>
-            </ol>
-          </nav>
+          <Breadcrumb
+            items={[
+              { label: "Dashboard", href: "/admin/dashboard" },
+              { label: "Packages", href: "/admin/packages" },
+            ]}
+            separator="/"
+          />
         </div>
 
         <div className="rounded-lg bg-white shadow-sm">
@@ -119,40 +113,11 @@ const PackageTable: React.FC = () => {
               Package Management
             </h1>
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex items-center space-x-2">
-                <span className="text-sm text-gray-700">Show</span>
-                <select
-                  value={itemsPerPage}
-                  onChange={(e) =>
-                    handleItemsPerPageChange(Number(e.target.value))
-                  }
-                  className="rounded border border-gray-300 px-2 py-1 text-sm"
-                >
-                  <option value={5}>5</option>
-                  <option value={10}>10</option>
-                  <option value={20}>20</option>
-                  <option value={50}>50</option>
-                  <option value={0}>All</option>
-                </select>
-                <span className="text-sm text-gray-700">entries</span>
-              </div>
-              <div
-                className="flex w-full max-w-md items-center gap-1 rounded-lg border border-gray-300 px-3 focus:border focus:border-blue-300 focus:ring-2 focus:ring-blue-500"
-                role="search"
-                tabIndex={0}
-                aria-activedescendant="search-input"
-              >
-                <div className="text-gray-400">
-                  <SearchIcon />
-                </div>
-                <input
-                  type="text"
-                  placeholder="Search by name, phone, package, or status..."
-                  className="w-full border-none px-4 py-2 outline-none focus:border-none focus:ring-0"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
+              <Entry
+                onChange={(value) => handleSearchPackage(value)}
+                value={value}
+              />
+              <Search placeholder="Search package..." />
             </div>
           </div>
 
@@ -220,41 +185,41 @@ const PackageTable: React.FC = () => {
                       <td className="whitespace-nowrap px-6 py-4 text-base font-medium">
                         <div className="flex space-x-2">
                           <Link
-                            href={`/admin/packages/${item?.id}`}
+                            href={`/admin/packages/${item?.slug}`}
                             title="Itinerary"
                           >
                             <ItinerayIcon />
                           </Link>
 
                           <Link
-                            href={`/admin/packages/${item?.id}`}
+                            href={`/admin/packages/${item?.slug}`}
                             title="Gallery"
                           >
                             <GalleryIcon />
                           </Link>
                           <Link
-                            href={`/admin/packages/${item?.id}`}
+                            href={`/admin/packages/${item?.slug}`}
                             title="Departure"
                           >
                             <DepartureIcon />
                           </Link>
 
                           <Link
-                            href={`/admin/packages/${item?.id}`}
+                            href={`/admin/packages/${item?.slug}`}
                             title="Review"
                           >
                             <ReviewIcon />
                           </Link>
 
                           <Link
-                            href={`/admin/packages/${item?.id}`}
+                            href={`/admin/packages/${item?.slug}`}
                             title="SEO"
                           >
                             <SeoIcon />
                           </Link>
 
                           <Link
-                            href={`/admin/packages/${item?.id}`}
+                            href={`/admin/packages/${item?.slug}`}
                             title="Edit Package"
                           >
                             <EditIcon />
