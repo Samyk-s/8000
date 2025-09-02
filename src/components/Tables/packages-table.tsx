@@ -13,10 +13,18 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   LoaderIcon,
+  ItinerayIcon,
+  GalleryIcon,
+  DepartureIcon,
+  ReviewIcon,
+  SeoIcon,
 } from "@/components/icons/icnos";
-import { BookingDetailsModal } from "./view/page";
+import usePackages from "@/hooks/usePackages";
+import { Package } from "@/types/package";
+import Image from "next/image";
+import Link from "next/link";
 
-const BookingTable: React.FC = () => {
+const PackageTable: React.FC = () => {
   const router = useRouter();
   const {
     data,
@@ -31,8 +39,7 @@ const BookingTable: React.FC = () => {
     fetchBookings,
     deleteBooking,
   } = useBookings();
-
-  const [viewingBookingId, setViewingBookingId] = useState<number | null>(null);
+  const { packages } = usePackages();
 
   const handleEdit = (id: number): void => {
     router.push(`/admin/packagebooking/editbooking?id=${id}`);
@@ -101,7 +108,7 @@ const BookingTable: React.FC = () => {
               <li>
                 <span className="mx-2">{">"}</span>
               </li>
-              <li className="text-gray-700">Bookings</li>
+              <li className="text-gray-700">Packages</li>
             </ol>
           </nav>
         </div>
@@ -109,7 +116,7 @@ const BookingTable: React.FC = () => {
         <div className="rounded-lg bg-white shadow-sm">
           <div className="border-b border-gray-200 p-6">
             <h1 className="mb-4 text-2xl font-bold text-gray-900">
-              Booking Management
+              Package Management
             </h1>
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center space-x-2">
@@ -124,6 +131,8 @@ const BookingTable: React.FC = () => {
                   <option value={5}>5</option>
                   <option value={10}>10</option>
                   <option value={20}>20</option>
+                  <option value={50}>50</option>
+                  <option value={0}>All</option>
                 </select>
                 <span className="text-sm text-gray-700">entries</span>
               </div>
@@ -155,22 +164,19 @@ const BookingTable: React.FC = () => {
               >
                 <tr>
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
-                    Customer Name
+                    S.N.
                   </th>
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
-                    Phone
+                    Image
                   </th>
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
-                    Package
+                    Title
                   </th>
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
-                    Created Date
+                    Altitue
                   </th>
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
-                    Viewed
+                    Grade
                   </th>
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
                     Actions
@@ -178,57 +184,81 @@ const BookingTable: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
-                {data.items && data.items.length > 0 ? (
-                  data.items.map((item: BookingItem) => (
-                    <tr key={item.id} className="hover:bg-gray-50">
+                {packages && packages.length > 0 ? (
+                  packages?.map((item: Package, index) => (
+                    <tr key={item?.id} className="hover:bg-gray-50">
+                      <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
+                        {index + 1}
+                      </td>
                       <td className="whitespace-nowrap px-6 py-4">
-                        <div className="text-base font-medium text-gray-900">
-                          {item.customerName}
-                        </div>
+                        <Link href={item?.image?.url} target="_blank">
+                          <div className="h-20 w-30 text-base font-medium text-gray-900">
+                            <Image
+                              src={item?.image?.url}
+                              alt={item?.title}
+                              width={1080}
+                              height={720}
+                              className="aspect-video"
+                            />
+                          </div>
+                        </Link>
                       </td>
                       <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
-                        {item.customerPhone}
+                        {item?.title}
                       </td>
                       <td className="whitespace-nowrap px-6 py-4">
                         <div className="text-base font-medium text-gray-900">
-                          {item.package?.title || "N/A"}
+                          {item?.altitude}
                         </div>
+                      </td>
+                      <td className="whitespace-nowrap px-6 py-4">
                         <div className="text-base text-gray-500">
-                          {item.noOfTravellers} travelers
+                          {item?.grade}
                         </div>
                       </td>
-                      <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
-                        {formatDate(item.createdAt)}
-                      </td>
-                      <td className="whitespace-nowrap px-6 py-4">
-                        <StatusBadge status={item.status} />
-                      </td>
-                      <td className="whitespace-nowrap px-6 py-4">
-                        <ViewedBadge isViewed={item.isViewd} />
-                      </td>
+
                       <td className="whitespace-nowrap px-6 py-4 text-base font-medium">
                         <div className="flex space-x-2">
-                          <button
-                            onClick={() => setViewingBookingId(item.id)}
-                            className="rounded p-1 text-blue-600 hover:bg-blue-50 hover:text-blue-900"
-                            title="View Details"
+                          <Link
+                            href={`/admin/packages/${item?.id}`}
+                            title="Itinerary"
                           >
-                            <EyeIcon />
-                          </button>
-                          <button
-                            onClick={() => handleEdit(item.id)}
-                            className="rounded p-1 text-green-600 hover:bg-green-50 hover:text-green-900"
-                            title="Edit Booking"
+                            <ItinerayIcon />
+                          </Link>
+
+                          <Link
+                            href={`/admin/packages/${item?.id}`}
+                            title="Gallery"
+                          >
+                            <GalleryIcon />
+                          </Link>
+                          <Link
+                            href={`/admin/packages/${item?.id}`}
+                            title="Departure"
+                          >
+                            <DepartureIcon />
+                          </Link>
+
+                          <Link
+                            href={`/admin/packages/${item?.id}`}
+                            title="Review"
+                          >
+                            <ReviewIcon />
+                          </Link>
+
+                          <Link
+                            href={`/admin/packages/${item?.id}`}
+                            title="SEO"
+                          >
+                            <SeoIcon />
+                          </Link>
+
+                          <Link
+                            href={`/admin/packages/${item?.id}`}
+                            title="Edit Package"
                           >
                             <EditIcon />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(item.id)}
-                            className="rounded p-1 text-red-600 hover:bg-red-50 hover:text-red-900"
-                            title="Delete Booking"
-                          >
-                            <TrashIcon />
-                          </button>
+                          </Link>
                         </div>
                       </td>
                     </tr>
@@ -239,7 +269,7 @@ const BookingTable: React.FC = () => {
                       colSpan={7}
                       className="px-6 py-8 text-center text-base text-gray-500"
                     >
-                      No bookings found matching your search criteria.
+                      No packages found matching your search criteria.
                     </td>
                   </tr>
                 )}
@@ -297,16 +327,9 @@ const BookingTable: React.FC = () => {
             </div>
           </div>
         </div>
-
-        {viewingBookingId && (
-          <BookingDetailsModal
-            bookingId={viewingBookingId}
-            onClose={() => setViewingBookingId(null)}
-          />
-        )}
       </div>
     </>
   );
 };
 
-export default BookingTable;
+export default PackageTable;

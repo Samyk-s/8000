@@ -1,20 +1,12 @@
-import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-import CalendarBox from "@/components/CalenderBox";
-import { Metadata } from "next";
+"use client";
+import PackageTable from "@/components/Tables/packages-table";
+import usePackages from "@/hooks/usePackages";
+import React from "react";
 
-export const metadata: Metadata = {
-  title: "Calender Page",
-  // other metadata
+const Package = () => {
+  const { packages, error, loading } = usePackages();
+  console.log(packages, "sdfdsf");
+  return <PackageTable />;
 };
 
-const CalendarPage = () => {
-  return (
-    <>
-      <Breadcrumb pageName="Calendar" />
-
-      <CalendarBox />
-    </>
-  );
-};
-
-export default CalendarPage;
+export default Package;

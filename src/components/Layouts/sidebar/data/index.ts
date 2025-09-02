@@ -26,7 +26,7 @@ export const NAV_DATA = [
       {
         title: "Packages",
         url: "/admin/packages",
-        icon: Icons.Calendar,
+        icon: Icons.PackageIcon,
         items: [],
       },
       {
