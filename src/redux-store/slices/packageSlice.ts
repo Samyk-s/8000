@@ -4,10 +4,12 @@ import packageApi from "@/lib/api/packageApi";
 import { Package } from "@/types/package";
 import { Meta, Params } from "@/types/utils-type";
 
-// --- Step 1: create async thunk for fetching packages
-export const fetchPackages = createAsyncThunk(
+// ================= Async Thunks =================
+
+// fetch all packages
+export const fetchPackages = createAsyncThunk<{ items: Package[]; meta: Meta }, Params>(
   "packages/fetchPackages",
-  async (params: Params, { rejectWithValue }) => {
+  async (params, { rejectWithValue }) => {
     try {
       const res = await packageApi.getPackages(params);
       return res;
@@ -17,20 +19,33 @@ export const fetchPackages = createAsyncThunk(
   }
 );
 
-// create async thunk for add packages
-export const createPackage = createAsyncThunk(
+// create a new package
+export const createPackage = createAsyncThunk<Package, any>(
   "packages/createPackage",
-  async (data: any, { rejectWithValue }) => {
+  async (data) => {
     try {
-      const res = await packageApi.createPackage(data)
+      const res = await packageApi.createPackage(data);
       return res;
     } catch (error: any) {
-      return rejectWithValue(error.message)
+      return error?.message;
     }
   }
-)
+);
 
-// --- Step 2: create initial state
+// toggle package status
+export const togglePackageStatus = createAsyncThunk<Package, number>(
+  "packages/togglePackageStatus",
+  async (id: number) => {
+    try {
+      const res = await packageApi.togglePackage(id);
+      return res;
+    } catch (error: any) {
+      return error.message;
+    }
+  }
+);
+
+// ================= State =================
 interface PackageState {
   items: Package[];
   meta: Meta;
@@ -51,29 +66,65 @@ const initialState: PackageState = {
   loading: false,
 };
 
-// --- Step 3: create slice
+// ================= Slice =================
 const packagesSlice = createSlice({
   name: "packages",
   initialState,
-  reducers: {
-
-  },
+  reducers: {},
   extraReducers: (builder) => {
+    // fetchPackages
     builder
       .addCase(fetchPackages.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchPackages.fulfilled, (state, action: PayloadAction<{ items: Package[]; meta: Meta }>) => {
+      .addCase(fetchPackages.fulfilled, (state, action) => {
         state.items = action.payload.items;
         state.meta = action.payload.meta;
         state.loading = false;
       })
-      .addCase(fetchPackages.rejected, (state, action) => {
-        state.error = action.payload as string;
+      .addCase(fetchPackages.rejected, (state, action: PayloadAction<any>) => {
+        state.error = action.payload || "Failed to fetch packages";
         state.loading = false;
+      });
+
+    // createPackage
+    builder
+      .addCase(createPackage.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createPackage.fulfilled, (state, action) => {
+        state.items.push(action.payload);
+        state.meta.itemCount += 1;
+        state.meta.totalItems += 1;
+        state.loading = false;
+      })
+      .addCase(createPackage.rejected, (state, action: PayloadAction<any>) => {
+        state.error = action.payload || "Failed to create package";
+        state.loading = false;
+      });
+
+    // togglePackageStatus
+    builder
+      .addCase(togglePackageStatus.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(togglePackageStatus.fulfilled, (state, action) => {
+        const index = state.items.findIndex(pkg => pkg.id === action.payload.id);
+        if (index !== -1) {
+          state.items[index] = action.payload;
+        }
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(togglePackageStatus.rejected, (state, action: PayloadAction<any>) => {
+        state.loading = false;
+        state.error = action.payload || "Failed to toggle package status";
       });
   },
 });
-// --- Step 4: export reducer
+
+// ================= Export =================
 export default packagesSlice.reducer;

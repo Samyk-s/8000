@@ -20,6 +20,7 @@ import Pagination from "../adminComponents/pagination/pagination";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux-store/store/store";
 import { fetchPackages } from "@/redux-store/slices/packageSlice";
+import ToggleButton from "../adminComponents/toggle-button/toggle-button";
 
 const PackageTable: React.FC = () => {
   const router = useRouter();
@@ -213,6 +214,15 @@ const PackageTable: React.FC = () => {
                           >
                             <EditIcon />
                           </Link>
+                          <ToggleButton
+                            onChange={() => {}}
+                            checked={item?.status === 1 ? true : false}
+                            title={
+                              item?.status === 1
+                                ? "Deactive Package"
+                                : "Active Package"
+                            }
+                          />
                         </div>
                       </td>
                     </tr>

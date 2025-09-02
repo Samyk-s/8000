@@ -20,6 +20,15 @@ class PackageApi {
       throw error
     }
   }
+
+  async togglePackage(id: number) {
+    try {
+      const response = await api.post(`/packages/${id}/toggle-status`)
+    } catch (error) {
+      console.error(error)
+      throw error
+    }
+  }
 }
 
 export default new PackageApi;
