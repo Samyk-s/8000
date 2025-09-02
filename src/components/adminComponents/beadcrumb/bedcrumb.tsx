@@ -28,13 +28,17 @@ const Breadcrumbs: FC<BreadcrumbsProps> = ({
           return (
             <li key={index} className="flex items-center">
               {isLast ? (
-                <span className="text-gray-700">{item.label}</span>
+                <span className="text-gray-700 dark:text-white">
+                  {item.label}
+                </span>
               ) : (
                 <a href={item.href} className="text-blue-600 hover:underline">
                   {item.label}
                 </a>
               )}
-              {!isLast && <span className="mx-2">{separator}</span>}
+              {!isLast && (
+                <span className="mx-2 dark:text-white">{separator}</span>
+              )}
             </li>
           );
         })}

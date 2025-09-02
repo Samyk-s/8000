@@ -20,25 +20,18 @@ import Image from "next/image";
 import Link from "next/link";
 import Entry from "../adminComponents/entry/entry";
 import Search from "../adminComponents/search/search";
-import Breadcrumb from "../adminComponents/beadcrumb/bedvrumb";
+import Breadcrumb from "../adminComponents/beadcrumb/bedcrumb";
+import Pagination from "../adminComponents/pagination/pagination";
 
 const PackageTable: React.FC = () => {
   const router = useRouter();
   const [value, setValue] = useState(10);
-  const {
-    data,
-    loading,
-    error,
-    searchTerm,
-    setSearchTerm,
-    currentPage,
-    itemsPerPage,
-    handlePageChange,
-    handleItemsPerPageChange,
-    fetchBookings,
-    deleteBooking,
-  } = useBookings();
-  const { packages } = usePackages();
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  const totalItems = 95;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  const { packages, loading, error } = usePackages();
 
   const handleEdit = (id: number): void => {
     router.push(`/admin/packagebooking/editbooking?id=${id}`);
@@ -48,8 +41,6 @@ const PackageTable: React.FC = () => {
     if (!window.confirm("Are you sure you want to delete this booking?"))
       return;
     try {
-      await deleteBooking(id);
-      fetchBookings(currentPage, itemsPerPage, searchTerm);
     } catch (error) {
       alert(error instanceof Error ? error.message : "Error deleting booking");
     }
@@ -62,7 +53,7 @@ const PackageTable: React.FC = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 p-6">
-        <div className="rounded-lg bg-white p-8 shadow-sm">
+        <div className="light rounded-lg bg-white p-8 shadow-sm">
           <div className="flex items-center justify-center">
             <LoaderIcon />
             <span className="ml-2 text-gray-600">Loading bookings...</span>
@@ -79,14 +70,6 @@ const PackageTable: React.FC = () => {
           <div className="text-center text-red-600">
             <p className="mb-2 text-lg font-semibold">Error Loading Bookings</p>
             <p className="text-sm">{error}</p>
-            <button
-              onClick={() =>
-                fetchBookings(currentPage, itemsPerPage, searchTerm)
-              }
-              className="mt-4 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-            >
-              Retry
-            </button>
           </div>
         </div>
       </div>
@@ -241,56 +224,13 @@ const PackageTable: React.FC = () => {
               </tbody>
             </table>
           </div>
-
-          <div className="flex items-center justify-between border-t border-gray-200 px-6 py-4">
-            <div className="text-sm text-gray-700">
-              Showing{" "}
-              {((data.meta?.currentPage || 1) - 1) *
-                (data.meta?.itemsPerPage || itemsPerPage) +
-                1}{" "}
-              to{" "}
-              {Math.min(
-                (data.meta?.currentPage || 1) *
-                  (data.meta?.itemsPerPage || itemsPerPage),
-                data.meta?.totalItems || 0,
-              )}{" "}
-              of {data.meta?.totalItems || 0} entries
-            </div>
-            <div className="flex items-center space-x-1">
-              <button
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-                className="flex items-center rounded border border-gray-300 px-3 py-1 text-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                <ChevronLeftIcon />
-                <span className="ml-1">Previous</span>
-              </button>
-              {Array.from(
-                { length: data.meta?.totalPages || 1 },
-                (_, i) => i + 1,
-              ).map((page) => (
-                <button
-                  key={page}
-                  onClick={() => handlePageChange(page)}
-                  className={`rounded border px-3 py-1 text-sm ${
-                    currentPage === page
-                      ? "border-blue-500 bg-blue-500 text-white"
-                      : "border-gray-300 hover:bg-gray-50"
-                  }`}
-                >
-                  {page}
-                </button>
-              ))}
-              <button
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === (data.meta?.totalPages || 1)}
-                className="flex items-center rounded border border-gray-300 px-3 py-1 text-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                <span className="mr-1">Next</span>
-                <ChevronRightIcon />
-              </button>
-            </div>
-          </div>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            itemsPerPage={itemsPerPage}
+            totalItems={totalItems}
+            onPageChange={(page) => setCurrentPage(page)}
+          />
         </div>
       </div>
     </>
