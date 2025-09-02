@@ -3,29 +3,29 @@ export const NAV_DATA = [
   {
     label: "Main",
     items: [
-     {      
-            title: "Visit Website",
-            url: "/",
-            icon: Icons.WebsiteIcon,
-            items: [],
-      },   
-      
-     {      
-            title: "Dashboard",
-            url: "/admin/dashboard",
-            icon: Icons.HomeIcon,
-            items: [],
-      },   
-      
+      {
+        title: "Visit Website",
+        url: "/",
+        icon: Icons.WebsiteIcon,
+        items: [],
+      },
+
+      {
+        title: "Dashboard",
+        url: "/admin/dashboard",
+        icon: Icons.HomeIcon,
+        items: [],
+      },
+
     ],
   },
   {
     label: "Management",
     items: [
-     
+
       {
         title: "Packages",
-        url: "/admin/calendar",
+        url: "/admin/packages",
         icon: Icons.Calendar,
         items: [],
       },
@@ -66,7 +66,7 @@ export const NAV_DATA = [
         url: "/admin/tables",
         icon: Icons.Table,
         items: [
-          { 
+          {
             title: "Tables",
             url: "/admin/tables",
           },
@@ -111,7 +111,7 @@ export const NAV_DATA = [
           },
         ],
       },
-      
+
     ],
   },
 ];
