@@ -1,12 +1,8 @@
 "use client";
-import React, { ChangeEvent, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useBookings } from "@/hooks/useBookings";
 import {
   EditIcon,
-  SearchIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
   LoaderIcon,
   ItinerayIcon,
   GalleryIcon,
@@ -14,7 +10,6 @@ import {
   ReviewIcon,
   SeoIcon,
 } from "@/components/icons/icnos";
-import usePackages from "@/hooks/usePackages";
 import { Package } from "@/types/package";
 import Image from "next/image";
 import Link from "next/link";
@@ -22,16 +17,27 @@ import Entry from "../adminComponents/entry/entry";
 import Search from "../adminComponents/search/search";
 import Breadcrumb from "../adminComponents/beadcrumb/bedcrumb";
 import Pagination from "../adminComponents/pagination/pagination";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/redux-store/store/store";
+import { fetchPackages } from "@/redux-store/slices/packageSlice";
 
 const PackageTable: React.FC = () => {
   const router = useRouter();
   const [value, setValue] = useState(10);
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
-  const totalItems = 95;
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const { items, loading, error, meta } = useSelector(
+    (state: RootState) => state?.packges,
+  );
+  const [currentPage, setCurrentPage] = useState(meta?.currentPage);
+  const dispatch = useDispatch<AppDispatch>();
+  const totalPages = Math.ceil(meta?.totalPages / meta?.itemsPerPage);
 
-  const { packages, loading, error } = usePackages();
+  console.log("items", items);
+  console.log("loading", loading);
+
+  // call api for getting packages
+  useEffect(() => {
+    dispatch(fetchPackages({ page: 1, limit: 10 }));
+  }, [dispatch]);
 
   const handleEdit = (id: number): void => {
     router.push(`/admin/packagebooking/editbooking?id=${id}`);
@@ -132,8 +138,8 @@ const PackageTable: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
-                {packages && packages.length > 0 ? (
-                  packages?.map((item: Package, index) => (
+                {items && items.length > 0 ? (
+                  items?.map((item: Package, index) => (
                     <tr key={item?.id} className="hover:bg-gray-50">
                       <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
                         {index + 1}
@@ -227,8 +233,8 @@ const PackageTable: React.FC = () => {
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
-            itemsPerPage={itemsPerPage}
-            totalItems={totalItems}
+            itemsPerPage={meta?.itemsPerPage}
+            totalItems={meta?.totalItems}
             onPageChange={(page) => setCurrentPage(page)}
           />
         </div>

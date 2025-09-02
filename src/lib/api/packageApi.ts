@@ -1,11 +1,20 @@
+import { Params } from "@/types/utils-type";
 import { api } from "../axios-config/api";
 
 class PackageApi {
 
-  async getPackages(limit: number) {
+  async getPackages(param: Params) {
     try {
-      const response = await api.get(`/packages?${limit = limit}`);
+      const response = await api.get(`/packages?search=${param.search}&page=${param.page}limit=${param.limit}`);
       return response.data
+    } catch (error) {
+      console.error(error)
+      throw error
+    }
+  }
+  async createPackage(data: any) {
+    try {
+      const response = await api.post("/packages", data)
     } catch (error) {
       console.error(error)
       throw error
