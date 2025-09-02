@@ -19,7 +19,10 @@ import Breadcrumb from "../adminComponents/beadcrumb/bedcrumb";
 import Pagination from "../adminComponents/pagination/pagination";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux-store/store/store";
-import { fetchPackages } from "@/redux-store/slices/packageSlice";
+import {
+  fetchPackages,
+  togglePackageStatus,
+} from "@/redux-store/slices/packageSlice";
 import ToggleButton from "../adminComponents/toggle-button/toggle-button";
 
 const PackageTable: React.FC = () => {
@@ -31,10 +34,6 @@ const PackageTable: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(meta?.currentPage);
   const dispatch = useDispatch<AppDispatch>();
   const totalPages = Math.ceil(meta?.totalPages / meta?.itemsPerPage);
-
-  console.log("items", items);
-  console.log("loading", loading);
-
   // call api for getting packages
   useEffect(() => {
     dispatch(fetchPackages({ page: 1, limit: 10 }));
@@ -215,7 +214,9 @@ const PackageTable: React.FC = () => {
                             <EditIcon />
                           </Link>
                           <ToggleButton
-                            onChange={() => {}}
+                            onChange={() => {
+                              dispatch(togglePackageStatus(item?.id));
+                            }}
                             checked={item?.status === 1 ? true : false}
                             title={
                               item?.status === 1

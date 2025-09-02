@@ -38,9 +38,11 @@ export const togglePackageStatus = createAsyncThunk<Package, number>(
   async (id: number) => {
     try {
       const res = await packageApi.togglePackage(id);
-      return res;
-    } catch (error: any) {
-      return error.message;
+      console.log(res, "toggle")
+
+    } catch (err: any) {
+      console.log("err", err)
+      return err.message;
     }
   }
 );

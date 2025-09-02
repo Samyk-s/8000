@@ -23,7 +23,8 @@ class PackageApi {
 
   async togglePackage(id: number) {
     try {
-      const response = await api.post(`/packages/${id}/toggle-status`)
+      const response = await api.patch(`/packages/${id}/toggle-status`)
+      return response.data
     } catch (error) {
       console.error(error)
       throw error
