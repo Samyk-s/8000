@@ -42,6 +42,12 @@ export const NAV_DATA = [
         items: [],
       },
       {
+        title: "Pages",
+        url: "/admin/pages",
+        icon: Icons.PageIcon,
+        items: [],
+      },
+      {
         title: "Profile",
         url: "/admin/profile",
         icon: Icons.User,
@@ -73,7 +79,7 @@ export const NAV_DATA = [
         ],
       },
       {
-        title: "Pages",
+        title: "Page",
         icon: Icons.Alphabet,
         items: [
           {

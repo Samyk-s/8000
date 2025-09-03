@@ -3,9 +3,11 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import storage from "redux-persist/lib/storage";
 import { persistReducer, persistStore } from "redux-persist";
 import packageReducer from "../slices/packageSlice"
+import pageReducer from "../slices/pageSlice"
 
 const rootReducer = combineReducers({
-  packges: packageReducer
+  packges: packageReducer,
+  pages: pageReducer
 });
 
 const persistConfig = {

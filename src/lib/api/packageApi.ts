@@ -32,4 +32,4 @@ class PackageApi {
   }
 }
 
-export default new PackageApi;
+export default new PackageApi();

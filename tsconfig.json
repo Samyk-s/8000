@@ -33,7 +33,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"
-, ".next/types/app/admin/(routes)/calendar/page.tsx", "src/components/adminComponents/layout/drag-drop"  ],
+, ".next/types/app/admin/(routes)/calendar/page.tsx", "src/components/adminComponents/pages-components/drag-drop"  ],
   "exclude": [
     "node_modules"
   ]

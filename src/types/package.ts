@@ -1,11 +1,5 @@
-export interface MediaFile {
-  uid: string;
-  name: string;
-  url: string;
-  alt: string;
-  type: string;
-  size: string;
-}
+import { MediaFile } from "./utils-type";
+
 
 export interface Package {
   slug: string;

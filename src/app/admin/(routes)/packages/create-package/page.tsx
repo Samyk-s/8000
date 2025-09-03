@@ -3,7 +3,7 @@
 import React from "react";
 import { Form, Input, Button, Space, Row, Col, Upload } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
-import CreatePackageForm from "@/components/adminComponents/layout/forms/package-form/create-package-form";
+import CreatePackageForm from "@/components/adminComponents/pages-components/forms/package-form/create-package-form";
 
 const CreatePackage: React.FC = () => {
   const onFinish = (values: { title: string }) => {

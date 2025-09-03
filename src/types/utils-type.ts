@@ -11,3 +11,11 @@ export interface Params {
   search?: number | string,
   page?: number
 }
+export interface MediaFile {
+  uid: string;
+  name: string;
+  url: string;
+  alt: string;
+  type: string;
+  size: string;
+}

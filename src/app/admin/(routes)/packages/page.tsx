@@ -1,9 +1,21 @@
 "use client";
-import PackageTable from "@/components/Tables/packages-table";
+import Breadcrumbs from "@/components/adminComponents/beadcrumb/bedcrumb";
+import PackageTable from "@/components/adminComponents/pages-components/tables/packages-table";
 import React from "react";
 
 const Package = () => {
-  return <PackageTable />;
+  return (
+    <>
+      <Breadcrumbs
+        items={[
+          { label: "Dashboard", href: "/admin/dashboard" },
+          { label: "Package", href: "/admin/packages" },
+        ]}
+        separator="/"
+      />
+      <PackageTable />;
+    </>
+  );
 };
 
 export default Package;
