@@ -12,6 +12,15 @@ class PageApi {
       throw error
     }
   }
+  async getPageById(id: number) {
+    try {
+      const response = await api.get(`/pages/by-id${id}`);
+      return response.data
+    } catch (error) {
+      console.error(error)
+      throw error
+    }
+  }
   async togglePage(id: number) {
     try {
       const response = await api.patch(`/pages/${id}/toggle-status`)

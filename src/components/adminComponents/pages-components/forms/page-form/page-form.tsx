@@ -17,11 +17,12 @@ import { generateSlug } from "@/lib/utils";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux-store/store/store";
 import { fetchPages } from "@/redux-store/slices/pageSlice";
+import { PageItem } from "@/types/page";
 
 const TextEditor = dynamic(() => import("../../text-editor/text-editor"));
 const { Option } = Select;
 
-const PageForm: React.FC = () => {
+const PageForm = ({ page }: { page: PageItem }) => {
   const [form] = Form.useForm();
   const { items } = useSelector((state: RootState) => state.pages);
   const dispatch = useDispatch();
