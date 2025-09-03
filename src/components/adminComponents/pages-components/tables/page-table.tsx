@@ -70,7 +70,7 @@ const PageTable: React.FC = () => {
           <div className="flex flex-col gap-3 border-b border-gray-200 p-6">
             <div className="flex justify-end">
               <Link
-                href={"/admin/packages/create-package"}
+                href={"/admin/pages/create-page"}
                 className="flex w-fit items-center gap-1 rounded-md bg-black px-2 py-1 text-white dark:bg-white dark:text-black"
               >
                 <PlusIcon />
@@ -135,7 +135,7 @@ const PageTable: React.FC = () => {
                         {item?.title}
                       </td>
                       <td className="whitespace-nowrap px-6 py-4">
-                        <div className="text-base font-medium text-gray-900">
+                        <div className="text-base text-gray-900">
                           {item?.parent?.title}
                         </div>
                       </td>
@@ -143,20 +143,14 @@ const PageTable: React.FC = () => {
                       <td className="whitespace-nowrap px-6 py-4 text-base font-medium">
                         <div className="flex space-x-2">
                           <Link
-                            href={`/admin/packages/${item?.slug}`}
+                            href={`/admin/packages/${item?.id}`}
                             title="SEO"
                           >
                             <SeoIcon />
                           </Link>
-                          <Link
-                            href={`/admin/pages/${item?.slug}`}
-                            title="Gallery"
-                          >
-                            <GalleryIcon />
-                          </Link>
 
                           <Link
-                            href={`/admin/packages/${item?.slug}`}
+                            href={`/admin/pages/${item?.id}`}
                             title="Edit Package"
                           >
                             <EditIcon />

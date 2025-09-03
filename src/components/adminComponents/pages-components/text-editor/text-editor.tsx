@@ -1,16 +1,20 @@
 "use client";
+import dynamic from "next/dynamic";
 import React, { useRef, useState } from "react";
-import JoditEditor from "jodit-react";
+const JoditEditor = dynamic(() => import("jodit-react"), {
+  ssr: false,
+});
 
 const TextEditor = () => {
   const editor = useRef(null);
-  const [content, setContent] = useState("<p>Hello world!</p>");
+  const [content, setContent] = useState("");
 
   const config = {
     readonly: false,
     toolbarButtonSize: "medium",
     buttons: "undo,redo,bold,italic,underline,ul,ol,link,image,fontsize,brush",
     height: 400,
+    placeholder: "Description",
   };
 
   return (

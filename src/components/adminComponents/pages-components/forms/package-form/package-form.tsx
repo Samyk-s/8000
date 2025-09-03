@@ -12,6 +12,7 @@ import {
   Typography,
   Space,
   Checkbox,
+  Card,
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import CreatePackageTransfer from "../../drag-drop/drag-drop";
@@ -29,7 +30,7 @@ const CreatePackageForm: React.FC = () => {
   };
 
   return (
-    <div className="h-full p-4">
+    <Card className="h-full p-4">
       <Form
         name="create-package"
         autoComplete="off"
@@ -331,7 +332,7 @@ const CreatePackageForm: React.FC = () => {
           </Col>
         </Row>
       </Form>
-    </div>
+    </Card>
   );
 };
 

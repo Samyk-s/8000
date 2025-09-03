@@ -5,7 +5,7 @@ import pageApi from "@/lib/api/pageApi";
 
 export const fetchPages = createAsyncThunk<{ items: PageItem[]; meta: Meta }, Params>(
   "packages/fetchPackages",
-  async (params, { rejectWithValue }) => {
+  async (params: Params, { rejectWithValue }) => {
     try {
       const res = await pageApi.getPages(params);
       return res;
