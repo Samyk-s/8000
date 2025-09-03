@@ -14,6 +14,19 @@ export const fetchPages = createAsyncThunk<{ items: PageItem[]; meta: Meta }, Pa
     }
   }
 );
+// toggle package status
+export const togglePageStatus = createAsyncThunk<PageItem, number>(
+  "pages/togglePagetatus",
+  async (id: number) => {
+    try {
+      const res = await pageApi.togglePage(id);
+      return res.data
+    } catch (err: any) {
+      console.log("err", err)
+      return err.message;
+    }
+  }
+);
 
 interface PageItemState {
   items: PageItem[];
@@ -53,6 +66,24 @@ const pageSlice = createSlice({
       .addCase(fetchPages.rejected, (state, action: PayloadAction<any>) => {
         state.error = action.payload || "Failed to fetch pages";
         state.loading = false;
+      });
+    // togglePackageStatus
+    builder
+      .addCase(togglePageStatus.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(togglePageStatus.fulfilled, (state, action) => {
+        const index = state.items.findIndex(page => page?.id === action.payload?.id);
+        if (index !== -1) {
+          state.items[index] = action.payload;
+        }
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(togglePageStatus.rejected, (state, action: PayloadAction<any>) => {
+        state.loading = false;
+        state.error = action.payload || "Failed to toggle package status";
       });
 
   }

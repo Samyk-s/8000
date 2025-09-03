@@ -13,10 +13,9 @@ import Search from "../../search/search";
 import Pagination from "../../pagination/pagination";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux-store/store/store";
-import { togglePackageStatus } from "@/redux-store/slices/packageSlice";
 import ToggleButton from "../../toggle-button/toggle-button";
 import { PlusIcon } from "@/assets/icons";
-import { fetchPages } from "@/redux-store/slices/pageSlice";
+import { fetchPages, togglePageStatus } from "@/redux-store/slices/pageSlice";
 import { PageItem } from "@/types/page";
 
 const PageTable: React.FC = () => {
@@ -157,7 +156,7 @@ const PageTable: React.FC = () => {
                           </Link>
                           <ToggleButton
                             onChange={() => {
-                              dispatch(togglePackageStatus(item?.id));
+                              dispatch(togglePageStatus(item?.id));
                             }}
                             checked={item?.status === 1 ? true : false}
                             title={
