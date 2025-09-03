@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { Form, Col, Button, Space } from "antd";
+import React, { useState } from "react";
+import { Button, Space } from "antd";
 import {
   DndContext,
   closestCenter,
@@ -42,7 +42,6 @@ const SortableItem: React.FC<{
 }> = ({ id, title, onAdd, onRemove, isSelected }) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id });
-
   const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -124,45 +123,27 @@ const CreatePackageTransfer: React.FC<CreatePackageTransferProps> = ({
   value = [],
   onChange,
 }) => {
-  const [available, setAvailable] = useState<Item[]>(
-    mockData.filter((i) => !value.some((v) => v.key === i.key)),
-  );
   const [selected, setSelected] = useState<Item[]>(value);
   const [search, setSearch] = useState("");
 
-  useEffect(() => {
-    setSelected(value);
-    setAvailable(mockData.filter((i) => !value.some((v) => v.key === i.key)));
-  }, [value]);
+  // Derive available items dynamically
+  const available = mockData.filter(
+    (i) => !selected.some((v) => v.key === i.key),
+  );
+  const filteredAvailable = available.filter((item) =>
+    item.title.toLowerCase().includes(search.toLowerCase()),
+  );
 
   const updateSelected = (newSelected: Item[]) => {
     setSelected(newSelected);
     onChange?.(newSelected);
   };
 
-  const handleAdd = (item: Item) => {
-    setAvailable((prev) => prev.filter((i) => i.key !== item.key));
-    updateSelected([...selected, item]);
-  };
-
-  const handleRemove = (item: Item) => {
+  const handleAdd = (item: Item) => updateSelected([...selected, item]);
+  const handleRemove = (item: Item) =>
     updateSelected(selected.filter((i) => i.key !== item.key));
-    setAvailable((prev) => [...prev, item]);
-  };
-
-  const handleAddAll = () => {
-    updateSelected([...selected, ...available]);
-    setAvailable([]);
-  };
-
-  const handleRemoveAll = () => {
-    setAvailable((prev) => [...prev, ...selected]);
-    updateSelected([]);
-  };
-
-  const filteredAvailable = available.filter((item) =>
-    item.title.toLowerCase().includes(search.toLowerCase()),
-  );
+  const handleAddAll = () => updateSelected([...selected, ...available]);
+  const handleRemoveAll = () => updateSelected([]);
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -170,28 +151,6 @@ const CreatePackageTransfer: React.FC<CreatePackageTransferProps> = ({
 
     const activeId = active.id as string;
     const overId = over.id as string;
-
-    // Drop to list
-    if (overId === "available" || overId === "selected") {
-      if (overId === "selected") {
-        const movedItem = available.find((i) => i.key === activeId);
-        if (movedItem) handleAdd(movedItem);
-      } else {
-        const movedItem = selected.find((i) => i.key === activeId);
-        if (movedItem) handleRemove(movedItem);
-      }
-      return;
-    }
-
-    // Reorder inside same list
-    if (
-      available.some((i) => i.key === activeId) &&
-      available.some((i) => i.key === overId)
-    ) {
-      const oldIndex = available.findIndex((i) => i.key === activeId);
-      const newIndex = available.findIndex((i) => i.key === overId);
-      setAvailable(arrayMove(available, oldIndex, newIndex));
-    }
 
     if (
       selected.some((i) => i.key === activeId) &&
@@ -224,6 +183,7 @@ const CreatePackageTransfer: React.FC<CreatePackageTransferProps> = ({
             onAddItem={handleAdd}
           />
         </div>
+
         <div style={{ flex: 1 }}>
           <Space className="my-5 w-full justify-end">
             <Button onClick={handleRemoveAll}>Remove All</Button>
