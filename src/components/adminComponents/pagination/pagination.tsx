@@ -25,7 +25,7 @@ const Pagination: FC<PaginationProps> = ({
     <div
       className={`flex flex-col items-center justify-between border-t border-gray-200 px-6 py-4 sm:flex-row ${className}`}
     >
-      <div className="mb-2 text-sm text-gray-700 sm:mb-0">
+      <div className="mb-2 text-sm text-gray-700 dark:text-white sm:mb-0">
         Showing {startItem} to {endItem} of {totalItems} entries
       </div>
 
@@ -33,17 +33,17 @@ const Pagination: FC<PaginationProps> = ({
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className="flex items-center rounded border border-gray-300 px-3 py-1 text-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex items-center rounded border border-gray-300 px-3 py-1 text-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:text-white"
         >
           <ChevronLeftIcon />
-          <span className="ml-1">Previous</span>
+          <span className="ml-1 dark:text-white">Previous</span>
         </button>
 
         {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
           <button
             key={page}
             onClick={() => onPageChange(page)}
-            className={`rounded border px-3 py-1 text-sm ${
+            className={`rounded border px-3 py-1 text-sm dark:text-white ${
               currentPage === page
                 ? "border-blue-500 bg-blue-500 text-white"
                 : "border-gray-300 hover:bg-gray-50"
@@ -56,9 +56,9 @@ const Pagination: FC<PaginationProps> = ({
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className="flex items-center rounded border border-gray-300 px-3 py-1 text-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex items-center rounded border border-gray-300 px-3 py-1 text-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:text-white"
         >
-          <span className="mr-1">Next</span>
+          <span className="mr-1 dark:text-white">Next</span>
           <ChevronRightIcon />
         </button>
       </div>

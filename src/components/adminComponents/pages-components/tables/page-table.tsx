@@ -65,7 +65,7 @@ const PageTable: React.FC = () => {
   return (
     <>
       <div className="min-h-screen p-1">
-        <div className="rounded-lg bg-white shadow-sm">
+        <div className="rounded-lg bg-white text-gray-700 shadow-sm dark:bg-[#020D1A] dark:text-white">
           <div className="flex flex-col gap-3 border-b border-gray-200 p-6">
             <div className="flex justify-end">
               <Link
@@ -110,11 +110,11 @@ const PageTable: React.FC = () => {
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200 bg-white">
+              <tbody className="divide-y divide-gray-200 bg-white dark:bg-[#020D1A]">
                 {items && items.length > 0 ? (
                   items?.map((item: PageItem, index) => (
-                    <tr key={item?.id} className="hover:bg-gray-50">
-                      <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
+                    <tr key={item?.id}>
+                      <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900 dark:text-white">
                         {index + 1}
                       </td>
                       <td className="whitespace-nowrap px-6 py-4">
@@ -130,16 +130,16 @@ const PageTable: React.FC = () => {
                           </div>
                         </Link>
                       </td>
-                      <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
+                      <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900 dark:text-white">
                         {item?.title}
                       </td>
                       <td className="whitespace-nowrap px-6 py-4">
-                        <div className="text-base text-gray-900">
+                        <div className="text-base text-gray-900 dark:text-white">
                           {item?.parent?.title}
                         </div>
                       </td>
 
-                      <td className="whitespace-nowrap px-6 py-4 text-base font-medium">
+                      <td className="whitespace-nowrap px-6 py-4 text-base font-medium dark:text-white">
                         <div className="flex space-x-2">
                           <Link
                             href={`/admin/packages/${item?.id}`}

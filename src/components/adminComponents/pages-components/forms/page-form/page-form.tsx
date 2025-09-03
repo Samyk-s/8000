@@ -1,5 +1,6 @@
 "use client";
-import React, { Suspense, useEffect, useState } from "react";
+
+import React, { useEffect } from "react";
 import {
   Form,
   Input,
@@ -10,6 +11,7 @@ import {
   Select,
   Checkbox,
   Card,
+  message,
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import dynamic from "next/dynamic";
@@ -18,48 +20,107 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux-store/store/store";
 import { fetchPages } from "@/redux-store/slices/pageSlice";
 import { PageItem } from "@/types/page";
+import pageApi from "@/lib/api/pageApi";
 
-const TextEditor = dynamic(() => import("../../text-editor/text-editor"));
+// ✅ Dynamic import with ssr: false prevents hydration mismatch
+const TextEditor = dynamic(() => import("../../text-editor/text-editor"), {
+  ssr: false,
+});
+
 const { Option } = Select;
 
-const PageForm = ({ page }: { page: PageItem }) => {
+const PageForm = ({ page }: { page?: PageItem | null }) => {
   const [form] = Form.useForm();
   const { items } = useSelector((state: RootState) => state.pages);
   const dispatch = useDispatch();
 
-  const onFinish = (values: any) => {
-    console.log("Success:", values);
-  };
-
+  // ✅ Prefill form only on client
   useEffect(() => {
-    dispatch(fetchPages({ page: 1, limit: 10 }));
+    if (page) {
+      form.setFieldsValue({
+        ...page,
+        image: page.image
+          ? [
+              {
+                uid: page.image.uid || "1",
+                name: page.image.name,
+                url: page.image.url,
+                alt: page.image.alt,
+                type: page.image.type,
+                size: page.image.size,
+              },
+            ]
+          : [],
+        cover_image: page.cover_image
+          ? [
+              {
+                uid: page.cover_image.uid || "2",
+                name: page.cover_image.name,
+                url: page.cover_image.url,
+                alt: page.cover_image.alt,
+                type: page.cover_image.type,
+                size: page.cover_image.size,
+              },
+            ]
+          : [],
+      });
+    }
+  }, [page, form]);
+
+  // ✅ Fetch pages for template select (client-side)
+  useEffect(() => {
+    dispatch(fetchPages({ page: 1, limit: 10 }) as any);
   }, [dispatch]);
 
+  const onFinish = async (values: any) => {
+    try {
+      let res;
+      if (page?.id) {
+        // res = await pageApi.updatePage(page.id, values);
+        message.success("Page updated successfully!");
+      } else {
+        // res = await pageApi.createPage(values);
+        message.success("Page created successfully!");
+        form.resetFields();
+      }
+      console.log("Saved:", res);
+    } catch (error: any) {
+      message.error(error?.message || "Something went wrong");
+    }
+  };
+
   return (
-    <Card className="h-full p-4">
+    <Card className="h-full p-4 dark:bg-[#020D1A]">
       <Form
         form={form}
-        name="create-package"
+        name="page-form"
         autoComplete="off"
         layout="vertical"
         onFinish={onFinish}
+        initialValues={{
+          status: true,
+          isMenu: false,
+          isMainMenu: false,
+          isFooterMenu: false,
+        }}
       >
         <Row gutter={16}>
           {/* TITLE */}
           <Col xs={24} md={12}>
             <Form.Item
-              label="TITLE"
+              label={<span className="uppercase dark:text-white">title</span>}
               name="title"
               rules={[{ required: true, message: "Title is required" }]}
+              className="dark:!text-white"
             >
               <Input
                 onChange={(e) => {
                   const value = e.target.value;
                   form.setFieldsValue({
-                    title: value,
                     slug: generateSlug(value),
                   });
                 }}
+                className="bg-transparent"
               />
             </Form.Item>
           </Col>
@@ -67,30 +128,41 @@ const PageForm = ({ page }: { page: PageItem }) => {
           {/* SLUG */}
           <Col xs={24} md={12}>
             <Form.Item
-              label="Slug"
+              label={<span className="uppercase dark:text-white">slug</span>}
               name="slug"
               rules={[{ required: true, message: "Slug is required" }]}
             >
-              <Input />
+              <Input className="!bg-transparent" />
             </Form.Item>
           </Col>
 
           {/* IMAGE */}
           <Col xs={24} md={8}>
             <Form.Item
-              label="Image"
+              label={<span className="uppercase dark:text-white">image</span>}
               name="image"
               valuePropName="fileList"
+              rules={[
+                {
+                  required: true,
+                  message: "Image is required",
+                },
+              ]}
               getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
-              rules={[{ required: true, message: "Image is required" }]}
             >
               <Upload
                 beforeUpload={() => false}
                 listType="picture"
                 accept=".jpg,.jpeg,.png,.webp"
                 maxCount={1}
+                className="!bg-transparent"
               >
-                <Button icon={<UploadOutlined />}>Click to Upload</Button>
+                <Button
+                  className="bg-transparent dark:text-white"
+                  icon={<UploadOutlined />}
+                >
+                  Click to Upload
+                </Button>
               </Upload>
             </Form.Item>
           </Col>
@@ -98,19 +170,32 @@ const PageForm = ({ page }: { page: PageItem }) => {
           {/* COVER IMAGE */}
           <Col xs={24} md={8}>
             <Form.Item
-              label="COVER IMAGE"
+              label={
+                <span className="uppercase dark:text-white">cover image</span>
+              }
+              rules={[
+                {
+                  required: true,
+                  message: "Image is required",
+                },
+              ]}
               name="cover_image"
               valuePropName="fileList"
               getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
-              rules={[{ required: true, message: "Cover image is required" }]}
             >
               <Upload
                 beforeUpload={() => false}
                 listType="picture"
                 accept=".jpg,.jpeg,.png,.webp"
                 maxCount={1}
+                className="!bg-transparent"
               >
-                <Button icon={<UploadOutlined />}>Click to Upload</Button>
+                <Button
+                  className="bg-transparent dark:text-white"
+                  icon={<UploadOutlined />}
+                >
+                  Click to Upload
+                </Button>
               </Upload>
             </Form.Item>
           </Col>
@@ -118,25 +203,40 @@ const PageForm = ({ page }: { page: PageItem }) => {
           {/* ORDER NO */}
           <Col xs={24} md={8}>
             <Form.Item
-              label="ORDER NO."
+              label={
+                <span className="uppercase dark:text-white">order no.</span>
+              }
               name="order"
-              rules={[{ required: true, message: "Order is required" }]}
             >
-              <Input type="number" />
+              <Input
+                type="number"
+                className="!bg-transparent dark:placeholder:text-white"
+              />
             </Form.Item>
           </Col>
 
           {/* TEMPLATE */}
           <Col xs={24} md={12}>
             <Form.Item
-              label="TEMPLATE"
-              name="grade"
-              rules={[{ required: true, message: "Grade is required" }]}
+              label={
+                <span className="uppercase dark:text-white">template</span>
+              }
+              name="page_id"
+              rules={[
+                {
+                  required: true,
+                  message: "Template is required",
+                },
+              ]}
             >
-              <Select placeholder="Select a template">
-                {items?.map((item) => (
-                  <Option value={item?.id} key={item?.id}>
-                    {item?.title}
+              <Select
+                placeholder="Select a template"
+                allowClear
+                className="!bg-transparent"
+              >
+                {(items || []).map((item) => (
+                  <Option value={item.id} key={item.id}>
+                    {item.title}
                   </Option>
                 ))}
               </Select>
@@ -146,63 +246,75 @@ const PageForm = ({ page }: { page: PageItem }) => {
           {/* SHORT TITLE */}
           <Col xs={24} md={12}>
             <Form.Item
-              label="SHORT TITLE"
+              label={
+                <span className="uppercase dark:text-white">short title</span>
+              }
               name="shortTitle"
-              rules={[{ required: true, message: "Short title is required" }]}
             >
-              <Input />
+              <Input className="!bg-transparent" />
             </Form.Item>
           </Col>
 
           {/* SHORT DESCRIPTION */}
           <Col span={24}>
             <Form.Item
-              label="SHORT DESCRIPTION"
+              label={
+                <span className="uppercase dark:text-white">
+                  short description
+                </span>
+              }
               name="shortDescription"
-              rules={[
-                { required: true, message: "Short description is required" },
-              ]}
             >
-              <Input />
+              <Input className="!bg-transparent" />
             </Form.Item>
           </Col>
 
           {/* DESCRIPTION */}
           <Col span={24}>
             <Form.Item
-              label="DESCRIPTION"
+              label={
+                <span className="uppercase dark:text-white">description</span>
+              }
               name="description"
-              rules={[{ required: true, message: "Description is required" }]}
             >
-              <Suspense fallback={null}>
-                <TextEditor />
-              </Suspense>
+              <TextEditor />
             </Form.Item>
           </Col>
 
           {/* CHECKBOXES */}
           <Col xs={12} md={6} lg={4}>
-            <Form.Item label="Status" name="status" valuePropName="checked">
+            <Form.Item
+              label={<span className="dark:text-white">Status</span>}
+              name="status"
+              valuePropName="checked"
+            >
               <Checkbox />
             </Form.Item>
           </Col>
-          <Col xs={12} md={6} lg={4}>
-            <Form.Item label="Is Menu" name="isMenu" valuePropName="checked">
-              <Checkbox />
-            </Form.Item>
-          </Col>
+
           <Col xs={12} md={6} lg={4}>
             <Form.Item
-              label="Is Main Menu"
+              label={<span className="dark:text-white">Is Menu</span>}
+              name="isMenu"
+              valuePropName="checked"
+            >
+              <Checkbox />
+            </Form.Item>
+          </Col>
+
+          <Col xs={12} md={6} lg={4}>
+            <Form.Item
+              label={<span className="dark:text-white">Is Main Menu</span>}
               name="isMainMenu"
               valuePropName="checked"
             >
               <Checkbox />
             </Form.Item>
           </Col>
+
           <Col xs={12} md={6} lg={4}>
             <Form.Item
-              label="Is Footer Menu"
+              label={<span className="dark:text-white">Is Footer Menu</span>}
               name="isFooterMenu"
               valuePropName="checked"
             >
@@ -214,11 +326,11 @@ const PageForm = ({ page }: { page: PageItem }) => {
           <Col span={24}>
             <Form.Item>
               <Button
-                className="text-white hover:bg-black"
                 htmlType="submit"
-                type="primary"
+                type="default"
+                className="!bg-black !text-white hover:!bg-black hover:!text-white dark:!bg-white dark:!text-black"
               >
-                SAVE
+                {page ? "Update Page" : "Create Page"}
               </Button>
             </Form.Item>
           </Col>

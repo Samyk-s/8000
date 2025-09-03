@@ -19,6 +19,7 @@ const TextEditor = () => {
 
   return (
     <JoditEditor
+      className="!bg-transparent"
       ref={editor}
       // defaultValue={}
       value={content}

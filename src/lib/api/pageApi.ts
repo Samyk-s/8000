@@ -14,7 +14,7 @@ class PageApi {
   }
   async getPageById(id: number) {
     try {
-      const response = await api.get(`/pages/by-id${id}`);
+      const response = await api.get(`/pages/by-id/${id}`);
       return response.data
     } catch (error) {
       console.error(error)

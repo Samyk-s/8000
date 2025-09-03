@@ -1,24 +1,34 @@
 "use client";
 import Breadcrumbs from "@/components/adminComponents/beadcrumb/bedcrumb";
-import PageForm from "@/components/adminComponents/pages-components/forms/page-form/page-form";
+const PageForm = dynamic(
+  () =>
+    import(
+      "@/components/adminComponents/pages-components/forms/page-form/page-form"
+    ),
+);
 import pageApi from "@/lib/api/pageApi";
 import { PageItem } from "@/types/page";
 import React, { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import dynamic from "next/dynamic";
 
-const EditPage = ({ params }: { params: { id: string } }) => {
+const EditPage = () => {
+  const { id } = useParams<{ id: string }>();
   const [page, setPage] = useState<PageItem | null>(null);
 
   useEffect(() => {
     async function fetchPageById() {
       try {
-        const res = await pageApi.getPageById(Number(params.id));
-        setPage(res.data);
+        if (!id) return;
+        const res = await pageApi.getPageById(Number(id));
+        console.log(res);
+        setPage(res);
       } catch (error: any) {
-        console.error(error?.message);
+        console.error("error:: ", error?.message);
       }
     }
     fetchPageById();
-  }, [params.id]);
+  }, [id]);
 
   return (
     <div className="flex flex-col gap-3">
@@ -26,7 +36,7 @@ const EditPage = ({ params }: { params: { id: string } }) => {
         items={[
           { label: "Dashboard", href: "/admin/dashboard" },
           { label: "Page", href: "/admin/pages" },
-          { label: "Edit Page", href: `/admin/pages/${params.id}/edit` },
+          { label: "Edit Page", href: `/admin/pages/${id}/edit` },
         ]}
         separator="/"
       />
