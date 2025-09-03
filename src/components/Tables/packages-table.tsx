@@ -24,6 +24,7 @@ import {
   togglePackageStatus,
 } from "@/redux-store/slices/packageSlice";
 import ToggleButton from "../adminComponents/toggle-button/toggle-button";
+import { PlusIcon } from "@/assets/icons";
 
 const PackageTable: React.FC = () => {
   const router = useRouter();
@@ -90,17 +91,23 @@ const PackageTable: React.FC = () => {
           <Breadcrumb
             items={[
               { label: "Dashboard", href: "/admin/dashboard" },
-              { label: "Packages", href: "/admin/packages" },
+              { label: "Package", href: "/admin/packages" },
             ]}
             separator="/"
           />
         </div>
 
         <div className="rounded-lg bg-white shadow-sm">
-          <div className="border-b border-gray-200 p-6">
-            <h1 className="mb-4 text-2xl font-bold text-gray-900">
-              Package Management
-            </h1>
+          <div className="flex flex-col gap-3 border-b border-gray-200 p-6">
+            <div className="flex justify-end">
+              <Link
+                href={"/admin/packages/create-package"}
+                className="flex w-fit items-center gap-1 rounded-md bg-black px-2 py-1 text-white dark:bg-white dark:text-black"
+              >
+                <PlusIcon />
+                <span>Create</span>
+              </Link>
+            </div>
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <Entry
                 onChange={(value) => handleSearchPackage(value)}
