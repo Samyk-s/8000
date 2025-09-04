@@ -25,6 +25,7 @@ import ToggleButton from "../../toggle-button/toggle-button";
 import { PlusIcon } from "@/assets/icons";
 import Loader from "../loader/loader";
 import { message } from "antd";
+import PackageTabs from "../../tabs/package-tabs";
 
 const PackageTable: React.FC = () => {
   const router = useRouter();
@@ -70,7 +71,8 @@ const PackageTable: React.FC = () => {
       <div className="min-h-screen p-1">
         <div className="rounded-lg bg-white shadow-sm">
           <div className="flex flex-col gap-3 border-b border-gray-200 p-6">
-            <div className="flex justify-end">
+            <div className="flex items-center justify-center gap-3 md:justify-between">
+              <PackageTabs />
               <Link
                 href={"/admin/packages/create-package"}
                 className="flex w-fit items-center gap-1 rounded-md bg-black px-2 py-1 text-white dark:bg-white dark:text-black"

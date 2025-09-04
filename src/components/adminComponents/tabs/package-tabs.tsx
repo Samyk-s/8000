@@ -1,14 +1,15 @@
 "use client";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import React from "react";
 
-const PackageTabs = ({ id }: { id?: string }) => {
+const PackageTabs = () => {
+  const { id } = useParams<{ id: string }>();
   const pathname = usePathname();
 
   // Define all tabs with label and path suffix
   const tabs = [
-    { label: "Page", path: "" },
+    { label: "Package", path: "" },
     { label: "Itinerary", path: "itinerary" },
     { label: "Review", path: "review" },
     { label: "SEO", path: "seo" },

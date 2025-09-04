@@ -34,7 +34,7 @@ const EditPackage: React.FC = () => {
       />
       <Card>
         <div className="flex flex-col gap-3">
-          <PackageTabs id={id as string} />
+          <PackageTabs />
           <PackageForm />
         </div>
       </Card>
