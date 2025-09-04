@@ -5,11 +5,13 @@ import { persistReducer, persistStore } from "redux-persist";
 import packageReducer from "../slices/packageSlice"
 import pageReducer from "../slices/pageSlice"
 import itineraryReducer from "../slices/itinerarySlice"
+import departureReducer from "../slices/departureSlice"
 
 const rootReducer = combineReducers({
   packges: packageReducer,
   pages: pageReducer,
-  itineraries: itineraryReducer
+  itineraries: itineraryReducer,
+  departures: departureReducer
 });
 
 const persistConfig = {

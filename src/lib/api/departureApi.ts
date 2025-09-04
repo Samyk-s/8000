@@ -2,10 +2,10 @@ import { Params } from "@/types/utils-type";
 import { api } from "../axios-config/api";
 import { ItineraryItem } from "@/types/itinerary";
 
-class ItineraryApi {
-  async getItenerary(id: number, parms: Params) {
+class DepartureApi {
+  async getDeparture(id: number, parms: Params) {
     try {
-      const res = await api.get(`/packages/${id}/itineraries?limit=${parms?.limit}&page=${parms.page}`);
+      const res = await api.get(`/packages/${id}/departures?limit=${parms?.limit}&page=${parms.page}`);
       return res.data
     } catch (error) {
       throw error
@@ -45,10 +45,7 @@ class ItineraryApi {
   }
   async searchItinerary(packageId: number, params: Params) {
     try {
-      const res = await api.get(
-        `/packages/${packageId}/itineraries/search?'search keyword'=${params?.search || ''}&page=${params?.page || 1}&limit=${params?.limit || 10}`
-      );
-
+      const res = await api.get(`/packages/${packageId}/itineraries/?searchkeyword=${params?.search}&page=${params?.page}&limig=${params?.limit}`);
       return res.data
     } catch (error) {
       throw error
@@ -56,4 +53,4 @@ class ItineraryApi {
   }
 }
 
-export default new ItineraryApi();
+export default new DepartureApi();

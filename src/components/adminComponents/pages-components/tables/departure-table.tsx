@@ -11,7 +11,6 @@ import Loader from "../loader/loader";
 import { Button, message, Modal, Popconfirm } from "antd";
 import {
   deleteItinerary,
-  fetchItineraries,
   searchItineraries,
   toggleItineraryStatus,
 } from "@/redux-store/slices/itinerarySlice";
@@ -19,10 +18,12 @@ import { ItineraryItem } from "@/types/itinerary";
 import PackageTabs from "../../tabs/package-tabs";
 import ItineraryForm from "../forms/itinerary-form/itinerary-form";
 import { useParams } from "next/navigation";
+import { fetchDepartures } from "@/redux-store/slices/departureSlice";
+import { DepartureItem } from "@/types/departure";
 
 const DepartureTable: React.FC = () => {
   const { items, loading, error, meta } = useSelector(
-    (state: RootState) => state?.itineraries,
+    (state: RootState) => state?.departures,
   );
   const dispatch = useDispatch<AppDispatch>();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -36,7 +37,7 @@ const DepartureTable: React.FC = () => {
 
   useEffect(() => {
     dispatch(
-      fetchItineraries({
+      fetchDepartures({
         id: Number(id),
         params: { limit: limit, page: page },
       }),
@@ -115,10 +116,13 @@ const DepartureTable: React.FC = () => {
                     S.N.
                   </th>
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
-                    Day
+                    Start date
                   </th>
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
-                    Title
+                    end date
+                  </th>
+                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                    Days
                   </th>
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
                     Actions
@@ -127,11 +131,12 @@ const DepartureTable: React.FC = () => {
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
                 {items && items.length > 0 ? (
-                  items.map((item: ItineraryItem, index) => (
+                  items.map((item: DepartureItem, index) => (
                     <tr key={item?.id}>
                       <td className="px-6 py-4">{index + 1}</td>
-                      <td className="px-6 py-4">{item.day}</td>
-                      <td className="px-6 py-4">{item.title}</td>
+                      <td className="px-6 py-4">{item?.startDate}</td>
+                      <td className="px-6 py-4">{item?.endDate}</td>
+                      <td className="px-6 py-4">{item?.days}</td>
                       <td className="px-6 py-4">
                         <div className="flex items-center space-x-2">
                           <Popconfirm
@@ -178,7 +183,7 @@ const DepartureTable: React.FC = () => {
                       colSpan={7}
                       className="px-6 py-8 text-center text-base text-gray-500"
                     >
-                      No itineraries found.
+                      No departure found.
                     </td>
                   </tr>
                 )}
