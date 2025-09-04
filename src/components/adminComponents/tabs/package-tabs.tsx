@@ -28,7 +28,7 @@ const PackageTabs = ({ id }: { id?: string }) => {
             className={`px-4 py-1 font-semibold ${
               isActive
                 ? "bg-blue-600 text-white"
-                : "bg-gray-400 text-gray-500 hover:text-gray-500"
+                : "bg-gray-400 text-gray-600 hover:text-gray-600"
             }`}
           >
             {tab.label}
