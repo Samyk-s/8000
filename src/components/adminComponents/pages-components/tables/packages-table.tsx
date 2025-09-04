@@ -186,7 +186,7 @@ const PackageTable: React.FC = () => {
                           </Link>
 
                           <Link
-                            href={`/admin/packages/${item?.slug}`}
+                            href={`/admin/packages/${item?.id}`}
                             title="Edit Package"
                           >
                             <EditIcon />
