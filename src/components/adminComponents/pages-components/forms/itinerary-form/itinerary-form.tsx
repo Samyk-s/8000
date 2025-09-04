@@ -11,45 +11,12 @@ const TextEditor = dynamic(() => import("../../text-editor/text-editor"), {
   ssr: false,
 });
 
-const SeoForm = ({ id }: { id: string }) => {
+const ItineraryForm = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
 
   // Fetch SEO data by ID
-  useEffect(() => {
-    async function fetchSeoById() {
-      setLoading(true);
-      try {
-        const res = await seoApi.getSeo("page", Number(id));
-        form.setFieldsValue({
-          title: res.title,
-          keywords: res.keywords,
-          description: res.description,
-          status: res.status ?? true,
-          isMenu: res.isMenu ?? false,
-          isMainMenu: res.isMainMenu ?? false,
-          isFooterMenu: res.isFooterMenu ?? false,
-          image: res.image
-            ? [
-                {
-                  uid: res.image.uid,
-                  name: res.image.name,
-                  url: res.image.url,
-                  status: "done",
-                },
-              ]
-            : [],
-        });
-      } catch (error) {
-        console.error("Failed to fetch SEO:", error);
-        message.error("Failed to load SEO data");
-        setLoading(false);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchSeoById();
-  }, [id, form]);
+  useEffect(() => {}, [form]);
 
   const onFinish = async (values: any) => {
     try {
@@ -94,8 +61,18 @@ const SeoForm = ({ id }: { id: string }) => {
         onFinish={onFinish}
       >
         <Row gutter={16}>
+          {/* DAY */}
+          <Col xs={24} md={4}>
+            <Form.Item
+              label={<span className="uppercase dark:text-white">Day</span>}
+              name="day"
+              rules={[{ required: true, message: "Day is required" }]}
+            >
+              <Input className="bg-transparent" placeholder="Eg. 1 or 1-2" />
+            </Form.Item>
+          </Col>
           {/* TITLE */}
-          <Col xs={24}>
+          <Col xs={24} md={16}>
             <Form.Item
               label={<span className="uppercase dark:text-white">Title</span>}
               name="title"
@@ -104,50 +81,46 @@ const SeoForm = ({ id }: { id: string }) => {
               <Input className="bg-transparent" />
             </Form.Item>
           </Col>
-
-          {/* KEYWORDS */}
-          <Col xs={24}>
+          {/* Order */}
+          <Col xs={24} md={4}>
+            <Form.Item
+              label={<span className="uppercase dark:text-white">order</span>}
+              name="order"
+              rules={[{ required: true, message: "Order is required" }]}
+            >
+              <Input className="bg-transparent" type="number" />
+            </Form.Item>
+          </Col>
+          {/* max altitude */}
+          <Col xs={24} md={12} lg={8}>
             <Form.Item
               label={
-                <span className="uppercase dark:text-white">Keywords</span>
+                <span className="uppercase dark:text-white">max Altitude</span>
               }
-              name="keywords"
+              name="maxAltitude"
               rules={[{ required: true, message: "Keywords are required" }]}
             >
               <Input className="bg-transparent" />
             </Form.Item>
           </Col>
-
-          {/* IMAGE */}
-          <Col xs={24} md={8}>
+          <Col xs={24} md={12} lg={8}>
             <Form.Item
-              label={<span className="uppercase dark:text-white">Image</span>}
-              name="image"
-              valuePropName="fileList"
-              getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
-              rules={[
-                {
-                  validator: (_, value) =>
-                    value && value.length > 0
-                      ? Promise.resolve()
-                      : Promise.reject(new Error("Image is required")),
-                },
-              ]}
+              label={<span className="uppercase dark:text-white">meal</span>}
+              name="meal"
+              rules={[{ required: true, message: "Keywords are required" }]}
             >
-              <Upload
-                beforeUpload={() => false}
-                listType="picture"
-                accept=".jpg,.jpeg,.png,.webp"
-                maxCount={1}
-                className="!bg-transparent"
-              >
-                <Button
-                  className="bg-transparent dark:text-white"
-                  icon={<UploadOutlined />}
-                >
-                  Click to Upload
-                </Button>
-              </Upload>
+              <Input className="bg-transparent" />
+            </Form.Item>
+          </Col>
+          <Col xs={24} md={12} lg={8}>
+            <Form.Item
+              label={
+                <span className="uppercase dark:text-white">accommodation</span>
+              }
+              name="accommodation"
+              rules={[{ required: true, message: "Keywords are required" }]}
+            >
+              <Input className="bg-transparent" />
             </Form.Item>
           </Col>
 
@@ -183,4 +156,4 @@ const SeoForm = ({ id }: { id: string }) => {
   );
 };
 
-export default SeoForm;
+export default ItineraryForm;

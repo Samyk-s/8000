@@ -4,10 +4,12 @@ import storage from "redux-persist/lib/storage";
 import { persistReducer, persistStore } from "redux-persist";
 import packageReducer from "../slices/packageSlice"
 import pageReducer from "../slices/pageSlice"
+import itineraryReducer from "../slices/itinerarySlice"
 
 const rootReducer = combineReducers({
   packges: packageReducer,
-  pages: pageReducer
+  pages: pageReducer,
+  itineraries: itineraryReducer
 });
 
 const persistConfig = {

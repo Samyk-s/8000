@@ -1,5 +1,6 @@
 "use client";
 import Breadcrumbs from "@/components/adminComponents/beadcrumb/bedcrumb";
+import ItineraryTable from "@/components/adminComponents/pages-components/tables/itinerary-table";
 import PackageTable from "@/components/adminComponents/pages-components/tables/packages-table";
 import { useParams } from "next/navigation";
 import React from "react";
@@ -16,7 +17,7 @@ const ItineraryPage = () => {
         ]}
         separator="/"
       />
-      <PackageTable />
+      <ItineraryTable />
     </>
   );
 };

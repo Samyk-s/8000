@@ -19,3 +19,8 @@ export interface MediaFile {
   type: string;
   size: string;
 }
+
+export interface FetchPackagePayload {
+  id: number;
+  params: Params;
+}
