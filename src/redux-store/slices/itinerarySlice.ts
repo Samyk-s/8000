@@ -79,6 +79,7 @@ export const updateItinerary = createAsyncThunk<
   async ({ packageId, itineraryId, data }, { rejectWithValue }) => {
     try {
       const res = await itineraryApi.updateItinerary(packageId, itineraryId, data as ItineraryItem);
+      console.log(res.data, "data")
       return res.data as ItineraryItem;
     } catch (err: any) {
       return rejectWithValue(err?.message || "Failed to update itinerary");

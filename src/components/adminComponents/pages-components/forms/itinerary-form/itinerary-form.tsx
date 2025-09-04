@@ -1,11 +1,14 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Form, Input, Button, Row, Col, message } from "antd";
 import dynamic from "next/dynamic";
 import Loader from "../../loader/loader";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux-store/store/store";
-import { createItinerary } from "@/redux-store/slices/itinerarySlice";
+import {
+  createItinerary,
+  updateItinerary,
+} from "@/redux-store/slices/itinerarySlice";
 import { useParams } from "next/navigation";
 import { ItineraryItem } from "@/types/itinerary";
 
@@ -15,17 +18,24 @@ const TextEditor = dynamic(() => import("../../text-editor/text-editor"), {
 
 const ItineraryForm = ({
   setIsModalOpen,
+  itinerary,
 }: {
   setIsModalOpen: (val: boolean) => void;
+  itinerary?: ItineraryItem | null;
 }) => {
   const [form] = Form.useForm();
-
   const dispatch = useDispatch<AppDispatch>();
   const { id } = useParams<{ id: string }>();
   const { loading } = useSelector((state: RootState) => state.itineraries);
 
-  // Fetch SEO data by ID
-  useEffect(() => {}, [form]);
+  // Prefill or reset form when editing/creating
+  useEffect(() => {
+    if (itinerary) {
+      form.setFieldsValue(itinerary);
+    } else {
+      form.resetFields();
+    }
+  }, [itinerary, form]);
 
   const onFinish = async (values: ItineraryItem) => {
     try {
@@ -34,31 +44,43 @@ const ItineraryForm = ({
         order: Number(values?.order),
         maxAltitude: Number(values?.maxAltitude),
       };
-      dispatch(
-        createItinerary({
-          id: Number(id),
-          data: {
-            ...payload,
-            order: Number(values?.order),
-            maxAltitude: Number(values?.maxAltitude),
-          },
-        }),
-      );
+
+      if (itinerary) {
+        // Update
+        await dispatch(
+          updateItinerary({
+            packageId: Number(id),
+            itineraryId: Number(itinerary.id),
+            data: payload,
+          }),
+        );
+        message.success("Itinerary updated successfully!");
+      } else {
+        // Create
+        await dispatch(
+          createItinerary({
+            id: Number(id),
+            data: payload,
+          }),
+        );
+        message.success("Itinerary created successfully!");
+      }
+
       setIsModalOpen(false);
+      form.resetFields();
     } catch (error) {
-      console.error("Failed to update SEO:", error);
-      message.error("Failed to update SEO");
+      console.error("Failed to save itinerary:", error);
+      message.error("Failed to save itinerary");
     }
   };
 
-  if (loading) {
-    return <Loader />;
-  }
+  if (loading) return <Loader />;
+
   return (
     <div className="h-full dark:bg-[#020D1A]">
       <Form
         form={form}
-        name="seo-form"
+        name="itinerary-form"
         autoComplete="off"
         layout="vertical"
         onFinish={onFinish}
@@ -74,6 +96,7 @@ const ItineraryForm = ({
               <Input className="bg-transparent" placeholder="Eg. 1 or 1-2" />
             </Form.Item>
           </Col>
+
           {/* TITLE */}
           <Col xs={24} md={16}>
             <Form.Item
@@ -84,44 +107,50 @@ const ItineraryForm = ({
               <Input className="bg-transparent" />
             </Form.Item>
           </Col>
-          {/* Order */}
+
+          {/* ORDER */}
           <Col xs={24} md={4}>
             <Form.Item
-              label={<span className="uppercase dark:text-white">order</span>}
+              label={<span className="uppercase dark:text-white">Order</span>}
               name="order"
               rules={[{ required: true, message: "Order is required" }]}
             >
               <Input className="bg-transparent" type="number" />
             </Form.Item>
           </Col>
-          {/* max altitude */}
+
+          {/* MAX ALTITUDE */}
           <Col xs={24} md={12} lg={8}>
             <Form.Item
               label={
-                <span className="uppercase dark:text-white">max Altitude</span>
+                <span className="uppercase dark:text-white">Max Altitude</span>
               }
               name="maxAltitude"
-              rules={[{ required: true, message: "Keywords are required" }]}
+              rules={[{ required: true, message: "Max Altitude is required" }]}
             >
               <Input className="bg-transparent" type="number" />
             </Form.Item>
           </Col>
+
+          {/* MEAL */}
           <Col xs={24} md={12} lg={8}>
             <Form.Item
-              label={<span className="uppercase dark:text-white">meal</span>}
+              label={<span className="uppercase dark:text-white">Meal</span>}
               name="meal"
-              rules={[{ required: true, message: "Keywords are required" }]}
+              rules={[{ required: true, message: "Meal is required" }]}
             >
               <Input className="bg-transparent" />
             </Form.Item>
           </Col>
+
+          {/* ACCOMMODATION */}
           <Col xs={24} md={12} lg={8}>
             <Form.Item
               label={
-                <span className="uppercase dark:text-white">accommodation</span>
+                <span className="uppercase dark:text-white">Accommodation</span>
               }
               name="accommodation"
-              rules={[{ required: true, message: "Keywords are required" }]}
+              rules={[{ required: true, message: "Accommodation is required" }]}
             >
               <Input className="bg-transparent" />
             </Form.Item>
@@ -149,7 +178,7 @@ const ItineraryForm = ({
                 type="default"
                 className="!bg-black !text-white hover:!bg-black hover:!text-white dark:!bg-white dark:!text-black"
               >
-                SAVE
+                {itinerary ? "Update" : "Save"}
               </Button>
             </Form.Item>
           </Col>

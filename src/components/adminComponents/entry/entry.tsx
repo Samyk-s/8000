@@ -3,9 +3,10 @@ import React, { FC } from "react";
 interface EntryProps {
   value: number | string;
   onChange: (value: number | string) => void;
+  total?: number;
 }
 
-const Entry: FC<EntryProps> = ({ value, onChange }) => {
+const Entry: FC<EntryProps> = ({ value, onChange, total }) => {
   return (
     <div className="flex items-center space-x-2">
       <span className="text-sm text-gray-700 dark:text-white">Show</span>
@@ -17,7 +18,7 @@ const Entry: FC<EntryProps> = ({ value, onChange }) => {
         <option value={10}>10</option>
         <option value={20}>20</option>
         <option value={50}>50</option>
-        <option value={0}>All</option>
+        <option value={total}>All</option>
       </select>
       <span className="text-sm text-gray-700 dark:text-white">entries</span>
     </div>

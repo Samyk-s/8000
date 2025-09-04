@@ -22,7 +22,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux-store/store/store";
 import { fetchPages } from "@/redux-store/slices/pageSlice";
 import { PageItem } from "@/types/page";
-import { PageTemplate } from "../seo-form/seo-form";
+import { PageTemplate } from "@/types/page-template";
 
 const TextEditor = dynamic(() => import("../../text-editor/text-editor"), {
   ssr: false,

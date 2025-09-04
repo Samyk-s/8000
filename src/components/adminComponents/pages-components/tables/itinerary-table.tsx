@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { EditIcon } from "@/components/icons/icnos";
-import Link from "next/link";
 import Entry from "../../entry/entry";
 import Search from "../../search/search";
 import Pagination from "../../pagination/pagination";
@@ -10,7 +9,7 @@ import { AppDispatch, RootState } from "@/redux-store/store/store";
 import ToggleButton from "../../toggle-button/toggle-button";
 import { PlusIcon, TrashIcon } from "@/assets/icons";
 import Loader from "../loader/loader";
-import { Button, message, Modal, Popconfirm, PopconfirmProps } from "antd";
+import { Button, message, Modal, Popconfirm } from "antd";
 import {
   deleteItinerary,
   fetchItineraries,
@@ -22,32 +21,30 @@ import ItineraryForm from "../forms/itinerary-form/itinerary-form";
 import { useParams } from "next/navigation";
 
 const ItineraryTable: React.FC = () => {
-  const [value, setValue] = useState(10);
   const { items, loading, error, meta } = useSelector(
     (state: RootState) => state?.itineraries,
   );
-  const [currentPage, setCurrentPage] = useState(meta?.currentPage);
   const dispatch = useDispatch<AppDispatch>();
-  const totalPages = Math.ceil(meta?.totalPages / meta?.itemsPerPage);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedItinerary, setSelectedItinerary] =
+    useState<ItineraryItem | null>(null); // 👈 NEW
   const { id } = useParams<{ id: string }>();
-  // Call API for getting itineraries
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState<number>(10);
+
   useEffect(() => {
-    dispatch(fetchItineraries({ id: 1, params: { limit: 10, page: 1 } }));
-  }, [dispatch]);
+    dispatch(
+      fetchItineraries({
+        id: Number(id),
+        params: { limit: limit, page: page },
+      }),
+    );
+  }, [dispatch, id, limit, page]);
 
-  // Handle delete with confirmation modal
-
-  function handleSearchPackage(value: string | number) {
-    setValue(Number(value));
-  }
-
-  // Close create/edit modal
-  const handleClose = () => setIsModalOpen(false);
-  // delete itenerary
-
-  const cancel: PopconfirmProps["onCancel"] = (e) => {
-    message.error("Click on No");
+  // Close modal
+  const handleClose = () => {
+    setIsModalOpen(false);
+    setSelectedItinerary(null); // reset
   };
 
   if (loading) return <Loader />;
@@ -63,7 +60,10 @@ const ItineraryTable: React.FC = () => {
               <PackageTabs />
               <Button
                 className="flex w-fit items-center gap-1 rounded-md bg-black px-2 py-1 text-white hover:!bg-black hover:!text-white dark:bg-white dark:text-black"
-                onClick={() => setIsModalOpen(true)}
+                onClick={() => {
+                  setSelectedItinerary(null); // 👈 Reset to create mode
+                  setIsModalOpen(true);
+                }}
               >
                 <PlusIcon />
                 <span>Create</span>
@@ -71,8 +71,9 @@ const ItineraryTable: React.FC = () => {
             </div>
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <Entry
-                onChange={(value) => handleSearchPackage(value)}
-                value={value}
+                onChange={(value) => setLimit(Number(value))}
+                value={limit}
+                total={meta?.totalItems}
               />
               <Search placeholder="Search package..." />
             </div>
@@ -81,10 +82,7 @@ const ItineraryTable: React.FC = () => {
           {/* Table */}
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead
-                style={{ backgroundColor: "oklch(37.9% 0.146 265.522)" }}
-                className="text-white"
-              >
+              <thead className="bg-blue-900 text-white">
                 <tr>
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
                     S.N.
@@ -104,29 +102,25 @@ const ItineraryTable: React.FC = () => {
                 {items && items.length > 0 ? (
                   items.map((item: ItineraryItem, index) => (
                     <tr key={item?.id}>
-                      <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
-                        {index + 1}
-                      </td>
-                      <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
-                        {item.day}
-                      </td>
-                      <td className="whitespace-nowrap px-6 py-4">
-                        <div className="text-base font-medium text-gray-900">
-                          {item.title}
-                        </div>
-                      </td>
-                      <td className="whitespace-nowrap px-6 py-4 text-base font-medium">
+                      <td className="px-6 py-4">{index + 1}</td>
+                      <td className="px-6 py-4">{item.day}</td>
+                      <td className="px-6 py-4">{item.title}</td>
+                      <td className="px-6 py-4">
                         <div className="flex items-center space-x-2">
-                          <Link
-                            href={`/admin/packages/${item.id}`}
-                            title="Edit Package"
+                          <button
+                            onClick={() => {
+                              setSelectedItinerary(item);
+                              setIsModalOpen(true);
+                            }}
+                            title="Edit Itinerary"
                           >
                             <EditIcon />
-                          </Link>
+                          </button>
+
                           <Popconfirm
                             title="Delete the Itinerary"
                             description="Are you sure to delete this itinerary?"
-                            onCancel={cancel}
+                            onCancel={() => message.error("Cancelled")}
                             onConfirm={() =>
                               dispatch(
                                 deleteItinerary({
@@ -138,10 +132,7 @@ const ItineraryTable: React.FC = () => {
                             okText="Yes"
                             cancelText="No"
                           >
-                            <button
-                              className="rounded p-1 text-red-600 hover:bg-red-50 hover:text-red-900"
-                              title="Delete Itinerary"
-                            >
+                            <button className="rounded p-1 text-red-600 hover:bg-red-50 hover:text-red-900">
                               <TrashIcon />
                             </button>
                           </Popconfirm>
@@ -157,9 +148,7 @@ const ItineraryTable: React.FC = () => {
                             }
                             checked={item.status === 1}
                             title={
-                              item.status === 1
-                                ? "Deactivate Package"
-                                : "Activate Package"
+                              item.status === 1 ? "Deactivate" : "Activate"
                             }
                           />
                         </div>
@@ -172,7 +161,7 @@ const ItineraryTable: React.FC = () => {
                       colSpan={7}
                       className="px-6 py-8 text-center text-base text-gray-500"
                     >
-                      No packages found matching your search criteria.
+                      No itineraries found.
                     </td>
                   </tr>
                 )}
@@ -182,26 +171,29 @@ const ItineraryTable: React.FC = () => {
 
           {/* Pagination */}
           <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            itemsPerPage={meta?.itemsPerPage}
+            currentPage={meta?.currentPage}
+            totalPages={meta?.totalPages}
+            itemsPerPage={limit}
             totalItems={meta?.totalItems}
-            onPageChange={(page) => setCurrentPage(page)}
+            onPageChange={(page) => setPage(page)}
           />
         </div>
       </div>
 
       {/* Create / Edit Modal */}
       <Modal
-        title="Add Itinerary"
+        title={selectedItinerary ? "Edit Itinerary" : "Add Itinerary"}
         open={isModalOpen}
         onCancel={handleClose}
         footer={null}
         centered
-        width={window.innerWidth >= 768 ? 800 : 400}
+        width={800}
         style={{ maxWidth: "90%", padding: "0" }}
       >
-        <ItineraryForm setIsModalOpen={setIsModalOpen} />
+        <ItineraryForm
+          setIsModalOpen={setIsModalOpen}
+          itinerary={selectedItinerary}
+        />
       </Modal>
     </>
   );
