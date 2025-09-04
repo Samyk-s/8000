@@ -1,7 +1,6 @@
 // store/packagesSlice.ts
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import packageApi from "@/lib/api/packageApi";
-import { FetchPackagePayload, Meta, Params } from "@/types/utils-type";
+import { FetchPackagePayload, Meta } from "@/types/utils-type";
 import { ItineraryItem } from "@/types/itinerary";
 import itineraryApi from "@/lib/api/itineraryApi";
 
@@ -23,18 +22,28 @@ export const fetchItineraries = createAsyncThunk<
 );
 
 
-// create a new package
-// export const createPackage = createAsyncThunk<Package, any>(
-//   "packages/createPackage",
-//   async (data) => {
-//     try {
-//       const res = await packageApi.createPackage(data);
-//       return res;
-//     } catch (error: any) {
-//       return error?.message;
-//     }
-//   }
-// );
+// Define the payload shape
+interface CreateItineraryPayload {
+  id: number;
+  data: Partial<ItineraryItem>; // or whatever structure your API expects
+}
+
+// create a new itinerary
+export const createItinerary = createAsyncThunk<
+  ItineraryItem,              // Return type
+  CreateItineraryPayload,     // Payload type
+  { rejectValue: string }     // Rejected value type
+>(
+  "packages/createPackage",
+  async ({ id, data }, { rejectWithValue }) => {
+    try {
+      const res = await itineraryApi.createItinerary(id, data as ItineraryItem);
+      return res as ItineraryItem;
+    } catch (error: any) {
+      return rejectWithValue(error?.message || "Failed to create itinerary");
+    }
+  }
+);
 
 // toggle package status
 // export const togglePackageStatus = createAsyncThunk<Package, number>(
@@ -94,21 +103,21 @@ const itinerariesSlice = createSlice({
       });
 
     // createPackage
-    // builder
-    //   .addCase(createPackage.pending, (state) => {
-    //     state.loading = true;
-    //     state.error = null;
-    //   })
-    //   .addCase(createPackage.fulfilled, (state, action) => {
-    //     state.items.push(action.payload);
-    //     state.meta.itemCount += 1;
-    //     state.meta.totalItems += 1;
-    //     state.loading = false;
-    //   })
-    //   .addCase(createPackage.rejected, (state, action: PayloadAction<any>) => {
-    //     state.error = action.payload || "Failed to create package";
-    //     state.loading = false;
-    //   });
+    builder
+      .addCase(createItinerary.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createItinerary.fulfilled, (state, action) => {
+        state.items.push(action.payload);
+        state.meta.itemCount += 1;
+        state.meta.totalItems += 1;
+        state.loading = false;
+      })
+      .addCase(createItinerary.rejected, (state, action: PayloadAction<any>) => {
+        state.error = action.payload || "Failed to create package";
+        state.loading = false;
+      });
 
     // togglePackageStatus
     // builder

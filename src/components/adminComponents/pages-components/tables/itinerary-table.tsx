@@ -11,27 +11,17 @@ import { togglePackageStatus } from "@/redux-store/slices/packageSlice";
 import ToggleButton from "../../toggle-button/toggle-button";
 import { PlusIcon, TrashIcon } from "@/assets/icons";
 import Loader from "../loader/loader";
-import {
-  Alert,
-  Button,
-  message,
-  Modal,
-  Popconfirm,
-  PopconfirmProps,
-} from "antd";
+import { Button, message, Modal, Popconfirm, PopconfirmProps } from "antd";
 import { fetchItineraries } from "@/redux-store/slices/itinerarySlice";
 import { ItineraryItem } from "@/types/itinerary";
 import PackageTabs from "../../tabs/package-tabs";
 import ItineraryForm from "../forms/itinerary-form/itinerary-form";
-
-const { confirm } = Modal;
 
 const ItineraryTable: React.FC = () => {
   const [value, setValue] = useState(10);
   const { items, loading, error, meta } = useSelector(
     (state: RootState) => state?.itineraries,
   );
-
   const [currentPage, setCurrentPage] = useState(meta?.currentPage);
   const dispatch = useDispatch<AppDispatch>();
   const totalPages = Math.ceil(meta?.totalPages / meta?.itemsPerPage);
@@ -113,10 +103,13 @@ const ItineraryTable: React.FC = () => {
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200 bg-white">
+              <tbody
+                className="divide-y divide-gray-200 bg-white"
+                key={"sdfsf"}
+              >
                 {items && items.length > 0 ? (
                   items.map((item: ItineraryItem, index) => (
-                    <tr key={item.id}>
+                    <tr key={item?.id}>
                       <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
                         {index + 1}
                       </td>
@@ -202,7 +195,7 @@ const ItineraryTable: React.FC = () => {
         width={window.innerWidth >= 768 ? 800 : 400}
         style={{ maxWidth: "90%", padding: "20px" }}
       >
-        <ItineraryForm />
+        <ItineraryForm setIsModalOpen={setIsModalOpen} />
       </Modal>
     </>
   );

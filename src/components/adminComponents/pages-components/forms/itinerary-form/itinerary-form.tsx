@@ -1,47 +1,51 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Form, Input, Button, Row, Col, Upload, message } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
+import { Form, Input, Button, Row, Col, message } from "antd";
 import dynamic from "next/dynamic";
-import seoApi from "@/lib/api/seoApi";
-import { MediaFile } from "@/types/utils-type";
 import Loader from "../../loader/loader";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/redux-store/store/store";
+import { createItinerary } from "@/redux-store/slices/itinerarySlice";
+import { useParams } from "next/navigation";
+import { ItineraryItem } from "@/types/itinerary";
 
 const TextEditor = dynamic(() => import("../../text-editor/text-editor"), {
   ssr: false,
 });
 
-const ItineraryForm = () => {
+const ItineraryForm = ({
+  setIsModalOpen,
+}: {
+  setIsModalOpen: (val: boolean) => void;
+}) => {
   const [form] = Form.useForm();
-  const [loading, setLoading] = useState(false);
+
+  const dispatch = useDispatch<AppDispatch>();
+  const { id } = useParams<{ id: string }>();
+  const { loading } = useSelector((state: RootState) => state.itineraries);
 
   // Fetch SEO data by ID
   useEffect(() => {}, [form]);
 
-  const onFinish = async (values: any) => {
+  const onFinish = async (values: ItineraryItem) => {
     try {
-      // Validate image
-      if (!values.image || values.image.length === 0) {
-        message.error("Image is required");
-        return;
-      }
-
-      // Convert image to MediaFile format
-      const image: MediaFile = {
-        uid: values.image[0].uid,
-        name: values.image[0].name,
-        url: values.image[0].url || "",
-        alt: values.image[0].name,
-        type: "image",
-        size: "0", // set actual size if available
+      const payload = {
+        ...values,
+        order: Number(values?.order),
+        maxAltitude: Number(values?.maxAltitude),
       };
-
-      const payload = { ...values, image };
-      console.log("Updated SEO Payload:", payload);
-
-      // Call API to update SEO
-      // await seoApi.updateSeo("page", Number(id), payload);
-      message.success("SEO updated successfully");
+      console.log("created payload:", payload);
+      dispatch(
+        createItinerary({
+          id: Number(id),
+          data: {
+            ...payload,
+            order: Number(values?.order),
+            maxAltitude: Number(values?.maxAltitude),
+          },
+        }),
+      );
+      setIsModalOpen(false);
     } catch (error) {
       console.error("Failed to update SEO:", error);
       message.error("Failed to update SEO");
@@ -100,7 +104,7 @@ const ItineraryForm = () => {
               name="maxAltitude"
               rules={[{ required: true, message: "Keywords are required" }]}
             >
-              <Input className="bg-transparent" />
+              <Input className="bg-transparent" type="number" />
             </Form.Item>
           </Col>
           <Col xs={24} md={12} lg={8}>
