@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { PageItem } from "@/types/page";
 import { Meta, Params } from "@/types/utils-type";
 import pageApi from "@/lib/api/pageApi";
+import { message } from "antd";
 
 export const fetchPages = createAsyncThunk<{ items: PageItem[]; meta: Meta }, Params>(
   "packages/fetchPackages",
@@ -15,15 +16,23 @@ export const fetchPages = createAsyncThunk<{ items: PageItem[]; meta: Meta }, Pa
   }
 );
 // toggle package status
-export const togglePageStatus = createAsyncThunk<PageItem, number>(
-  "pages/togglePagetatus",
-  async (id: number) => {
+
+export const togglePageStatus = createAsyncThunk<
+  PageItem,
+  number,
+  { rejectValue: string }
+>(
+  "pages/togglePageStatus",
+  async (id: number, { rejectWithValue }) => {
     try {
       const res = await pageApi.togglePage(id);
-      return res.data
+
+      message.success(res?.message);
+      return res.data;
     } catch (err: any) {
-      console.log("err", err)
-      return err.message;
+      console.error("Error toggling page status:", err);
+      message.error(err?.message || "Something went wrong");
+      return rejectWithValue(err?.message || "Something went wrong");
     }
   }
 );

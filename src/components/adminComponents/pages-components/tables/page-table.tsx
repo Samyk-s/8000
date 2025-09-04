@@ -13,6 +13,7 @@ import { PlusIcon } from "@/assets/icons";
 import { fetchPages, togglePageStatus } from "@/redux-store/slices/pageSlice";
 import { PageItem } from "@/types/page";
 import Loader from "../loader/loader";
+import { message } from "antd";
 
 const PageTable: React.FC = () => {
   const [value, setValue] = useState(10);
@@ -35,20 +36,9 @@ const PageTable: React.FC = () => {
   if (loading) {
     return <Loader />;
   }
-
   if (error) {
-    return (
-      <div className="min-h-screen bg-gray-50 p-6">
-        <div className="rounded-lg bg-white p-8 shadow-sm">
-          <div className="text-center text-red-600">
-            <p className="mb-2 text-lg font-semibold">Error Loading Bookings</p>
-            <p className="text-sm">{error}</p>
-          </div>
-        </div>
-      </div>
-    );
+    message.error(error);
   }
-
   return (
     <>
       <div className="min-h-screen p-1">
