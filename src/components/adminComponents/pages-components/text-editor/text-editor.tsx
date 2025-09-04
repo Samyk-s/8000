@@ -1,13 +1,15 @@
 "use client";
 import dynamic from "next/dynamic";
-import React, { useRef, useState } from "react";
-const JoditEditor = dynamic(() => import("jodit-react"), {
-  ssr: false,
-});
+import React, { useRef } from "react";
+const JoditEditor = dynamic(() => import("jodit-react"), { ssr: false });
 
-const TextEditor = () => {
+interface TextEditorProps {
+  value?: string;
+  onChange?: (value: string) => void;
+}
+
+const TextEditor: React.FC<TextEditorProps> = ({ value, onChange }) => {
   const editor = useRef(null);
-  const [content, setContent] = useState("");
 
   const config = {
     readonly: false,
@@ -19,12 +21,12 @@ const TextEditor = () => {
 
   return (
     <JoditEditor
-      className="!bg-transparent"
       ref={editor}
-      // defaultValue={}
-      value={content}
+      value={value}
       config={config as any}
-      onBlur={(newContent) => setContent(newContent)} // update state only on blur
+      onBlur={(newContent) => {
+        if (onChange) onChange(newContent);
+      }}
     />
   );
 };

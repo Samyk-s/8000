@@ -1,6 +1,13 @@
 import Breadcrumbs from "@/components/adminComponents/beadcrumb/bedcrumb";
 import PageTabs from "@/components/adminComponents/tabs/page-tabs";
 import { Card } from "antd";
+import dynamic from "next/dynamic";
+const PageForm = dynamic(
+  () =>
+    import(
+      "@/components/adminComponents/pages-components/forms/page-form/page-form"
+    ),
+);
 import React from "react";
 
 const CreatePage = () => {
@@ -25,7 +32,10 @@ const CreatePage = () => {
         separator="/"
       />
       <Card>
-        <PageTabs />
+        <div className="flex flex-col gap-3">
+          <PageTabs />
+          <PageForm />
+        </div>
       </Card>
     </div>
   );
