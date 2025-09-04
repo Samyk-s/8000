@@ -19,6 +19,30 @@ class ItineraryApi {
       throw error
     }
   }
+  async toggleItinerary(packageId: number, itineraryId: number) {
+    try {
+      const res = await api.patch(`/packages/${packageId}/itineraries/${itineraryId}/toggle-status`);
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
+  async updateItinerary(packageId: number, itineraryId: number, data: ItineraryItem) {
+    try {
+      const res = await api.patch(`/packages/${packageId}/itineraries/${itineraryId}`, data);
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
+  async deleteItinerary(packageId: number, itineraryId: number) {
+    try {
+      const res = await api.delete(`/packages/${packageId}/itineraries/${itineraryId}`);
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
 }
 
 export default new ItineraryApi();

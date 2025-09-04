@@ -6,58 +6,102 @@ import itineraryApi from "@/lib/api/itineraryApi";
 
 // ================= Async Thunks =================
 
+// Fetch
 export const fetchItineraries = createAsyncThunk<
-  { items: any[]; meta: Meta }, // replace any with your PackageItem type
+  { items: ItineraryItem[]; meta: Meta },
   FetchPackagePayload
->(
-  "itineraries/fetchItineraries",
-  async ({ id, params }, { rejectWithValue }) => {
-    try {
-      const res = await itineraryApi.getItenerary(id, params);
-      return res;
-    } catch (err: any) {
-      return rejectWithValue(err.message);
-    }
+>("itineraries/fetchItineraries", async ({ id, params }, { rejectWithValue }) => {
+  try {
+    const res = await itineraryApi.getItenerary(id, params);
+    return res;
+  } catch (err: any) {
+    return rejectWithValue(err.message);
   }
-);
+});
 
-
-// Define the payload shape
+// Define payloads
 interface CreateItineraryPayload {
   id: number;
-  data: Partial<ItineraryItem>; // or whatever structure your API expects
+  data: Partial<ItineraryItem>;
+}
+interface TogglePackagePayload {
+  packageId: number;
+  itineraryId: number;
+}
+interface UpdateItineraryPayload {
+  packageId: number;
+  itineraryId: number;
+  data: Partial<ItineraryItem>;
+}
+interface DeleteItineraryPayload {
+  packageId: number;
+  itineraryId: number;
 }
 
-// create a new itinerary
+// Create
 export const createItinerary = createAsyncThunk<
-  ItineraryItem,              // Return type
-  CreateItineraryPayload,     // Payload type
-  { rejectValue: string }     // Rejected value type
+  ItineraryItem,
+  CreateItineraryPayload,
+  { rejectValue: string }
+>("itineraries/createItineraries", async ({ id, data }, { rejectWithValue }) => {
+  try {
+    const res = await itineraryApi.createItinerary(id, data as ItineraryItem);
+    return res.data;
+  } catch (error: any) {
+    return rejectWithValue(error?.message || "Failed to create itinerary");
+  }
+});
+
+// Toggle Status
+export const toggleItineraryStatus = createAsyncThunk<
+  ItineraryItem,
+  TogglePackagePayload,
+  { rejectValue: string }
 >(
-  "packages/createPackage",
-  async ({ id, data }, { rejectWithValue }) => {
+  "itineraries/toggleItinerariesStatus",
+  async ({ packageId, itineraryId }, { rejectWithValue }) => {
     try {
-      const res = await itineraryApi.createItinerary(id, data as ItineraryItem);
-      return res as ItineraryItem;
-    } catch (error: any) {
-      return rejectWithValue(error?.message || "Failed to create itinerary");
+      const res = await itineraryApi.toggleItinerary(packageId, itineraryId);
+      return res.data as ItineraryItem;
+    } catch (err: any) {
+      return rejectWithValue(err?.message || "Failed to toggle itinerary status");
     }
   }
 );
 
-// toggle package status
-// export const togglePackageStatus = createAsyncThunk<Package, number>(
-//   "packages/togglePackageStatus",
-//   async (id: number) => {
-//     try {
-//       const res = await packageApi.togglePackage(id);
-//       return res.data
-//     } catch (err: any) {
-//       console.log("err", err)
-//       return err.message;
-//     }
-//   }
-// );
+// Update
+export const updateItinerary = createAsyncThunk<
+  ItineraryItem,
+  UpdateItineraryPayload,
+  { rejectValue: string }
+>(
+  "itineraries/updateItinerary",
+  async ({ packageId, itineraryId, data }, { rejectWithValue }) => {
+    try {
+      const res = await itineraryApi.updateItinerary(packageId, itineraryId, data as ItineraryItem);
+      return res.data as ItineraryItem;
+    } catch (err: any) {
+      return rejectWithValue(err?.message || "Failed to update itinerary");
+    }
+  }
+);
+
+// Delete
+export const deleteItinerary = createAsyncThunk<
+  { id: number }, // return only the deleted id
+  DeleteItineraryPayload,
+  { rejectValue: string }
+>(
+  "itineraries/deleteItinerary",
+  async ({ packageId, itineraryId }, { rejectWithValue }) => {
+    try {
+      await itineraryApi.deleteItinerary(packageId, itineraryId);
+      return { id: itineraryId };
+    } catch (err: any) {
+      return rejectWithValue(err?.message || "Failed to delete itinerary");
+    }
+  }
+);
 
 // ================= State =================
 interface ItineraryState {
@@ -82,11 +126,11 @@ const initialState: ItineraryState = {
 
 // ================= Slice =================
 const itinerariesSlice = createSlice({
-  name: "packages",
+  name: "itineraries",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    // fetchPackages
+    // fetch
     builder
       .addCase(fetchItineraries.pending, (state) => {
         state.loading = true;
@@ -98,45 +142,80 @@ const itinerariesSlice = createSlice({
         state.loading = false;
       })
       .addCase(fetchItineraries.rejected, (state, action: PayloadAction<any>) => {
-        state.error = action.payload || "Failed to fetch packages";
+        state.error = action.payload || "Failed to fetch itineraries";
         state.loading = false;
       });
 
-    // createPackage
+    // create
     builder
       .addCase(createItinerary.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(createItinerary.fulfilled, (state, action) => {
+        console.log("payload", action.payload)
         state.items.push(action.payload);
         state.meta.itemCount += 1;
         state.meta.totalItems += 1;
         state.loading = false;
       })
       .addCase(createItinerary.rejected, (state, action: PayloadAction<any>) => {
-        state.error = action.payload || "Failed to create package";
+        state.error = action.payload || "Failed to create itinerary";
         state.loading = false;
       });
 
-    // togglePackageStatus
-    // builder
-    //   .addCase(togglePackageStatus.pending, (state) => {
-    //     state.loading = true;
-    //     state.error = null;
-    //   })
-    //   .addCase(togglePackageStatus.fulfilled, (state, action) => {
-    //     const index = state.items.findIndex(pkg => pkg.id === action.payload.id);
-    //     if (index !== -1) {
-    //       state.items[index] = action.payload;
-    //     }
-    //     state.loading = false;
-    //     state.error = null;
-    //   })
-    //   .addCase(togglePackageStatus.rejected, (state, action: PayloadAction<any>) => {
-    //     state.loading = false;
-    //     state.error = action.payload || "Failed to toggle package status";
-    //   });
+    // toggle
+    builder
+      .addCase(toggleItineraryStatus.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(toggleItineraryStatus.fulfilled, (state, action) => {
+        const index = state.items.findIndex((item) => item.id === action.payload.id);
+        if (index !== -1) {
+          state.items[index] = action.payload;
+        }
+        state.loading = false;
+      })
+      .addCase(toggleItineraryStatus.rejected, (state, action: PayloadAction<any>) => {
+        state.error = action.payload || "Failed to toggle itinerary status";
+        state.loading = false;
+      });
+
+    // update
+    builder
+      .addCase(updateItinerary.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateItinerary.fulfilled, (state, action) => {
+        const index = state.items.findIndex((item) => item.id === action.payload.id);
+        if (index !== -1) {
+          state.items[index] = action.payload;
+        }
+        state.loading = false;
+      })
+      .addCase(updateItinerary.rejected, (state, action: PayloadAction<any>) => {
+        state.error = action.payload || "Failed to update itinerary";
+        state.loading = false;
+      });
+
+    // delete
+    builder
+      .addCase(deleteItinerary.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteItinerary.fulfilled, (state, action) => {
+        state.items = state.items.filter((item) => item.id !== action.payload.id);
+        state.meta.itemCount -= 1;
+        state.meta.totalItems -= 1;
+        state.loading = false;
+      })
+      .addCase(deleteItinerary.rejected, (state, action: PayloadAction<any>) => {
+        state.error = action.payload || "Failed to delete itinerary";
+        state.loading = false;
+      });
   },
 });
 

@@ -34,7 +34,6 @@ const ItineraryForm = ({
         order: Number(values?.order),
         maxAltitude: Number(values?.maxAltitude),
       };
-      console.log("created payload:", payload);
       dispatch(
         createItinerary({
           id: Number(id),

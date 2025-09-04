@@ -7,15 +7,19 @@ import Search from "../../search/search";
 import Pagination from "../../pagination/pagination";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux-store/store/store";
-import { togglePackageStatus } from "@/redux-store/slices/packageSlice";
 import ToggleButton from "../../toggle-button/toggle-button";
 import { PlusIcon, TrashIcon } from "@/assets/icons";
 import Loader from "../loader/loader";
 import { Button, message, Modal, Popconfirm, PopconfirmProps } from "antd";
-import { fetchItineraries } from "@/redux-store/slices/itinerarySlice";
+import {
+  deleteItinerary,
+  fetchItineraries,
+  toggleItineraryStatus,
+} from "@/redux-store/slices/itinerarySlice";
 import { ItineraryItem } from "@/types/itinerary";
 import PackageTabs from "../../tabs/package-tabs";
 import ItineraryForm from "../forms/itinerary-form/itinerary-form";
+import { useParams } from "next/navigation";
 
 const ItineraryTable: React.FC = () => {
   const [value, setValue] = useState(10);
@@ -25,16 +29,14 @@ const ItineraryTable: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(meta?.currentPage);
   const dispatch = useDispatch<AppDispatch>();
   const totalPages = Math.ceil(meta?.totalPages / meta?.itemsPerPage);
-
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const { id } = useParams<{ id: string }>();
   // Call API for getting itineraries
   useEffect(() => {
     dispatch(fetchItineraries({ id: 1, params: { limit: 10, page: 1 } }));
   }, [dispatch]);
 
   // Handle delete with confirmation modal
-  const handleDelete = (id: number) => {};
 
   function handleSearchPackage(value: string | number) {
     setValue(Number(value));
@@ -43,13 +45,8 @@ const ItineraryTable: React.FC = () => {
   // Close create/edit modal
   const handleClose = () => setIsModalOpen(false);
   // delete itenerary
-  const confirm: PopconfirmProps["onConfirm"] = (e) => {
-    console.log(e);
-    message.success("Click on Yes");
-  };
 
   const cancel: PopconfirmProps["onCancel"] = (e) => {
-    console.log(e);
     message.error("Click on No");
   };
 
@@ -62,7 +59,7 @@ const ItineraryTable: React.FC = () => {
         <div className="rounded-lg bg-white shadow-sm">
           {/* Header */}
           <div className="flex flex-col gap-3 border-b border-gray-200 p-6">
-            <div className="flex items-center justify-center gap-3 md:justify-between">
+            <div className="flex flex-wrap-reverse items-center justify-center gap-3 md:justify-between">
               <PackageTabs />
               <Button
                 className="flex w-fit items-center gap-1 rounded-md bg-black px-2 py-1 text-white hover:!bg-black hover:!text-white dark:bg-white dark:text-black"
@@ -103,10 +100,7 @@ const ItineraryTable: React.FC = () => {
                   </th>
                 </tr>
               </thead>
-              <tbody
-                className="divide-y divide-gray-200 bg-white"
-                key={"sdfsf"}
-              >
+              <tbody className="divide-y divide-gray-200 bg-white">
                 {items && items.length > 0 ? (
                   items.map((item: ItineraryItem, index) => (
                     <tr key={item?.id}>
@@ -130,10 +124,17 @@ const ItineraryTable: React.FC = () => {
                             <EditIcon />
                           </Link>
                           <Popconfirm
-                            title="Delete the Itineary"
-                            description="Are you sure to delete this itineary?"
-                            onConfirm={confirm}
+                            title="Delete the Itinerary"
+                            description="Are you sure to delete this itinerary?"
                             onCancel={cancel}
+                            onConfirm={() =>
+                              dispatch(
+                                deleteItinerary({
+                                  packageId: Number(id),
+                                  itineraryId: Number(item?.id),
+                                }),
+                              )
+                            }
                             okText="Yes"
                             cancelText="No"
                           >
@@ -147,7 +148,12 @@ const ItineraryTable: React.FC = () => {
 
                           <ToggleButton
                             onChange={() =>
-                              dispatch(togglePackageStatus(item.id))
+                              dispatch(
+                                toggleItineraryStatus({
+                                  packageId: Number(id),
+                                  itineraryId: Number(item?.id),
+                                }),
+                              )
                             }
                             checked={item.status === 1}
                             title={
@@ -193,7 +199,7 @@ const ItineraryTable: React.FC = () => {
         footer={null}
         centered
         width={window.innerWidth >= 768 ? 800 : 400}
-        style={{ maxWidth: "90%", padding: "20px" }}
+        style={{ maxWidth: "90%", padding: "0" }}
       >
         <ItineraryForm setIsModalOpen={setIsModalOpen} />
       </Modal>

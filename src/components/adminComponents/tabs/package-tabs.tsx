@@ -18,7 +18,7 @@ const PackageTabs = () => {
   ];
 
   return (
-    <div className="flex">
+    <div className="flex flex-wrap justify-center md:justify-start">
       {tabs.map((tab) => {
         const tabPath = `/admin/packages/${id}${tab.path ? `/${tab.path}` : ""}`;
         const isActive = pathname === tabPath;
