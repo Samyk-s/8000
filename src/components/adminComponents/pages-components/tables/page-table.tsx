@@ -119,7 +119,7 @@ const PageTable: React.FC = () => {
                       <td className="whitespace-nowrap px-6 py-4 text-base font-medium dark:text-white">
                         <div className="flex space-x-2">
                           <Link
-                            href={`/admin/packages/${item?.id}`}
+                            href={`/admin/pages/${item?.id}/seo`}
                             title="SEO"
                           >
                             <SeoIcon />
@@ -127,7 +127,7 @@ const PageTable: React.FC = () => {
 
                           <Link
                             href={`/admin/pages/${item?.id}`}
-                            title="Edit Package"
+                            title="Edit Page"
                           >
                             <EditIcon />
                           </Link>
