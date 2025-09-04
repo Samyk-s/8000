@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   EditIcon,
-  LoaderIcon,
   ItinerayIcon,
   GalleryIcon,
   DepartureIcon,
@@ -24,6 +23,8 @@ import {
 } from "@/redux-store/slices/packageSlice";
 import ToggleButton from "../../toggle-button/toggle-button";
 import { PlusIcon } from "@/assets/icons";
+import Loader from "../loader/loader";
+import { message } from "antd";
 
 const PackageTable: React.FC = () => {
   const router = useRouter();
@@ -57,29 +58,11 @@ const PackageTable: React.FC = () => {
   }
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 p-6">
-        <div className="light rounded-lg bg-white p-8 shadow-sm">
-          <div className="flex items-center justify-center">
-            <LoaderIcon />
-            <span className="ml-2 text-gray-600">Loading bookings...</span>
-          </div>
-        </div>
-      </div>
-    );
+    return <Loader />;
   }
 
   if (error) {
-    return (
-      <div className="min-h-screen bg-gray-50 p-6">
-        <div className="rounded-lg bg-white p-8 shadow-sm">
-          <div className="text-center text-red-600">
-            <p className="mb-2 text-lg font-semibold">Error Loading Bookings</p>
-            <p className="text-sm">{error}</p>
-          </div>
-        </div>
-      </div>
-    );
+    message.error(error);
   }
 
   return (
