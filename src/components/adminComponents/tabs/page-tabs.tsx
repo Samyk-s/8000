@@ -12,16 +12,12 @@ const PageTabs = ({ id }: { id?: string }) => {
 
   return isCreate ? (
     <div>
-      <span
+      <Link
+        href={`/admin/pages/${id}`}
         className={`cursor-default ${isPage ? "bg-blue-600 text-white" : "bg-gray-400 text-gray-500 hover:text-gray-500"} px-4 py-1 font-semibold`}
       >
         Page
-      </span>
-      <span
-        className={`px-4 py-1 font-semibold ${isSeo ? "bg-blue-600 text-white" : "bg-gray-400 text-gray-500 hover:text-gray-500"} `}
-      >
-        SEO
-      </span>
+      </Link>
     </div>
   ) : (
     <div>

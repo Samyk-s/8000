@@ -12,7 +12,6 @@ import {
   Typography,
   Space,
   Checkbox,
-  Card,
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import CreatePackageTransfer from "../../drag-drop/drag-drop";

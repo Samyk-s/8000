@@ -45,7 +45,7 @@ const EditPage = () => {
         items={[
           { label: "Dashboard", href: "/admin/dashboard" },
           { label: "Page", href: "/admin/pages" },
-          { label: "Edit Page", href: `/admin/pages/${id}/edit` },
+          { label: "Edit Page", href: `/admin/pages/${id}` },
         ]}
         separator="/"
       />

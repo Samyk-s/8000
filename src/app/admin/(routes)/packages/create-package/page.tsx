@@ -1,5 +1,9 @@
 "use client";
+import Breadcrumbs from "@/components/adminComponents/beadcrumb/bedcrumb";
+import PackageTabs from "@/components/adminComponents/tabs/package-tabs";
+import { Card } from "antd";
 import dynamic from "next/dynamic";
+import { useParams } from "next/navigation";
 import React from "react";
 const PackageForm = dynamic(
   () =>
@@ -18,8 +22,20 @@ const CreatePackage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen">
-      <PackageForm />
+    <div className="flex flex-col gap-3">
+      <Breadcrumbs
+        items={[
+          { label: "Dashboard", href: "/admin/dashboard" },
+          { label: "Package", href: "/admin/packages" },
+          { label: "Create Package", href: `/admin/packages/create-page` },
+        ]}
+        separator="/"
+      />
+      <Card>
+        <div className="flex flex-col gap-3">
+          <PackageForm />
+        </div>
+      </Card>
     </div>
   );
 };

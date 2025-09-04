@@ -27,8 +27,8 @@ const EditPackage: React.FC = () => {
       <Breadcrumbs
         items={[
           { label: "Dashboard", href: "/admin/dashboard" },
-          { label: "Page", href: "/admin/pages" },
-          { label: "Edit Page", href: `/admin/pages/${id}/edit` },
+          { label: "Package", href: "/admin/packages" },
+          { label: "Edit Package", href: `/admin/packages/${id}` },
         ]}
         separator="/"
       />
