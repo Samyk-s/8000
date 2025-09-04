@@ -11,10 +11,10 @@ const PackageTabs = () => {
   const tabs = [
     { label: "Package", path: "" },
     { label: "Itinerary", path: "itinerary" },
-    { label: "Review", path: "review" },
-    { label: "SEO", path: "seo" },
     { label: "Gallery", path: "gallery" },
     { label: "Departure", path: "departure" },
+    { label: "Review", path: "review" },
+    { label: "SEO", path: "seo" },
   ];
 
   return (
@@ -26,10 +26,10 @@ const PackageTabs = () => {
           <Link
             key={tab.label}
             href={tabPath}
-            className={`px-4 py-1 font-semibold ${
+            className={`px-4 py-1 !text-[14px] !font-semibold md:!text-[16px] ${
               isActive
                 ? "bg-blue-600 text-white"
-                : "bg-gray-400 text-gray-600 hover:text-gray-600"
+                : "bg-gray-300 text-gray-600 hover:text-gray-600"
             }`}
           >
             {tab.label}

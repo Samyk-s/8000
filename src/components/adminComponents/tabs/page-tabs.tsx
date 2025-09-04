@@ -14,7 +14,7 @@ const PageTabs = ({ id }: { id?: string }) => {
     <div>
       <Link
         href={`/admin/pages/${id}`}
-        className={`cursor-default ${isPage ? "bg-blue-600 text-white" : "bg-gray-400 text-gray-500 hover:text-gray-500"} px-4 py-1 font-semibold`}
+        className={`cursor-default ${isPage ? "bg-blue-600 text-white" : "bg-gray-300 text-gray-500 hover:text-gray-500"} px-4 py-1 font-semibold`}
       >
         Page
       </Link>
@@ -23,13 +23,13 @@ const PageTabs = ({ id }: { id?: string }) => {
     <div>
       <Link
         href={`/admin/pages/${id}`}
-        className={`cursor-default ${isPage ? "bg-blue-600 text-white" : "bg-gray-400 text-gray-500 hover:text-gray-500"} px-4 py-1 font-semibold`}
+        className={`cursor-default ${isPage ? "bg-blue-600 text-white" : "bg-gray-300 text-gray-500 hover:text-gray-500"} px-4 py-1 font-semibold`}
       >
         Page
       </Link>
       <Link
         href={`/admin/pages/${id}/seo`}
-        className={`px-4 py-1 font-semibold ${isSeo ? "bg-blue-600 text-white" : "bg-gray-400 text-gray-500 hover:text-gray-500"} `}
+        className={`px-4 py-1 font-semibold ${isSeo ? "bg-blue-600 text-white" : "bg-gray-300 text-gray-500 hover:text-gray-500"} `}
       >
         SEO
       </Link>

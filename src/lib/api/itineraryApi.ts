@@ -45,7 +45,7 @@ class ItineraryApi {
   }
   async searchItinerary(packageId: number, params: Params) {
     try {
-      const res = await api.get(`/packages/${packageId}/itineraries/search}?searchkeyword=${params?.search}&page=${params?.page}&limig=${params?.limit}`);
+      const res = await api.get(`/packages/${packageId}/itineraries/?searchkeyword=${params?.search}&page=${params?.page}&limig=${params?.limit}`);
       return res.data
     } catch (error) {
       throw error
