@@ -1,16 +1,11 @@
 "use client";
 import Breadcrumbs from "@/components/adminComponents/beadcrumb/bedcrumb";
-const PageForm = dynamic(
-  () =>
-    import(
-      "@/components/adminComponents/pages-components/forms/page-form/page-form"
-    ),
-);
 import pageApi from "@/lib/api/pageApi";
 import { PageItem } from "@/types/page";
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import dynamic from "next/dynamic";
+import { Card } from "antd";
+import PageTabs from "@/components/adminComponents/tabs/page-tabs";
 
 const EditPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -40,7 +35,9 @@ const EditPage = () => {
         ]}
         separator="/"
       />
-      <PageForm page={page as PageItem} />
+      <Card>
+        <PageTabs disabled={false} page={page as PageItem} />
+      </Card>
     </div>
   );
 };

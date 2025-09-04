@@ -1,5 +1,6 @@
 import Breadcrumbs from "@/components/adminComponents/beadcrumb/bedcrumb";
-import PageForm from "@/components/adminComponents/pages-components/forms/page-form/page-form";
+import PageTabs from "@/components/adminComponents/tabs/page-tabs";
+import { Card } from "antd";
 import React from "react";
 
 const CreatePage = () => {
@@ -23,7 +24,9 @@ const CreatePage = () => {
         ]}
         separator="/"
       />
-      <PageForm />
+      <Card>
+        <PageTabs />
+      </Card>
     </div>
   );
 };

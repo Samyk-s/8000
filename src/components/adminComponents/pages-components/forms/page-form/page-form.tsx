@@ -12,6 +12,8 @@ import {
   Checkbox,
   Card,
   message,
+  Space,
+  Tabs,
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import dynamic from "next/dynamic";
@@ -90,7 +92,7 @@ const PageForm = ({ page }: { page?: PageItem | null }) => {
   };
 
   return (
-    <Card className="h-full p-4 dark:bg-[#020D1A]">
+    <div className="h-full dark:bg-[#020D1A]">
       <Form
         form={form}
         name="page-form"
@@ -336,7 +338,7 @@ const PageForm = ({ page }: { page?: PageItem | null }) => {
           </Col>
         </Row>
       </Form>
-    </Card>
+    </div>
   );
 };
 
