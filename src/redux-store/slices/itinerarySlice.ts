@@ -153,7 +153,6 @@ const itinerariesSlice = createSlice({
         state.error = null;
       })
       .addCase(createItinerary.fulfilled, (state, action) => {
-        console.log("payload", action.payload)
         state.items.push(action.payload);
         state.meta.itemCount += 1;
         state.meta.totalItems += 1;
