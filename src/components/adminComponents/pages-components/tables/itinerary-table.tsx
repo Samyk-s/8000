@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { EditIcon } from "@/components/icons/icnos";
 import Entry from "../../entry/entry";
 import Search from "../../search/search";
@@ -13,6 +13,7 @@ import { Button, message, Modal, Popconfirm } from "antd";
 import {
   deleteItinerary,
   fetchItineraries,
+  searchItineraries,
   toggleItineraryStatus,
 } from "@/redux-store/slices/itinerarySlice";
 import { ItineraryItem } from "@/types/itinerary";
@@ -31,6 +32,8 @@ const ItineraryTable: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState<number>(10);
+  const [search, setSearch] = useState("");
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     dispatch(
@@ -45,6 +48,27 @@ const ItineraryTable: React.FC = () => {
   const handleClose = () => {
     setIsModalOpen(false);
     setSelectedItinerary(null); // reset
+  };
+
+  // search itinerary
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearch(value);
+
+    // Clear previous timeout
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+
+    // Set new timeout
+    debounceRef.current = setTimeout(() => {
+      dispatch(
+        searchItineraries({
+          id: Number(id),
+          params: { limit, page, search: value },
+        }),
+      );
+    }, 300); // 300ms debounce
   };
 
   if (loading) return <Loader />;
@@ -75,7 +99,11 @@ const ItineraryTable: React.FC = () => {
                 value={limit}
                 total={meta?.totalItems}
               />
-              <Search placeholder="Search package..." />
+              <Search
+                placeholder="Search package..."
+                search={search}
+                onChange={handleSearch}
+              />
             </div>
           </div>
 

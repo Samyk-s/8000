@@ -104,6 +104,18 @@ export const deleteItinerary = createAsyncThunk<
   }
 );
 
+//search
+export const searchItineraries = createAsyncThunk<
+  { items: ItineraryItem[]; meta: Meta },
+  FetchPackagePayload
+>("itineraries/searchItineraries", async ({ id, params }, { rejectWithValue }) => {
+  try {
+    const res = await itineraryApi.getItenerary(id, params);
+    return res;
+  } catch (err: any) {
+    return rejectWithValue(err.message);
+  }
+});
 // ================= State =================
 interface ItineraryState {
   items: ItineraryItem[];
@@ -216,6 +228,19 @@ const itinerariesSlice = createSlice({
         state.error = action.payload || "Failed to delete itinerary";
         state.loading = false;
       });
+    //search
+    builder.addCase(searchItineraries.pending, (state) => {
+      state.loading = true;
+    })
+      .addCase(searchItineraries.fulfilled, (state, action: PayloadAction<any>) => {
+        state.items = action.payload.items;
+        state.meta = action.payload.meta
+        state.loading = false;
+      })
+      .addCase(searchItineraries.rejected, (state, action: PayloadAction<any>) => {
+        state.error = action.payload;
+        state.loading = false;
+      })
   },
 });
 

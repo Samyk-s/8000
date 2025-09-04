@@ -2,15 +2,15 @@ import { SearchIcon } from "@/assets/icons";
 import React, { FC } from "react";
 
 interface SearchProps {
-  searchTerm?: string;
-  setSearchTerm?: (value: string) => void;
+  search?: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder?: string;
   className?: string;
 }
 
 const Search: FC<SearchProps> = ({
-  searchTerm = "",
-  setSearchTerm,
+  search = "",
+  onChange,
   placeholder = "Search by name, phone, package, or status...",
   className = "",
 }) => {
@@ -28,8 +28,8 @@ const Search: FC<SearchProps> = ({
         type="text"
         placeholder={placeholder}
         className="w-full border-none bg-transparent px-4 py-2 outline-none focus:border-none focus:ring-0"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm?.(e.target.value)}
+        value={search}
+        onChange={onChange}
       />
     </div>
   );
