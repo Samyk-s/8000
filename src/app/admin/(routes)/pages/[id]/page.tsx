@@ -13,25 +13,32 @@ import { useParams } from "next/navigation";
 import dynamic from "next/dynamic";
 import { Card } from "antd";
 import PageTabs from "@/components/adminComponents/tabs/page-tabs";
+import Loader from "@/components/adminComponents/pages-components/loader/loader";
 
 const EditPage = () => {
   const { id } = useParams<{ id: string }>();
   const [page, setPage] = useState<PageItem | null>(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     async function fetchPageById() {
+      setLoading(true);
       try {
         if (!id) return;
         const res = await pageApi.getPageById(Number(id));
         console.log(res);
         setPage(res);
       } catch (error: any) {
+        setLoading(false);
         console.error("error:: ", error?.message);
+      } finally {
+        setLoading(false);
       }
     }
     fetchPageById();
   }, [id]);
 
+  if (loading) return <Loader />;
   return (
     <div className="flex flex-col gap-3">
       <Breadcrumbs

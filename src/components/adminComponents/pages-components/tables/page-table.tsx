@@ -1,11 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import {
-  EditIcon,
-  LoaderIcon,
-  GalleryIcon,
-  SeoIcon,
-} from "@/components/icons/icnos";
+import { EditIcon, GalleryIcon, SeoIcon } from "@/components/icons/icnos";
 import Image from "next/image";
 import Link from "next/link";
 import Entry from "../../entry/entry";
@@ -17,6 +12,7 @@ import ToggleButton from "../../toggle-button/toggle-button";
 import { PlusIcon } from "@/assets/icons";
 import { fetchPages, togglePageStatus } from "@/redux-store/slices/pageSlice";
 import { PageItem } from "@/types/page";
+import Loader from "../loader/loader";
 
 const PageTable: React.FC = () => {
   const [value, setValue] = useState(10);
@@ -37,16 +33,7 @@ const PageTable: React.FC = () => {
   }
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 p-6">
-        <div className="light rounded-lg bg-white p-8 shadow-sm">
-          <div className="flex items-center justify-center">
-            <LoaderIcon />
-            <span className="ml-2 text-gray-600">Loading bookings...</span>
-          </div>
-        </div>
-      </div>
-    );
+    return <Loader />;
   }
 
   if (error) {
