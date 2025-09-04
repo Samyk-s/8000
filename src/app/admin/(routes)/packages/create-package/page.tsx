@@ -1,6 +1,5 @@
 "use client";
 import Breadcrumbs from "@/components/adminComponents/beadcrumb/bedcrumb";
-import PackageTabs from "@/components/adminComponents/tabs/package-tabs";
 import { Card } from "antd";
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
