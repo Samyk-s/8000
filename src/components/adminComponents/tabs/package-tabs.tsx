@@ -17,7 +17,7 @@ const PackageTabs = ({ id }: { id?: string }) => {
   ];
 
   return (
-    <div className="flex space-x-2">
+    <div className="flex">
       {tabs.map((tab) => {
         const tabPath = `/admin/packages/${id}${tab.path ? `/${tab.path}` : ""}`;
         const isActive = pathname === tabPath;
@@ -25,7 +25,7 @@ const PackageTabs = ({ id }: { id?: string }) => {
           <Link
             key={tab.label}
             href={tabPath}
-            className={`rounded px-4 py-1 font-semibold ${
+            className={`px-4 py-1 font-semibold ${
               isActive
                 ? "bg-blue-600 text-white"
                 : "bg-gray-400 text-gray-500 hover:text-gray-500"
