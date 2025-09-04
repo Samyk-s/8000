@@ -1,0 +1,44 @@
+"use client";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import React from "react";
+
+const PackageTabs = ({ id }: { id?: string }) => {
+  const pathname = usePathname();
+
+  const isSeo = pathname.endsWith("/seo");
+  const isCreate = pathname.endsWith("/create-page");
+  const isPage = !isSeo;
+
+  return isCreate ? (
+    <div>
+      <span
+        className={`cursor-default ${isPage ? "bg-blue-600 text-white" : "bg-gray-400 text-gray-500 hover:text-gray-500"} px-4 py-1 font-semibold`}
+      >
+        Page
+      </span>
+      <span
+        className={`px-4 py-1 font-semibold ${isSeo ? "bg-blue-600 text-white" : "bg-gray-400 text-gray-500 hover:text-gray-500"} `}
+      >
+        SEO
+      </span>
+    </div>
+  ) : (
+    <div>
+      <Link
+        href={`/admin/pages/${id}`}
+        className={`cursor-default ${isPage ? "bg-blue-600 text-white" : "bg-gray-400 text-gray-500 hover:text-gray-500"} px-4 py-1 font-semibold`}
+      >
+        Page
+      </Link>
+      <Link
+        href={`/admin/pages/${id}/seo`}
+        className={`px-4 py-1 font-semibold ${isSeo ? "bg-blue-600 text-white" : "bg-gray-400 text-gray-500 hover:text-gray-500"} `}
+      >
+        SEO
+      </Link>
+    </div>
+  );
+};
+
+export default PackageTabs;

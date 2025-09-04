@@ -20,7 +20,7 @@ import TextEditor from "../../text-editor/text-editor";
 
 const { Option } = Select;
 
-const CreatePackageForm: React.FC = () => {
+const PackageForm: React.FC = () => {
   const onFinish = (values: any) => {
     console.log("Success:", values);
   };
@@ -30,7 +30,7 @@ const CreatePackageForm: React.FC = () => {
   };
 
   return (
-    <Card className="h-full p-4">
+    <div>
       <Form
         name="create-package"
         autoComplete="off"
@@ -332,8 +332,8 @@ const CreatePackageForm: React.FC = () => {
           </Col>
         </Row>
       </Form>
-    </Card>
+    </div>
   );
 };
 
-export default CreatePackageForm;
+export default PackageForm;

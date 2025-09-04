@@ -152,34 +152,34 @@ const PackageTable: React.FC = () => {
                       <td className="whitespace-nowrap px-6 py-4 text-base font-medium">
                         <div className="flex space-x-2">
                           <Link
-                            href={`/admin/packages/${item?.slug}`}
+                            href={`/admin/packages/${item?.id}/itinerary`}
                             title="Itinerary"
                           >
                             <ItinerayIcon />
                           </Link>
 
                           <Link
-                            href={`/admin/packages/${item?.slug}`}
+                            href={`/admin/packages/${item?.id}/gallery`}
                             title="Gallery"
                           >
                             <GalleryIcon />
                           </Link>
                           <Link
-                            href={`/admin/packages/${item?.slug}`}
+                            href={`/admin/packages/${item?.id}/departure`}
                             title="Departure"
                           >
                             <DepartureIcon />
                           </Link>
 
                           <Link
-                            href={`/admin/packages/${item?.slug}`}
+                            href={`/admin/packages/${item?.id}/review`}
                             title="Review"
                           >
                             <ReviewIcon />
                           </Link>
 
                           <Link
-                            href={`/admin/packages/${item?.slug}`}
+                            href={`/admin/packages/${item?.id}/seo`}
                             title="SEO"
                           >
                             <SeoIcon />

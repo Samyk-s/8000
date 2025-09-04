@@ -1,6 +1,12 @@
 "use client";
+import dynamic from "next/dynamic";
 import React from "react";
-import CreatePackageForm from "@/components/adminComponents/pages-components/forms/package-form/package-form";
+const PackageForm = dynamic(
+  () =>
+    import(
+      "@/components/adminComponents/pages-components/forms/package-form/package-form"
+    ),
+);
 
 const CreatePackage: React.FC = () => {
   const onFinish = (values: { title: string }) => {
@@ -13,7 +19,7 @@ const CreatePackage: React.FC = () => {
 
   return (
     <div className="min-h-screen">
-      <CreatePackageForm />
+      <PackageForm />
     </div>
   );
 };
