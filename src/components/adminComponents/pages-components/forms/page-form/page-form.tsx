@@ -22,6 +22,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux-store/store/store";
 import { fetchPages } from "@/redux-store/slices/pageSlice";
 import { PageItem } from "@/types/page";
+import { PageTemplate } from "../seo-form/seo-form";
 
 const TextEditor = dynamic(() => import("../../text-editor/text-editor"), {
   ssr: false,
@@ -31,8 +32,6 @@ const { Option } = Select;
 
 const PageForm = ({ page }: { page?: PageItem | null }) => {
   const [form] = Form.useForm();
-  const { items } = useSelector((state: RootState) => state.pages);
-  const dispatch = useDispatch();
 
   useEffect(() => {
     if (page) {
@@ -67,9 +66,6 @@ const PageForm = ({ page }: { page?: PageItem | null }) => {
   }, [page, form]);
 
   // ✅ Fetch pages for template select (client-side)
-  useEffect(() => {
-    dispatch(fetchPages({ page: 1, limit: 10 }) as any);
-  }, [dispatch]);
 
   const onFinish = async (values: any) => {
     try {
@@ -233,11 +229,19 @@ const PageForm = ({ page }: { page?: PageItem | null }) => {
                 allowClear
                 className="!bg-transparent"
               >
-                {(items || []).map((item) => (
-                  <Option value={item.id} key={item.id}>
-                    {item.title}
-                  </Option>
-                ))}
+                <Option value={PageTemplate?.DESTINATION}>
+                  {PageTemplate?.DESTINATION}
+                </Option>
+                <Option value={PageTemplate?.ACTIVITIES}>
+                  {PageTemplate?.ACTIVITIES}
+                </Option>
+                <Option value={PageTemplate?.PACKAGE}>
+                  {PageTemplate?.PACKAGE}
+                </Option>
+                <Option value={PageTemplate?.STORY}>
+                  {PageTemplate?.STORY}
+                </Option>
+                <Option value={PageTemplate?.TEAM}>{PageTemplate?.TEAM}</Option>
               </Select>
             </Form.Item>
           </Col>
