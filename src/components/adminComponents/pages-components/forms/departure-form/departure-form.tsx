@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Form, Button, Row, Col, message } from "antd";
 import Loader from "../../loader/loader";
 import { useDispatch, useSelector } from "react-redux";
