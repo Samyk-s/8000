@@ -110,17 +110,17 @@ export const deleteReview = createAsyncThunk<
 );
 
 //search
-// export const searchItineraries = createAsyncThunk<
-//   { items: ItineraryItem[]; meta: Meta },
-//   FetchPackagePayload
-// >("itineraries/searchItineraries", async ({ id, params }, { rejectWithValue }) => {
-//   try {
-//     const res = await itineraryApi.searchItinerary(id, params);
-//     return res;
-//   } catch (err: any) {
-//     return rejectWithValue(err.message);
-//   }
-// });
+export const searchReviews = createAsyncThunk<
+  { items: ReviewItem[]; meta: Meta },
+  FetchPackagePayload
+>("reviews/searchReviews", async ({ params }, { rejectWithValue }) => {
+  try {
+    const res = await reviewApi.searchReviews(params);
+    return res;
+  } catch (err: any) {
+    return rejectWithValue(err.message);
+  }
+});
 // ================= State =================
 interface ReviewState {
   items: ReviewItem[];
@@ -237,18 +237,18 @@ const reviewsSlice = createSlice({
         state.loading = false;
       });
     //search
-    // builder.addCase(searchItineraries.pending, (state) => {
-    //   state.loading = true;
-    // })
-    //   .addCase(searchItineraries.fulfilled, (state, action: PayloadAction<any>) => {
-    //     state.items = action.payload.items;
-    //     state.meta = action.payload.meta
-    //     state.loading = false;
-    //   })
-    //   .addCase(searchItineraries.rejected, (state, action: PayloadAction<any>) => {
-    //     state.error = action.payload;
-    //     state.loading = false;
-    //   })
+    builder.addCase(searchReviews.pending, (state) => {
+      state.loading = true;
+    })
+      .addCase(searchReviews.fulfilled, (state, action: PayloadAction<any>) => {
+        state.items = action.payload.items;
+        state.meta = action.payload.meta
+        state.loading = false;
+      })
+      .addCase(searchReviews.rejected, (state, action: PayloadAction<any>) => {
+        state.error = action.payload;
+        state.loading = false;
+      })
   },
 });
 

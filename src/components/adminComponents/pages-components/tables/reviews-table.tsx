@@ -9,17 +9,15 @@ import ToggleButton from "../../toggle-button/toggle-button";
 import { PlusIcon, TrashIcon } from "@/assets/icons";
 import Loader from "../loader/loader";
 import { Button, message, Modal, Popconfirm } from "antd";
-import { ItineraryItem } from "@/types/itinerary";
 import PackageTabs from "../../tabs/package-tabs";
 import { useParams } from "next/navigation";
-import { searchDeparture } from "@/redux-store/slices/departureSlice";
 import dynamic from "next/dynamic";
-import { deleteFile, toggleFileStatus } from "@/redux-store/slices/fileSlice";
 import Link from "next/link";
 import Image from "next/image";
 import {
   deleteReview,
   fetchReviews,
+  searchReviews,
   toggleReviewStatus,
 } from "@/redux-store/slices/packageReviewSlice";
 import { ReviewItem } from "@/types/packge-review";
@@ -70,7 +68,7 @@ const ReviewTable: React.FC = () => {
     // Set new timeout
     debounceRef.current = setTimeout(() => {
       dispatch(
-        searchDeparture({
+        searchReviews({
           id: Number(id),
           params: { limit, page, search: value },
         }),

@@ -43,11 +43,11 @@ class ReviewApi {
       throw error
     }
   }
-  async searchItinerary(package_id: number, params: Params) {
+  async searchReviews(params: Params) {
 
     try {
       const res = await api.get(
-        `/packages/${package_id}/itineraries/search?keyword=${params?.search || ''}&packageId=${package_id}&page=${params?.page || 1}&limit=${params?.limit || 10}`
+        `/reviews/search?keyword=${params?.search || ''}&page=${params?.page || 1}&limit=${params?.limit || 10}`
       );
 
       return res.data
