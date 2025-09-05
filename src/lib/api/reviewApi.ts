@@ -3,9 +3,9 @@ import { api } from "../axios-config/api";
 import { ItineraryItem } from "@/types/itinerary";
 
 class ReviewApi {
-  async getReviews(id: number, parms: Params) {
+  async getPackageReviews(id: number, parms: Params) {
     try {
-      const res = await api.get(`/reviews?limit=${parms?.limit}&page=${parms.page}`);
+      const res = await api.get(`/reviews/package/${id}?limit=${parms?.limit}&page=${parms.page}`);
       return res.data
     } catch (error) {
       throw error
@@ -19,9 +19,9 @@ class ReviewApi {
       throw error
     }
   }
-  async toggleItinerary(packageId: number, itineraryId: number) {
+  async toggleReview(id: number) {
     try {
-      const res = await api.patch(`/packages/${packageId}/itineraries/${itineraryId}/toggle-status`);
+      const res = await api.patch(`/reviews/toggle-status/${id}`);
       return res.data
     } catch (error) {
       throw error
@@ -37,7 +37,7 @@ class ReviewApi {
   }
   async deleteItinerary(package_id: number, itineraryId: number) {
     try {
-      const res = await api.delete(`/packages/${package_id}/itineraries/${itineraryId}`);
+      const res = await api.delete(`/reviews/package/${package_id}/itineraries/${itineraryId}`);
       return res.data
     } catch (error) {
       throw error

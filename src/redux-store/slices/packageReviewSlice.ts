@@ -1,9 +1,9 @@
 // store/packagesSlice.ts
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { FetchPackagePayload, Meta } from "@/types/utils-type";
-import itineraryApi from "@/lib/api/itineraryApi";
 import { ReviewItem } from "@/types/packge-review";
 import reviewApi from "@/lib/api/reviewApi";
+import { message } from "antd";
 
 // ================= Async Thunks =================
 
@@ -13,7 +13,8 @@ export const fetchReviews = createAsyncThunk<
   FetchPackagePayload
 >("reviews/fetchReviews", async ({ id, params }, { rejectWithValue }) => {
   try {
-    const res = await reviewApi.getReviews(id, params);
+    const res = await reviewApi.getPackageReviews(id, params);
+    console.log(res, "reviews")
     return res;
   } catch (err: any) {
     return rejectWithValue(err.message);
@@ -25,10 +26,9 @@ export const fetchReviews = createAsyncThunk<
 //   id: number;
 //   data: Partial<ItineraryItem>;
 // }
-// interface TogglePackagePayload {
-//   packageId: number;
-//   itineraryId: number;
-// }
+interface ToggleReviewPayload {
+  id: number
+}
 // interface UpdateItineraryPayload {
 //   packageId: number;
 //   itineraryId: number;
@@ -54,21 +54,23 @@ export const fetchReviews = createAsyncThunk<
 // });
 
 // Toggle Status
-// export const toggleItineraryStatus = createAsyncThunk<
-//   ItineraryItem,
-//   TogglePackagePayload,
-//   { rejectValue: string }
-// >(
-//   "itineraries/toggleItinerariesStatus",
-//   async ({ packageId, itineraryId }, { rejectWithValue }) => {
-//     try {
-//       const res = await itineraryApi.toggleItinerary(packageId, itineraryId);
-//       return res.data as ItineraryItem;
-//     } catch (err: any) {
-//       return rejectWithValue(err?.message || "Failed to toggle itinerary status");
-//     }
-//   }
-// );
+export const toggleReviewStatus = createAsyncThunk<
+  ReviewItem,
+  ToggleReviewPayload,
+  { rejectValue: string }
+>(
+  "reviews/toggleReviewsStatus",
+  async ({ id }, { rejectWithValue }) => {
+    try {
+      const res = await reviewApi.toggleReview(id);
+      message.success(res?.message)
+      return res.data;
+    } catch (err: any) {
+      message.error("Failed to toggle")
+      return rejectWithValue(err?.message || "Failed to toggle itinerary status");
+    }
+  }
+);
 
 // Update
 // export const updateItinerary = createAsyncThunk<
@@ -151,7 +153,7 @@ const reviewsSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchReviews.fulfilled, (state, action) => {
-        state.items = action.payload.items;
+        state.items = action.payload as any;
         state.meta = action.payload.meta;
         state.loading = false;
       })
@@ -178,22 +180,22 @@ const reviewsSlice = createSlice({
     //   });
 
     // toggle
-    // builder
-    //   .addCase(toggleItineraryStatus.pending, (state) => {
-    //     state.loading = true;
-    //     state.error = null;
-    //   })
-    //   .addCase(toggleItineraryStatus.fulfilled, (state, action) => {
-    //     const index = state.items.findIndex((item) => item.id === action.payload.id);
-    //     if (index !== -1) {
-    //       state.items[index] = action.payload;
-    //     }
-    //     state.loading = false;
-    //   })
-    //   .addCase(toggleItineraryStatus.rejected, (state, action: PayloadAction<any>) => {
-    //     state.error = action.payload || "Failed to toggle itinerary status";
-    //     state.loading = false;
-    //   });
+    builder
+      .addCase(toggleReviewStatus.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(toggleReviewStatus.fulfilled, (state, action) => {
+        const index = state.items.findIndex((item) => item.id === action.payload.id);
+        if (index !== -1) {
+          state.items[index] = action.payload;
+        }
+        state.loading = false;
+      })
+      .addCase(toggleReviewStatus.rejected, (state, action: PayloadAction<any>) => {
+        state.error = action.payload || "Failed to toggle itinerary status";
+        state.loading = false;
+      });
 
     // update
     // builder

@@ -17,7 +17,10 @@ import dynamic from "next/dynamic";
 import { deleteFile, toggleFileStatus } from "@/redux-store/slices/fileSlice";
 import Link from "next/link";
 import Image from "next/image";
-import { fetchReviews } from "@/redux-store/slices/packageReviewSlice";
+import {
+  fetchReviews,
+  toggleReviewStatus,
+} from "@/redux-store/slices/packageReviewSlice";
 import { ReviewItem } from "@/types/packge-review";
 import { EditIcon } from "@/components/icons/icnos";
 const ReviewForm = dynamic(() => import("../forms/review-form/review-form"), {
@@ -189,7 +192,7 @@ const ReviewTable: React.FC = () => {
                           <ToggleButton
                             onChange={() =>
                               dispatch(
-                                toggleFileStatus({
+                                toggleReviewStatus({
                                   id: item?.id,
                                 }),
                               )
