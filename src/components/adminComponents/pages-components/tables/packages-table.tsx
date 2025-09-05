@@ -84,7 +84,7 @@ const PackageTable: React.FC = () => {
                 onChange={(value) => handleSearchPackage(value)}
                 value={value}
               />
-              <Search placeholder="Search package..." />
+              {/* <Search placeholder="Search package..." /> */}
             </div>
           </div>
 

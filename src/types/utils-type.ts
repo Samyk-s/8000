@@ -24,3 +24,17 @@ export interface FetchPackagePayload {
   id: number;
   params: Params;
 }
+
+
+export interface FileParams {
+  file_of: string;
+  related_id: number;
+  type: string;
+  page: number;
+  limit: number,
+  search?: string;
+}
+export interface FetchFilePayload {
+  id: number;
+  params: FileParams;
+}

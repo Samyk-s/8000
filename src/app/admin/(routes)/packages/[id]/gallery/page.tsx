@@ -1,7 +1,24 @@
+"use client";
+import Breadcrumbs from "@/components/adminComponents/beadcrumb/bedcrumb";
+import GalleryTable from "@/components/adminComponents/pages-components/tables/gallery-table";
+import { useParams } from "next/navigation";
 import React from "react";
 
 const GalleryPage = () => {
-  return <div>GalleryPage</div>;
+  const { id } = useParams<{ id: string }>();
+  return (
+    <>
+      <Breadcrumbs
+        items={[
+          { label: "Dashboard", href: "/admin/dashboard" },
+          { label: "Package", href: "/admin/packages" },
+          { label: "Edit Package", href: `/admin/packages/${id}` },
+        ]}
+        separator="/"
+      />
+      <GalleryTable />
+    </>
+  );
 };
 
 export default GalleryPage;

@@ -6,18 +6,20 @@ import packageReducer from "../slices/packageSlice"
 import pageReducer from "../slices/pageSlice"
 import itineraryReducer from "../slices/itinerarySlice"
 import departureReducer from "../slices/departureSlice"
+import fileReducer from "../slices/fileSlice"
 
 const rootReducer = combineReducers({
   packges: packageReducer,
   pages: pageReducer,
   itineraries: itineraryReducer,
-  departures: departureReducer
+  departures: departureReducer,
+  fiels: fileReducer
 });
 
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["auth", "category"], // 👈 use "auth" instead of "user"
+  whitelist: ["auth", "category"],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

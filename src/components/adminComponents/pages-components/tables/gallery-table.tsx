@@ -14,20 +14,24 @@ import PackageTabs from "../../tabs/package-tabs";
 import { useParams } from "next/navigation";
 import {
   deleteDeparture,
-  fetchDepartures,
   searchDeparture,
   toggleDepartureStatus,
 } from "@/redux-store/slices/departureSlice";
 import { DepartureItem } from "@/types/departure";
 import dynamic from "next/dynamic";
+import { fetchFiles } from "@/redux-store/slices/fileSlice";
+import { PageTemplate } from "@/types/page-template";
+import { FileItem } from "@/types/file";
+import Link from "next/link";
+import Image from "next/image";
 const DepartureForm = dynamic(
   () => import("../forms/departure-form/departure-form"),
   { ssr: false },
 );
 
-const DepartureTable: React.FC = () => {
+const GalleryTable: React.FC = () => {
   const { items, loading, error, meta } = useSelector(
-    (state: RootState) => state?.departures,
+    (state: RootState) => state?.fiels,
   );
   const dispatch = useDispatch<AppDispatch>();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -40,10 +44,17 @@ const DepartureTable: React.FC = () => {
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
+    console.log("sdfsdfdsf");
     dispatch(
-      fetchDepartures({
+      fetchFiles({
         id: Number(id),
-        params: { limit: limit, page: page },
+        params: {
+          file_of: PageTemplate.PACKAGE,
+          type: "gallery",
+          related_id: Number(id),
+          limit: limit,
+          page: page,
+        },
       }),
     );
   }, [dispatch, id, limit, page]);
@@ -120,13 +131,10 @@ const DepartureTable: React.FC = () => {
                     S.N.
                   </th>
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
-                    Start date
+                    Image
                   </th>
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
-                    end date
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
-                    Days
+                    alt
                   </th>
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
                     Actions
@@ -135,12 +143,25 @@ const DepartureTable: React.FC = () => {
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
                 {items && items.length > 0 ? (
-                  items.map((item: DepartureItem, index) => (
+                  items.map((item: FileItem, index) => (
                     <tr key={item?.id}>
                       <td className="px-6 py-4">{index + 1}</td>
-                      <td className="px-6 py-4">{item?.startDate}</td>
-                      <td className="px-6 py-4">{item?.endDate}</td>
-                      <td className="px-6 py-4">{item?.days}</td>
+                      <td className="whitespace-nowrap px-6 py-4">
+                        <Link href={item?.file?.url} target="_blank">
+                          <div className="h-20 w-30 text-base font-medium text-gray-900">
+                            <Image
+                              src={item?.file?.url}
+                              alt={item?.file.alt}
+                              width={1080}
+                              height={720}
+                              className="aspect-video"
+                            />
+                          </div>
+                        </Link>
+                      </td>
+                      <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
+                        {item?.alt}
+                      </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center space-x-2">
                           <Popconfirm
@@ -224,4 +245,4 @@ const DepartureTable: React.FC = () => {
   );
 };
 
-export default DepartureTable;
+export default GalleryTable;
