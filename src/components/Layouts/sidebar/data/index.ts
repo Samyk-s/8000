@@ -20,9 +20,50 @@ export const NAV_DATA = [
     ],
   },
   {
-    label: "Management",
+    label: " ",
+    items: [
+      {
+        title: "Bookings",
+        url: "/admin/packagebooking",
+        icon: Icons.BookingIcon,
+        items: [],
+      },
+      {
+        title: "Inquiries",
+        url: "/admin/inquiries",
+        icon: Icons.InquiryIcon,
+        items: [],
+      },
+      {
+        title: "Trip Plan",
+        url: "/admin/tri-plans",
+        icon: Icons.TripPlanIcon,
+        items: [],
+      },
+      {
+        title: "Contact Us",
+        url: "/admin/contact-us",
+        icon: Icons.ContactIcon,
+        items: [],
+      },
+    ],
+  },
+  {
+    label: " ",
     items: [
 
+      {
+        title: "Destinations",
+        url: "/admin/destinations",
+        icon: Icons.DestinationIcon,
+        items: [],
+      },
+      {
+        title: "Activities",
+        url: "/admin/activities",
+        icon: Icons.ActivityIcon,
+        items: [],
+      },
       {
         title: "Packages",
         url: "/admin/packages",
@@ -30,15 +71,21 @@ export const NAV_DATA = [
         items: [],
       },
       {
-        title: "Packages Bookings",
-        url: "/admin/packagebooking",
-        icon: Icons.Calendar,
+        title: "Gears",
+        url: "/admin/gears",
+        icon: Icons.GearIcon,
         items: [],
       },
+    ],
+  },
+  {
+    label: " ",
+    items: [
+
       {
-        title: "Reviews",
-        url: "/admin/reviews",
-        icon: Icons.Calendar,
+        title: "Slider",
+        url: "/admin/sliders",
+        icon: Icons.GalleryIcon,
         items: [],
       },
       {
@@ -48,76 +95,70 @@ export const NAV_DATA = [
         items: [],
       },
       {
-        title: "Profile",
-        url: "/admin/profile",
-        icon: Icons.User,
+        title: "Reviews",
+        url: "/admin/reviews",
+        icon: Icons.ReviewIcon,
         items: [],
       },
       {
-        title: "Forms",
-        icon: Icons.Alphabet,
-        items: [
-          {
-            title: "Form Elements",
-            url: "/admin/forms/form-elements",
-          },
-          {
-            title: "Form Layout",
-            url: "/admin/forms/form-layout",
-          },
-        ],
+        title: "Blogs",
+        url: "/admin/blogs",
+        icon: Icons.BlogsIcon,
+        items: [],
       },
       {
-        title: "Tables",
-        url: "/admin/tables",
-        icon: Icons.Table,
-        items: [
-          {
-            title: "Tables",
-            url: "/admin/tables",
-          },
-        ],
+        title: "Team",
+        url: "/admin/teams",
+        icon: Icons.TeamIcon,
+        items: [],
       },
       {
-        title: "Page",
-        icon: Icons.Alphabet,
-        items: [
-          {
-            title: "Settings",
-            url: "/admin//pages/settings",
-          },
-        ],
+        title: "Affiliation",
+        url: "/admin/affiliations",
+        icon: Icons.AffiliationIcon,
+        items: [],
+      },
+      {
+        title: "Company Fact",
+        url: "/admin/company-facts",
+        icon: Icons.FactIcon,
+        items: [],
+      },
+      {
+        title: "Why Choose Us",
+        url: "/admin/why-choose-us",
+        icon: Icons.WhyChooseIcon,
+        items: [],
+      },
+      {
+        title: "Features",
+        url: "/admin/features",
+        icon: Icons.FeatureIcon,
+        items: [],
+      },
+      {
+        title: "FAQs",
+        url: "/admin/faqs",
+        icon: Icons.FaqsIcon,
+        items: [],
+      },
+      {
+        title: "News Letter",
+        url: "/admin/news-letter",
+        icon: Icons.NewsLetterIcon,
+        items: [],
       },
     ],
   },
   {
-    label: "OTHERS",
+    label: " ",
     items: [
       {
-        title: "Charts",
-        icon: Icons.PieChart,
-        items: [
-          {
-            title: "Basic Chart",
-            url: "/admin/charts/basic-chart",
-          },
-        ],
+        title: "Site Setting",
+        url: "/admin/site-setting",
+        icon: Icons.GearIcon,
+        items: [],
       },
-      {
-        title: "UI Elements",
-        icon: Icons.FourCircle,
-        items: [
-          {
-            title: "Alerts",
-            url: "/admin/ui-elements/alerts",
-          },
-          {
-            title: "Buttons",
-            url: "/admin/ui-elements/buttons",
-          },
-        ],
-      },
-
     ],
   },
 ];
