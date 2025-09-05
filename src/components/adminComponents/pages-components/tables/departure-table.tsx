@@ -31,8 +31,6 @@ const DepartureTable: React.FC = () => {
   );
   const dispatch = useDispatch<AppDispatch>();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedItinerary, setSelectedItinerary] =
-    useState<ItineraryItem | null>(null); // 👈 NEW
   const { id } = useParams<{ id: string }>();
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState<number>(10);
@@ -51,7 +49,6 @@ const DepartureTable: React.FC = () => {
   // Close modal
   const handleClose = () => {
     setIsModalOpen(false);
-    setSelectedItinerary(null); // reset
   };
 
   // search itinerary
@@ -89,7 +86,6 @@ const DepartureTable: React.FC = () => {
               <Button
                 className="flex w-fit items-center gap-1 rounded-md bg-black px-2 py-1 text-white hover:!bg-black hover:!text-white dark:bg-white dark:text-black"
                 onClick={() => {
-                  setSelectedItinerary(null); // 👈 Reset to create mode
                   setIsModalOpen(true);
                 }}
               >
@@ -208,7 +204,7 @@ const DepartureTable: React.FC = () => {
 
       {/* Create / Edit Modal */}
       <Modal
-        title={selectedItinerary ? "Edit Itinerary" : "Add Itinerary"}
+        title={"Add Departure"}
         open={isModalOpen}
         onCancel={handleClose}
         footer={null}

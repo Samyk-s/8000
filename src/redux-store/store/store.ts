@@ -14,7 +14,7 @@ const rootReducer = combineReducers({
   pages: pageReducer,
   itineraries: itineraryReducer,
   departures: departureReducer,
-  fiels: fileReducer,
+  files: fileReducer,
   packgeReviews: packageReviewReducer
 });
 

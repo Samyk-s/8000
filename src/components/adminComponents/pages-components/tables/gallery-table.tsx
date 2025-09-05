@@ -29,11 +29,10 @@ const FileForm = dynamic(() => import("../forms/file-form/file-form"), {
 
 const GalleryTable: React.FC = () => {
   const { items, loading, error, meta } = useSelector(
-    (state: RootState) => state?.fiels,
+    (state: RootState) => state?.files,
   );
   const dispatch = useDispatch<AppDispatch>();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  useState<ItineraryItem | null>(null); // 👈 NEW
   const { id } = useParams<{ id: string }>();
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState<number>(10);
@@ -138,13 +137,16 @@ const GalleryTable: React.FC = () => {
               <tbody className="divide-y divide-gray-200 bg-white">
                 {items && items?.length > 0 ? (
                   items?.map((item: FileItem, index) => (
-                    <tr key={item?.id}>
+                    <tr key={item?.id || Date.now()}>
                       <td className="px-6 py-4">{index + 1}</td>
                       <td className="whitespace-nowrap px-6 py-4">
-                        <Link href={item?.file?.url} target="_blank">
+                        <Link
+                          href={`/${item?.file?.url as string}`}
+                          target="_blank"
+                        >
                           <div className="h-20 w-30 text-base font-medium text-gray-900">
                             <Image
-                              src={item?.file?.url}
+                              src={`${item?.file?.url as string}`}
                               alt={item?.alt}
                               width={1080}
                               height={720}

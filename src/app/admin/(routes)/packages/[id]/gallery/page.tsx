@@ -1,6 +1,12 @@
 "use client";
 import Breadcrumbs from "@/components/adminComponents/beadcrumb/bedcrumb";
-import GalleryTable from "@/components/adminComponents/pages-components/tables/gallery-table";
+import dynamic from "next/dynamic";
+const GalleryTable = dynamic(
+  () =>
+    import(
+      "@/components/adminComponents/pages-components/tables/gallery-table"
+    ),
+);
 import { useParams } from "next/navigation";
 import React from "react";
 
