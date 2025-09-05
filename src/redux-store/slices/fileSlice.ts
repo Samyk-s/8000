@@ -44,7 +44,7 @@ export const createFile = createAsyncThunk<
   async ({ params, data }, { rejectWithValue }) => {
     try {
       const res = await fileApi.createFile(params, data);
-      console.log("res", res)
+      // console.log("res", res)
       return res as FileItem;
     } catch (error: any) {
       message.error("Failed to create file")
