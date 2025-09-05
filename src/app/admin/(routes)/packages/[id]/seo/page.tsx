@@ -28,7 +28,7 @@ const PackageSEOPage = () => {
       <Card>
         <div className="flex flex-col gap-3">
           <PackageTabs />
-          <SeoForm id={id} type={PageTemplate.PAGE} />
+          <SeoForm id={id} type={PageTemplate.PACKAGE} />
         </div>
       </Card>
     </div>
