@@ -116,7 +116,7 @@ const PackageTable: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
-                {items && items.length > 0 ? (
+                {items && items?.length > 0 ? (
                   items?.map((item: Package, index) => (
                     <tr key={item?.id} className="hover:bg-gray-50">
                       <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900">

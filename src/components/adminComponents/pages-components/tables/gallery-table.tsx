@@ -41,7 +41,6 @@ const GalleryTable: React.FC = () => {
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    console.log("sdfsdfdsf");
     dispatch(
       fetchFiles({
         id: Number(id),
@@ -137,8 +136,8 @@ const GalleryTable: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
-                {items && items.length > 0 ? (
-                  items.map((item: FileItem, index) => (
+                {items && items?.length > 0 ? (
+                  items?.map((item: FileItem, index) => (
                     <tr key={item?.id}>
                       <td className="px-6 py-4">{index + 1}</td>
                       <td className="whitespace-nowrap px-6 py-4">

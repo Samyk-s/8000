@@ -88,7 +88,7 @@ const PageTable: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white dark:bg-[#020D1A]">
-                {items && items.length > 0 ? (
+                {items && items?.length > 0 ? (
                   items?.map((item: PageItem, index) => (
                     <tr key={item?.id}>
                       <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900 dark:text-white">

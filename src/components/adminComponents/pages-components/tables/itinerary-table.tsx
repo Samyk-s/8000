@@ -127,8 +127,8 @@ const ItineraryTable: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
-                {items && items.length > 0 ? (
-                  items.map((item: ItineraryItem, index) => (
+                {items && items?.length > 0 ? (
+                  items?.map((item: ItineraryItem, index) => (
                     <tr key={item?.id}>
                       <td className="px-6 py-4">{index + 1}</td>
                       <td className="px-6 py-4">{item.day}</td>
