@@ -10,6 +10,13 @@ export interface FileItem {
   order: number;
   status: number;
   alt: string;
-  created_at: string; // ISO date string
-  updated_at: string; // ISO date string
+  created_at: string;
+  updated_at: string;
+}
+
+export interface FilePayload {
+  file: MediaFile;
+  order: number;
+  status: number;
+  alt: string;
 }

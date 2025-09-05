@@ -1,5 +1,6 @@
 import { FileParams } from "@/types/utils-type";
 import { api } from "../axios-config/api";
+import { FileItem, FilePayload } from "@/types/file";
 
 class FileApi {
   async getFile(params: FileParams) {
@@ -10,10 +11,38 @@ class FileApi {
       throw error
     }
   }
+  async createFile(params: FileParams, data: FilePayload) {
+    try {
+      const res = await api.post(
+        `/files/${params.file_of}/${params.related_id}/${params.type}`,
+        data
+      );
+      return res.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async createResource(data: FormData) {
+    try {
+      const res = await api.post(`/resources/image`, data);
+      return res.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async toggleFile(id: number) {
-    console.log("id", id)
     try {
       const res = await api.patch(`/files/${id}/toggle-status`);
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
+  async deleteFile(id: number) {
+    try {
+      const res = await api.delete(`/files/${id}`);
       return res.data
     } catch (error) {
       throw error

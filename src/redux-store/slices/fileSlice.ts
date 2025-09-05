@@ -1,8 +1,9 @@
 // store/packagesSlice.ts
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { FetchFilePayload, Meta } from "@/types/utils-type";
-import { FileItem } from "@/types/file";
+import { FetchFilePayload, FileParams, Meta } from "@/types/utils-type";
+import { FileItem, FilePayload } from "@/types/file";
 import fileApi from "@/lib/api/fileApi";
+import { message } from "antd";
 
 // ================= Async Thunks =================
 
@@ -20,12 +21,7 @@ export const fetchFiles = createAsyncThunk<
   }
 });
 
-// Define payloads
-// interface CreateItineraryPayload {
-//   id: number;
-//   data: Partial<ItineraryItem>;
-// }
-interface TogglePackagePayload {
+interface ToggleFilePayload {
   id: number
 }
 // interface UpdateItineraryPayload {
@@ -39,32 +35,40 @@ interface TogglePackagePayload {
 // }
 
 // Create
-// export const createItinerary = createAsyncThunk<
-//   ItineraryItem,
-//   CreateItineraryPayload,
-//   { rejectValue: string }
-// >("itineraries/createItineraries", async ({ id, data }, { rejectWithValue }) => {
-//   try {
-//     const res = await itineraryApi.createItinerary(id, data as ItineraryItem);
-//     return res.data;
-//   } catch (error: any) {
-//     return rejectWithValue(error?.message || "Failed to create itinerary");
-//   }
-// });
+export const createFile = createAsyncThunk<
+  FileItem,
+  { params: FileParams; data: FilePayload },
+  { rejectValue: string }
+>(
+  "files/createFile",
+  async ({ params, data }, { rejectWithValue }) => {
+    try {
+      const res = await fileApi.createFile(params, data);
+      console.log("res", res)
+      return res as FileItem;
+    } catch (error: any) {
+      message.error("Failed to create file")
+      return rejectWithValue(error?.message || "Failed to create file");
+    }
+  }
+);
+
+
 
 // Toggle Status
 export const toggleFileStatus = createAsyncThunk<
   FileItem,
-  TogglePackagePayload,
+  ToggleFilePayload,
   { rejectValue: string }
 >(
   "files/toggleFilesStatus",
   async ({ id }, { rejectWithValue }) => {
     try {
       const res = await fileApi.toggleFile(id);
-      console.log(res, "files")
+      message.success(res.message)
       return res.data as FileItem;
     } catch (err: any) {
+      message.error("Failed toggle image")
       return rejectWithValue(err?.message || "Failed to toggle itinerary status");
     }
   }
@@ -74,21 +78,23 @@ export const toggleFileStatus = createAsyncThunk<
 
 
 // Delete
-// export const deleteItinerary = createAsyncThunk<
-//   { id: number }, // return only the deleted id
-//   DeleteItineraryPayload,
-//   { rejectValue: string }
-// >(
-//   "itineraries/deleteItinerary",
-//   async ({ packageId, itineraryId }, { rejectWithValue }) => {
-//     try {
-//       await itineraryApi.deleteItinerary(packageId, itineraryId);
-//       return { id: itineraryId };
-//     } catch (err: any) {
-//       return rejectWithValue(err?.message || "Failed to delete itinerary");
-//     }
-//   }
-// );
+export const deleteFile = createAsyncThunk<
+  { id: number }, // return only the deleted id
+  ToggleFilePayload,
+  { rejectValue: string }
+>(
+  "files/deleteFile",
+  async ({ id }, { rejectWithValue }) => {
+    try {
+      const res = await fileApi.deleteFile(id);
+      message.success(res.message)
+      return { id: id };
+    } catch (err: any) {
+      message.error("Failed to delete image")
+      return rejectWithValue(err?.message || "Failed to delete itinerary");
+    }
+  }
+);
 
 //search
 // export const searchItineraries = createAsyncThunk<
@@ -146,21 +152,21 @@ const filesSlice = createSlice({
       });
 
     // create
-    // builder
-    //   .addCase(createItinerary.pending, (state) => {
-    //     state.loading = true;
-    //     state.error = null;
-    //   })
-    //   .addCase(createItinerary.fulfilled, (state, action) => {
-    //     state.items.push(action.payload);
-    //     state.meta.itemCount += 1;
-    //     state.meta.totalItems += 1;
-    //     state.loading = false;
-    //   })
-    //   .addCase(createItinerary.rejected, (state, action: PayloadAction<any>) => {
-    //     state.error = action.payload || "Failed to create itinerary";
-    //     state.loading = false;
-    //   });
+    builder
+      .addCase(createFile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createFile.fulfilled, (state, action) => {
+        state.items.push(action.payload);
+        state.meta.itemCount += 1;
+        state.meta.totalItems += 1;
+        state.loading = false;
+      })
+      .addCase(createFile.rejected, (state, action: PayloadAction<any>) => {
+        state.error = action.payload || "Failed to create itinerary";
+        state.loading = false;
+      });
 
     // toggle
     builder
@@ -181,21 +187,21 @@ const filesSlice = createSlice({
       });
 
     // delete
-    // builder
-    //   .addCase(deleteItinerary.pending, (state) => {
-    //     state.loading = true;
-    //     state.error = null;
-    //   })
-    //   .addCase(deleteItinerary.fulfilled, (state, action) => {
-    //     state.items = state.items.filter((item) => item.id !== action.payload.id);
-    //     state.meta.itemCount -= 1;
-    //     state.meta.totalItems -= 1;
-    //     state.loading = false;
-    //   })
-    //   .addCase(deleteItinerary.rejected, (state, action: PayloadAction<any>) => {
-    //     state.error = action.payload || "Failed to delete itinerary";
-    //     state.loading = false;
-    //   });
+    builder
+      .addCase(deleteFile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteFile.fulfilled, (state, action) => {
+        state.items = state.items.filter((item) => item.id !== action.payload.id);
+        state.meta.itemCount -= 1;
+        state.meta.totalItems -= 1;
+        state.loading = false;
+      })
+      .addCase(deleteFile.rejected, (state, action: PayloadAction<any>) => {
+        state.error = action.payload || "Failed to delete itinerary";
+        state.loading = false;
+      });
     //search
     // builder.addCase(searchItineraries.pending, (state) => {
     //   state.loading = true;

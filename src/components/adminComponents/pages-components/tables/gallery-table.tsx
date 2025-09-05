@@ -12,22 +12,20 @@ import { Button, message, Modal, Popconfirm } from "antd";
 import { ItineraryItem } from "@/types/itinerary";
 import PackageTabs from "../../tabs/package-tabs";
 import { useParams } from "next/navigation";
-import {
-  deleteDeparture,
-  searchDeparture,
-  toggleDepartureStatus,
-} from "@/redux-store/slices/departureSlice";
-import { DepartureItem } from "@/types/departure";
+import { searchDeparture } from "@/redux-store/slices/departureSlice";
 import dynamic from "next/dynamic";
-import { fetchFiles, toggleFileStatus } from "@/redux-store/slices/fileSlice";
+import {
+  deleteFile,
+  fetchFiles,
+  toggleFileStatus,
+} from "@/redux-store/slices/fileSlice";
 import { FileType, PageTemplate } from "@/types/page-template";
 import { FileItem } from "@/types/file";
 import Link from "next/link";
 import Image from "next/image";
-const DepartureForm = dynamic(
-  () => import("../forms/departure-form/departure-form"),
-  { ssr: false },
-);
+const FileForm = dynamic(() => import("../forms/file-form/file-form"), {
+  ssr: false,
+});
 
 const GalleryTable: React.FC = () => {
   const { items, loading, error, meta } = useSelector(
@@ -35,8 +33,7 @@ const GalleryTable: React.FC = () => {
   );
   const dispatch = useDispatch<AppDispatch>();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedItinerary, setSelectedItinerary] =
-    useState<ItineraryItem | null>(null); // 👈 NEW
+  useState<ItineraryItem | null>(null); // 👈 NEW
   const { id } = useParams<{ id: string }>();
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState<number>(10);
@@ -62,7 +59,6 @@ const GalleryTable: React.FC = () => {
   // Close modal
   const handleClose = () => {
     setIsModalOpen(false);
-    setSelectedItinerary(null); // reset
   };
 
   // search itinerary
@@ -100,7 +96,6 @@ const GalleryTable: React.FC = () => {
               <Button
                 className="flex w-fit items-center gap-1 rounded-md bg-black px-2 py-1 text-white hover:!bg-black hover:!text-white dark:bg-white dark:text-black"
                 onClick={() => {
-                  setSelectedItinerary(null); // 👈 Reset to create mode
                   setIsModalOpen(true);
                 }}
               >
@@ -151,7 +146,7 @@ const GalleryTable: React.FC = () => {
                           <div className="h-20 w-30 text-base font-medium text-gray-900">
                             <Image
                               src={item?.file?.url}
-                              alt={item?.file.alt}
+                              alt={item?.alt}
                               width={1080}
                               height={720}
                               className="aspect-video"
@@ -170,9 +165,8 @@ const GalleryTable: React.FC = () => {
                             onCancel={() => message.error("Cancelled")}
                             onConfirm={() =>
                               dispatch(
-                                deleteDeparture({
-                                  packageId: Number(id),
-                                  departureId: Number(item?.id),
+                                deleteFile({
+                                  id: item?.id,
                                 }),
                               )
                             }
@@ -228,7 +222,7 @@ const GalleryTable: React.FC = () => {
 
       {/* Create / Edit Modal */}
       <Modal
-        title={selectedItinerary ? "Edit Itinerary" : "Add Itinerary"}
+        title="Add Gallery"
         open={isModalOpen}
         onCancel={handleClose}
         footer={null}
@@ -237,7 +231,7 @@ const GalleryTable: React.FC = () => {
         style={{ maxWidth: "90%", padding: "0" }}
       >
         <Suspense fallback={null}>
-          <DepartureForm setIsModalOpen={setIsModalOpen} />
+          <FileForm setIsModalOpen={setIsModalOpen} />
         </Suspense>
       </Modal>
     </>

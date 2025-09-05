@@ -1,9 +1,9 @@
 import "@/css/satoshi.css";
 import "@/css/style.css";
 
-
 import "flatpickr/dist/flatpickr.min.css";
 import "jsvectormap/dist/jsvectormap.css";
+import "@ant-design/v5-patch-for-react-19";
 
 import { Header } from "@/components/Layouts/header";
 import type { Metadata } from "next";
@@ -25,13 +25,9 @@ export default function RootLayout({ children }: PropsWithChildren) {
     <html lang="en" suppressHydrationWarning>
       <body>
         <Providers>
-         
-   <NextTopLoader color="#5750F1" showSpinner={false} />
+          <NextTopLoader color="#5750F1" showSpinner={false} />
 
-              <main className="isolate mx-auto w-full max-w-full ">
-                {children}
-              </main>
-            
+          <main className="isolate mx-auto w-full max-w-full">{children}</main>
         </Providers>
       </body>
     </html>

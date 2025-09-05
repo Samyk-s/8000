@@ -30,8 +30,8 @@ export interface FileParams {
   file_of: string;
   related_id: number;
   type: string;
-  page: number;
-  limit: number,
+  page?: number;
+  limit?: number,
   search?: string;
 }
 export interface FetchFilePayload {
