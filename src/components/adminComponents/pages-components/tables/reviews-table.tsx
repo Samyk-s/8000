@@ -18,6 +18,7 @@ import { deleteFile, toggleFileStatus } from "@/redux-store/slices/fileSlice";
 import Link from "next/link";
 import Image from "next/image";
 import {
+  deleteReview,
   fetchReviews,
   toggleReviewStatus,
 } from "@/redux-store/slices/packageReviewSlice";
@@ -39,7 +40,6 @@ const ReviewTable: React.FC = () => {
   const [limit, setLimit] = useState<number>(10);
   const [search, setSearch] = useState("");
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
-  console.log("review", items);
   useEffect(() => {
     dispatch(
       fetchReviews({
@@ -173,7 +173,7 @@ const ReviewTable: React.FC = () => {
                             onCancel={() => message.error("Cancelled")}
                             onConfirm={() =>
                               dispatch(
-                                deleteFile({
+                                deleteReview({
                                   id: item?.id,
                                 }),
                               )

@@ -26,7 +26,7 @@ export const fetchReviews = createAsyncThunk<
 //   id: number;
 //   data: Partial<ItineraryItem>;
 // }
-interface ToggleReviewPayload {
+interface ReviewPayload {
   id: number
 }
 // interface UpdateItineraryPayload {
@@ -56,7 +56,7 @@ interface ToggleReviewPayload {
 // Toggle Status
 export const toggleReviewStatus = createAsyncThunk<
   ReviewItem,
-  ToggleReviewPayload,
+  ReviewPayload,
   { rejectValue: string }
 >(
   "reviews/toggleReviewsStatus",
@@ -91,21 +91,23 @@ export const toggleReviewStatus = createAsyncThunk<
 // );
 
 // Delete
-// export const deleteItinerary = createAsyncThunk<
-//   { id: number }, // return only the deleted id
-//   DeleteItineraryPayload,
-//   { rejectValue: string }
-// >(
-//   "itineraries/deleteItinerary",
-//   async ({ packageId, itineraryId }, { rejectWithValue }) => {
-//     try {
-//       await itineraryApi.deleteItinerary(packageId, itineraryId);
-//       return { id: itineraryId };
-//     } catch (err: any) {
-//       return rejectWithValue(err?.message || "Failed to delete itinerary");
-//     }
-//   }
-// );
+export const deleteReview = createAsyncThunk<
+  { id: number }, // return only the deleted id
+  ReviewPayload,
+  { rejectValue: string }
+>(
+  "reviews/deleteReview",
+  async ({ id }, { rejectWithValue }) => {
+    try {
+      const res = await reviewApi.deleteReview(id);
+      message.success(res.message)
+      return { id };
+    } catch (err: any) {
+      message.error("Failed to delete")
+      return rejectWithValue(err?.message || "Failed to delete Review");
+    }
+  }
+);
 
 //search
 // export const searchItineraries = createAsyncThunk<
@@ -216,21 +218,24 @@ const reviewsSlice = createSlice({
     //   });
 
     // delete
-    // builder
-    //   .addCase(deleteItinerary.pending, (state) => {
-    //     state.loading = true;
-    //     state.error = null;
-    //   })
-    //   .addCase(deleteItinerary.fulfilled, (state, action) => {
-    //     state.items = state.items.filter((item) => item.id !== action.payload.id);
-    //     state.meta.itemCount -= 1;
-    //     state.meta.totalItems -= 1;
-    //     state.loading = false;
-    //   })
-    //   .addCase(deleteItinerary.rejected, (state, action: PayloadAction<any>) => {
-    //     state.error = action.payload || "Failed to delete itinerary";
-    //     state.loading = false;
-    //   });
+    builder
+      .addCase(deleteReview.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteReview.fulfilled, (state, action) => {
+        state.items = state.items.filter((item) => item.id !== action.payload.id);
+        if (state.meta) {
+          state.meta.itemCount = Math.max(0, state.meta.itemCount - 1);
+          state.meta.totalItems = Math.max(0, state.meta.totalItems - 1);
+        }
+        state.loading = false;
+      })
+
+      .addCase(deleteReview.rejected, (state, action: PayloadAction<any>) => {
+        state.error = action.payload || "Failed to delete itinerary";
+        state.loading = false;
+      });
     //search
     // builder.addCase(searchItineraries.pending, (state) => {
     //   state.loading = true;

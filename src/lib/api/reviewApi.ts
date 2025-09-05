@@ -35,9 +35,9 @@ class ReviewApi {
       throw error
     }
   }
-  async deleteItinerary(package_id: number, itineraryId: number) {
+  async deleteReview(id: number) {
     try {
-      const res = await api.delete(`/reviews/package/${package_id}/itineraries/${itineraryId}`);
+      const res = await api.delete(`/reviews/${id}`);
       return res.data
     } catch (error) {
       throw error
