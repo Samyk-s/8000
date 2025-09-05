@@ -1,7 +1,7 @@
 import * as Icons from "../icons";
 export const NAV_DATA = [
   {
-    label: "Main",
+    label: " ",
     items: [
       {
         title: "Visit Website",
