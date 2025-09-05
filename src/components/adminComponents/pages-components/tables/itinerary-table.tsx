@@ -160,7 +160,10 @@ const ItineraryTable: React.FC = () => {
                             okText="Yes"
                             cancelText="No"
                           >
-                            <button className="rounded p-1 text-red-600 hover:bg-red-50 hover:text-red-900">
+                            <button
+                              className="rounded p-1 text-red-600 hover:bg-red-50 hover:text-red-900"
+                              title="Delete Itinerary"
+                            >
                               <TrashIcon />
                             </button>
                           </Popconfirm>

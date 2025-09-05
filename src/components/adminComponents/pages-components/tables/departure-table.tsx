@@ -140,8 +140,8 @@ const DepartureTable: React.FC = () => {
                       <td className="px-6 py-4">
                         <div className="flex items-center space-x-2">
                           <Popconfirm
-                            title="Delete the Itinerary"
-                            description="Are you sure to delete this itinerary?"
+                            title="Delete the Departure"
+                            description="Are you sure to delete this departure?"
                             onCancel={() => message.error("Cancelled")}
                             onConfirm={() =>
                               dispatch(
@@ -154,7 +154,10 @@ const DepartureTable: React.FC = () => {
                             okText="Yes"
                             cancelText="No"
                           >
-                            <button className="rounded p-1 text-red-600 hover:bg-red-50 hover:text-red-900">
+                            <button
+                              className="rounded p-1 text-red-600 hover:bg-red-50 hover:text-red-900"
+                              title="Delete departure"
+                            >
                               <TrashIcon />
                             </button>
                           </Popconfirm>

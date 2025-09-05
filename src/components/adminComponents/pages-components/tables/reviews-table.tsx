@@ -19,7 +19,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { fetchReviews } from "@/redux-store/slices/packageReviewSlice";
 import { ReviewItem } from "@/types/packge-review";
-const FileForm = dynamic(() => import("../forms/file-form/file-form"), {
+import { EditIcon } from "@/components/icons/icnos";
+const ReviewForm = dynamic(() => import("../forms/review-form/review-form"), {
   ssr: false,
 });
 
@@ -157,9 +158,15 @@ const ReviewTable: React.FC = () => {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center space-x-2">
+                          <Link
+                            href={`/admin/pages/${item?.id}`}
+                            title="Edit Page"
+                          >
+                            <EditIcon />
+                          </Link>
                           <Popconfirm
-                            title="Delete the Itinerary"
-                            description="Are you sure to delete this itinerary?"
+                            title="Delete the Review"
+                            description="Are you sure to delete this review?"
                             onCancel={() => message.error("Cancelled")}
                             onConfirm={() =>
                               dispatch(
@@ -171,7 +178,10 @@ const ReviewTable: React.FC = () => {
                             okText="Yes"
                             cancelText="No"
                           >
-                            <button className="rounded p-1 text-red-600 hover:bg-red-50 hover:text-red-900">
+                            <button
+                              className="rounded p-1 text-red-600 hover:bg-red-50 hover:text-red-900"
+                              title="Delete Review"
+                            >
                               <TrashIcon />
                             </button>
                           </Popconfirm>
@@ -220,7 +230,7 @@ const ReviewTable: React.FC = () => {
 
       {/* Create / Edit Modal */}
       <Modal
-        title="Add Gallery"
+        title="Add Review"
         open={isModalOpen}
         onCancel={handleClose}
         footer={null}
@@ -229,7 +239,7 @@ const ReviewTable: React.FC = () => {
         style={{ maxWidth: "90%", padding: "0" }}
       >
         <Suspense fallback={null}>
-          <FileForm setIsModalOpen={setIsModalOpen} />
+          <ReviewForm setIsModalOpen={setIsModalOpen} />
         </Suspense>
       </Modal>
     </>
