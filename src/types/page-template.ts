@@ -4,7 +4,8 @@ export enum PageTemplate {
   PACKAGE = "package",
   BLOG = "blog",
   TEAM = "team",
-  STORY = "story"
+  STORY = "story",
+  PAGE = "page"
 }
 export enum FileType {
   GALLERY = "gallery",

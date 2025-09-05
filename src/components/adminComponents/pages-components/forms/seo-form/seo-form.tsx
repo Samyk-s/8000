@@ -11,7 +11,7 @@ const TextEditor = dynamic(() => import("../../text-editor/text-editor"), {
   ssr: false,
 });
 
-const SeoForm = ({ id }: { id: string }) => {
+const SeoForm = ({ id, type }: { id: string; type: string }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
 
@@ -20,7 +20,7 @@ const SeoForm = ({ id }: { id: string }) => {
     async function fetchSeoById() {
       setLoading(true);
       try {
-        const res = await seoApi.getSeo("page", Number(id));
+        const res = await seoApi.getSeo(type, Number(id));
         form.setFieldsValue({
           title: res.title,
           keywords: res.keywords,
