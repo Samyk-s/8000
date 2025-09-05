@@ -7,13 +7,15 @@ import pageReducer from "../slices/pageSlice"
 import itineraryReducer from "../slices/itinerarySlice"
 import departureReducer from "../slices/departureSlice"
 import fileReducer from "../slices/fileSlice"
+import packageReviewReducer from "../slices/packageReviewSlice"
 
 const rootReducer = combineReducers({
   packges: packageReducer,
   pages: pageReducer,
   itineraries: itineraryReducer,
   departures: departureReducer,
-  fiels: fileReducer
+  fiels: fileReducer,
+  packgeReviews: packageReviewReducer
 });
 
 const persistConfig = {

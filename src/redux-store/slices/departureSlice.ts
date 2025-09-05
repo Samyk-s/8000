@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { FetchPackagePayload, Meta } from "@/types/utils-type";
 import { DepartureItem } from "@/types/departure";
 import departureApi from "@/lib/api/departureApi";
+import { message } from "antd";
 
 // ================= Async Thunks =================
 
@@ -54,8 +55,10 @@ export const toggleDepartureStatus = createAsyncThunk<
 >("departures/toggleDepartureStatus", async ({ packageId, departureId }, { rejectWithValue }) => {
   try {
     const res = await departureApi.toggleDeparture(packageId, departureId);
+    message.success(res?.message)
     return res.data as DepartureItem;
   } catch (err: any) {
+    message.error("Failed to toggle")
     return rejectWithValue(err?.message || "Failed to toggle departure status");
   }
 });
@@ -67,9 +70,11 @@ export const deleteDeparture = createAsyncThunk<
   { rejectValue: string }
 >("departures/deleteDeparture", async ({ packageId, departureId }, { rejectWithValue }) => {
   try {
-    await departureApi.deleteDeparture(packageId, departureId);
+    const res = await departureApi.deleteDeparture(packageId, departureId);
+    message.success(res?.message)
     return { id: departureId };
   } catch (err: any) {
+    message.error("Failed to delete")
     return rejectWithValue(err?.message || "Failed to delete departure");
   }
 });

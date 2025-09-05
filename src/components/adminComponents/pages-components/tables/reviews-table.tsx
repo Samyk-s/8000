@@ -12,38 +12,38 @@ import { Button, message, Modal, Popconfirm } from "antd";
 import { ItineraryItem } from "@/types/itinerary";
 import PackageTabs from "../../tabs/package-tabs";
 import { useParams } from "next/navigation";
-import {
-  deleteDeparture,
-  fetchDepartures,
-  searchDeparture,
-  toggleDepartureStatus,
-} from "@/redux-store/slices/departureSlice";
-import { DepartureItem } from "@/types/departure";
+import { searchDeparture } from "@/redux-store/slices/departureSlice";
 import dynamic from "next/dynamic";
-const DepartureForm = dynamic(
-  () => import("../forms/departure-form/departure-form"),
-  { ssr: false },
-);
+import { deleteFile, toggleFileStatus } from "@/redux-store/slices/fileSlice";
+import Link from "next/link";
+import Image from "next/image";
+import { fetchReviews } from "@/redux-store/slices/packageReviewSlice";
+import { ReviewItem } from "@/types/packge-review";
+const FileForm = dynamic(() => import("../forms/file-form/file-form"), {
+  ssr: false,
+});
 
-const DepartureTable: React.FC = () => {
+const ReviewTable: React.FC = () => {
   const { items, loading, error, meta } = useSelector(
-    (state: RootState) => state?.departures,
+    (state: RootState) => state?.packgeReviews,
   );
   const dispatch = useDispatch<AppDispatch>();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedItinerary, setSelectedItinerary] =
-    useState<ItineraryItem | null>(null); // 👈 NEW
+  useState<ReviewItem | null>(null); // 👈 NEW
   const { id } = useParams<{ id: string }>();
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState<number>(10);
   const [search, setSearch] = useState("");
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
-
+  console.log("review", items);
   useEffect(() => {
     dispatch(
-      fetchDepartures({
+      fetchReviews({
         id: Number(id),
-        params: { limit: limit, page: page },
+        params: {
+          limit: limit,
+          page: page,
+        },
       }),
     );
   }, [dispatch, id, limit, page]);
@@ -51,7 +51,6 @@ const DepartureTable: React.FC = () => {
   // Close modal
   const handleClose = () => {
     setIsModalOpen(false);
-    setSelectedItinerary(null); // reset
   };
 
   // search itinerary
@@ -89,7 +88,6 @@ const DepartureTable: React.FC = () => {
               <Button
                 className="flex w-fit items-center gap-1 rounded-md bg-black px-2 py-1 text-white hover:!bg-black hover:!text-white dark:bg-white dark:text-black"
                 onClick={() => {
-                  setSelectedItinerary(null); // 👈 Reset to create mode
                   setIsModalOpen(true);
                 }}
               >
@@ -119,14 +117,14 @@ const DepartureTable: React.FC = () => {
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
                     S.N.
                   </th>
+                  {/* <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                    Image
+                  </th> */}
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
-                    Start date
+                    Name
                   </th>
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
-                    end date
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
-                    Days
+                    Country
                   </th>
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
                     Actions
@@ -135,12 +133,28 @@ const DepartureTable: React.FC = () => {
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
                 {items && items.length > 0 ? (
-                  items.map((item: DepartureItem, index) => (
+                  items.map((item: ReviewItem, index) => (
                     <tr key={item?.id}>
                       <td className="px-6 py-4">{index + 1}</td>
-                      <td className="px-6 py-4">{item?.startDate}</td>
-                      <td className="px-6 py-4">{item?.endDate}</td>
-                      <td className="px-6 py-4">{item?.days}</td>
+                      {/* <td className="whitespace-nowrap px-6 py-4">
+                        <Link href={item?.file?.url} target="_blank">
+                          <div className="h-20 w-30 text-base font-medium text-gray-900">
+                            <Image
+                              src={item?.file?.url}
+                              alt={item?.alt}
+                              width={1080}
+                              height={720}
+                              className="aspect-video"
+                            />
+                          </div>
+                        </Link>
+                      </td> */}
+                      <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
+                        {item?.fullName}
+                      </td>
+                      <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
+                        {item?.country}
+                      </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center space-x-2">
                           <Popconfirm
@@ -149,9 +163,8 @@ const DepartureTable: React.FC = () => {
                             onCancel={() => message.error("Cancelled")}
                             onConfirm={() =>
                               dispatch(
-                                deleteDeparture({
-                                  packageId: Number(id),
-                                  departureId: Number(item?.id),
+                                deleteFile({
+                                  id: item?.id,
                                 }),
                               )
                             }
@@ -166,15 +179,14 @@ const DepartureTable: React.FC = () => {
                           <ToggleButton
                             onChange={() =>
                               dispatch(
-                                toggleDepartureStatus({
-                                  packageId: Number(id),
-                                  departureId: Number(item?.id),
+                                toggleFileStatus({
+                                  id: item?.id,
                                 }),
                               )
                             }
-                            checked={item?.status === 1}
+                            checked={item.status === 1}
                             title={
-                              item?.status === 1 ? "Deactivate" : "Activate"
+                              item.status === 1 ? "Deactivate" : "Activate"
                             }
                           />
                         </div>
@@ -208,7 +220,7 @@ const DepartureTable: React.FC = () => {
 
       {/* Create / Edit Modal */}
       <Modal
-        title={selectedItinerary ? "Edit Itinerary" : "Add Itinerary"}
+        title="Add Gallery"
         open={isModalOpen}
         onCancel={handleClose}
         footer={null}
@@ -217,11 +229,11 @@ const DepartureTable: React.FC = () => {
         style={{ maxWidth: "90%", padding: "0" }}
       >
         <Suspense fallback={null}>
-          <DepartureForm setIsModalOpen={setIsModalOpen} />
+          <FileForm setIsModalOpen={setIsModalOpen} />
         </Suspense>
       </Modal>
     </>
   );
 };
 
-export default DepartureTable;
+export default ReviewTable;

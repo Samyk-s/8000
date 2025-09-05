@@ -186,9 +186,9 @@ const GalleryTable: React.FC = () => {
                                 }),
                               )
                             }
-                            checked={item.status === 1}
+                            checked={item?.status === 1}
                             title={
-                              item.status === 1 ? "Deactivate" : "Activate"
+                              item?.status === 1 ? "Deactivate" : "Activate"
                             }
                           />
                         </div>
