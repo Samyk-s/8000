@@ -47,7 +47,7 @@ class ItineraryApi {
 
     try {
       const res = await api.get(
-        `/packages/${package_id}/itineraries/search?search=${params?.search || ''}&page=${params?.page || 1}&limit=${params?.limit || 10}`
+        `/packages/${package_id}/itineraries/search?keyword=${params?.search || ''}&packageId=${package_id}&page=${params?.page || 1}&limit=${params?.limit || 10}`
       );
 
       return res.data

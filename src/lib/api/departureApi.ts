@@ -39,7 +39,9 @@ class DepartureApi {
   }
   async searchDeparture(packageId: number, params: Params) {
     try {
-      const res = await api.get(`/packages/${packageId}/departures/search?search=${params?.search}&page=${params?.page}&limit=${params?.limit}`);
+      const res = await api.get(
+        `/packages/${packageId}/departures/search?keyword=${params?.search || ''}&packageId=${packageId}&page=${params?.page || 1}&limit=${params?.limit || 10}`
+      );
       return res.data
     } catch (error) {
       throw error
