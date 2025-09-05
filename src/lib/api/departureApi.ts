@@ -1,6 +1,7 @@
 import { Params } from "@/types/utils-type";
 import { api } from "../axios-config/api";
 import { ItineraryItem } from "@/types/itinerary";
+import { DepartureItem } from "@/types/departure";
 
 class DepartureApi {
   async getDeparture(id: number, parms: Params) {
@@ -11,41 +12,34 @@ class DepartureApi {
       throw error
     }
   }
-  async createItinerary(id: number, values: ItineraryItem) {
+  async createDeparture(id: number, values: DepartureItem) {
     try {
-      const res = await api.post(`/packages/${id}/itineraries`, values);
+      const res = await api.post(`/packages/${id}/departures`, values);
       return res.data
     } catch (error) {
       throw error
     }
   }
-  async toggleItinerary(packageId: number, itineraryId: number) {
+  async toggleDeparture(packageId: number, id: number) {
     try {
-      const res = await api.patch(`/packages/${packageId}/itineraries/${itineraryId}/toggle-status`);
+      const res = await api.patch(`/packages/${packageId}/departures/${id}/toggle-status`);
       return res.data
     } catch (error) {
       throw error
     }
   }
-  async updateItinerary(packageId: number, itineraryId: number, data: ItineraryItem) {
+
+  async deleteDeparture(packageId: number, id: number) {
     try {
-      const res = await api.patch(`/packages/${packageId}/itineraries/${itineraryId}`, data);
+      const res = await api.delete(`/packages/${packageId}/departures/${id}`);
       return res.data
     } catch (error) {
       throw error
     }
   }
-  async deleteItinerary(packageId: number, itineraryId: number) {
+  async searchDeparture(packageId: number, params: Params) {
     try {
-      const res = await api.delete(`/packages/${packageId}/itineraries/${itineraryId}`);
-      return res.data
-    } catch (error) {
-      throw error
-    }
-  }
-  async searchItinerary(packageId: number, params: Params) {
-    try {
-      const res = await api.get(`/packages/${packageId}/itineraries/?searchkeyword=${params?.search}&page=${params?.page}&limig=${params?.limit}`);
+      const res = await api.get(`/packages/${packageId}/departures/search?'search keyword'=${params?.search}&page=${params?.page}&limit=${params?.limit}`);
       return res.data
     } catch (error) {
       throw error

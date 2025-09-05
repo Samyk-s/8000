@@ -110,7 +110,7 @@ export const searchItineraries = createAsyncThunk<
   FetchPackagePayload
 >("itineraries/searchItineraries", async ({ id, params }, { rejectWithValue }) => {
   try {
-    const res = await itineraryApi.getItenerary(id, params);
+    const res = await itineraryApi.searchItinerary(id, params);
     return res;
   } catch (err: any) {
     return rejectWithValue(err.message);

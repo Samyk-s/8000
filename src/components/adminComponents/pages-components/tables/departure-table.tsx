@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { Suspense, useEffect, useRef, useState } from "react";
 import Entry from "../../entry/entry";
 import Search from "../../search/search";
 import Pagination from "../../pagination/pagination";
@@ -9,17 +9,22 @@ import ToggleButton from "../../toggle-button/toggle-button";
 import { PlusIcon, TrashIcon } from "@/assets/icons";
 import Loader from "../loader/loader";
 import { Button, message, Modal, Popconfirm } from "antd";
-import {
-  deleteItinerary,
-  searchItineraries,
-  toggleItineraryStatus,
-} from "@/redux-store/slices/itinerarySlice";
+import { searchItineraries } from "@/redux-store/slices/itinerarySlice";
 import { ItineraryItem } from "@/types/itinerary";
 import PackageTabs from "../../tabs/package-tabs";
-import ItineraryForm from "../forms/itinerary-form/itinerary-form";
 import { useParams } from "next/navigation";
-import { fetchDepartures } from "@/redux-store/slices/departureSlice";
+import {
+  deleteDeparture,
+  fetchDepartures,
+  searchDeparture,
+  toggleDepartureStatus,
+} from "@/redux-store/slices/departureSlice";
 import { DepartureItem } from "@/types/departure";
+import dynamic from "next/dynamic";
+const DepartureForm = dynamic(
+  () => import("../forms/departure-form/departure-form"),
+  { ssr: false },
+);
 
 const DepartureTable: React.FC = () => {
   const { items, loading, error, meta } = useSelector(
@@ -63,7 +68,7 @@ const DepartureTable: React.FC = () => {
     // Set new timeout
     debounceRef.current = setTimeout(() => {
       dispatch(
-        searchItineraries({
+        searchDeparture({
           id: Number(id),
           params: { limit, page, search: value },
         }),
@@ -145,9 +150,9 @@ const DepartureTable: React.FC = () => {
                             onCancel={() => message.error("Cancelled")}
                             onConfirm={() =>
                               dispatch(
-                                deleteItinerary({
+                                deleteDeparture({
                                   packageId: Number(id),
-                                  itineraryId: Number(item?.id),
+                                  departureId: Number(item?.id),
                                 }),
                               )
                             }
@@ -162,9 +167,9 @@ const DepartureTable: React.FC = () => {
                           <ToggleButton
                             onChange={() =>
                               dispatch(
-                                toggleItineraryStatus({
+                                toggleDepartureStatus({
                                   packageId: Number(id),
-                                  itineraryId: Number(item?.id),
+                                  departureId: Number(item?.id),
                                 }),
                               )
                             }
@@ -212,10 +217,9 @@ const DepartureTable: React.FC = () => {
         width={800}
         style={{ maxWidth: "90%", padding: "0" }}
       >
-        <ItineraryForm
-          setIsModalOpen={setIsModalOpen}
-          itinerary={selectedItinerary}
-        />
+        <Suspense fallback={null}>
+          <DepartureForm setIsModalOpen={setIsModalOpen} />
+        </Suspense>
       </Modal>
     </>
   );

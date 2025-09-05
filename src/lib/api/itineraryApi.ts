@@ -35,18 +35,19 @@ class ItineraryApi {
       throw error
     }
   }
-  async deleteItinerary(packageId: number, itineraryId: number) {
+  async deleteItinerary(package_id: number, itineraryId: number) {
     try {
-      const res = await api.delete(`/packages/${packageId}/itineraries/${itineraryId}`);
+      const res = await api.delete(`/packages/${package_id}/itineraries/${itineraryId}`);
       return res.data
     } catch (error) {
       throw error
     }
   }
-  async searchItinerary(packageId: number, params: Params) {
+  async searchItinerary(package_id: number, params: Params) {
+    console.log(params, "Sdfs")
     try {
       const res = await api.get(
-        `/packages/${packageId}/itineraries/search?'search keyword'=${params?.search || ''}&page=${params?.page || 1}&limit=${params?.limit || 10}`
+        `/packages/${package_id}/itineraries/search?'search keyword'=${params?.search || ''}&page=${params?.page || 1}&limit=${params?.limit || 10}`
       );
 
       return res.data
