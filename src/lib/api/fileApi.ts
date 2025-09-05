@@ -10,6 +10,15 @@ class FileApi {
       throw error
     }
   }
+  async toggleFile(id: number) {
+    console.log("id", id)
+    try {
+      const res = await api.patch(`/files/${id}/toggle-status`);
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
 }
 
 export default new FileApi()

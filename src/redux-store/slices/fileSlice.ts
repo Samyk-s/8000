@@ -25,10 +25,9 @@ export const fetchFiles = createAsyncThunk<
 //   id: number;
 //   data: Partial<ItineraryItem>;
 // }
-// interface TogglePackagePayload {
-//   packageId: number;
-//   itineraryId: number;
-// }
+interface TogglePackagePayload {
+  id: number
+}
 // interface UpdateItineraryPayload {
 //   packageId: number;
 //   itineraryId: number;
@@ -54,20 +53,22 @@ export const fetchFiles = createAsyncThunk<
 // });
 
 // Toggle Status
-// export const toggleItineraryStatus = createAsyncThunk<
-//   ItineraryItem,
-//   TogglePackagePayload,
-//   { rejectValue: string }
-// >(
-//   "itineraries/toggleItinerariesStatus",
-//   async ({ packageId, itineraryId }, { rejectWithValue }) => {
-//     try {
-//       const res = await itineraryApi.toggleItinerary(packageId, itineraryId);
-//       return res.data as ItineraryItem;
-//     } catch (err: any) {
-//       return rejectWithValue(err?.message || "Failed to toggle itinerary status");
-//     }
-//   }
+export const toggleFileStatus = createAsyncThunk<
+  FileItem,
+  TogglePackagePayload,
+  { rejectValue: string }
+>(
+  "files/toggleFilesStatus",
+  async ({ id }, { rejectWithValue }) => {
+    try {
+      const res = await fileApi.toggleFile(id);
+      console.log(res, "files")
+      return res.data as FileItem;
+    } catch (err: any) {
+      return rejectWithValue(err?.message || "Failed to toggle itinerary status");
+    }
+  }
+)
 
 
 
@@ -162,22 +163,22 @@ const filesSlice = createSlice({
     //   });
 
     // toggle
-    // builder
-    //   .addCase(toggleItineraryStatus.pending, (state) => {
-    //     state.loading = true;
-    //     state.error = null;
-    //   })
-    //   .addCase(toggleItineraryStatus.fulfilled, (state, action) => {
-    //     const index = state.items.findIndex((item) => item.id === action.payload.id);
-    //     if (index !== -1) {
-    //       state.items[index] = action.payload;
-    //     }
-    //     state.loading = false;
-    //   })
-    //   .addCase(toggleItineraryStatus.rejected, (state, action: PayloadAction<any>) => {
-    //     state.error = action.payload || "Failed to toggle itinerary status";
-    //     state.loading = false;
-    //   });
+    builder
+      .addCase(toggleFileStatus.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(toggleFileStatus.fulfilled, (state, action) => {
+        const index = state.items.findIndex((item) => item.id === action.payload.id);
+        if (index !== -1) {
+          state.items[index] = action.payload;
+        }
+        state.loading = false;
+      })
+      .addCase(toggleFileStatus.rejected, (state, action: PayloadAction<any>) => {
+        state.error = action.payload || "Failed to toggle itinerary status";
+        state.loading = false;
+      });
 
     // delete
     // builder

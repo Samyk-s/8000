@@ -19,8 +19,8 @@ import {
 } from "@/redux-store/slices/departureSlice";
 import { DepartureItem } from "@/types/departure";
 import dynamic from "next/dynamic";
-import { fetchFiles } from "@/redux-store/slices/fileSlice";
-import { PageTemplate } from "@/types/page-template";
+import { fetchFiles, toggleFileStatus } from "@/redux-store/slices/fileSlice";
+import { FileType, PageTemplate } from "@/types/page-template";
 import { FileItem } from "@/types/file";
 import Link from "next/link";
 import Image from "next/image";
@@ -50,7 +50,7 @@ const GalleryTable: React.FC = () => {
         id: Number(id),
         params: {
           file_of: PageTemplate.PACKAGE,
-          type: "gallery",
+          type: FileType.GALLERY,
           related_id: Number(id),
           limit: limit,
           page: page,
@@ -187,9 +187,8 @@ const GalleryTable: React.FC = () => {
                           <ToggleButton
                             onChange={() =>
                               dispatch(
-                                toggleDepartureStatus({
-                                  packageId: Number(id),
-                                  departureId: Number(item?.id),
+                                toggleFileStatus({
+                                  id: item?.id,
                                 }),
                               )
                             }

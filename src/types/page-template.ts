@@ -6,3 +6,9 @@ export enum PageTemplate {
   TEAM = "team",
   STORY = "story"
 }
+export enum FileType {
+  GALLERY = "gallery",
+  CERIFICATE = "certificate",
+  DOCS = "docs",
+
+}
