@@ -119,10 +119,16 @@ const IquiryTable: React.FC = () => {
                     S.N.
                   </th>
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
-                    Day
+                    Name
                   </th>
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
-                    Title
+                    Email
+                  </th>
+                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                    Phone
+                  </th>
+                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                    Received on
                   </th>
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
                     Actions
