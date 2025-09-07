@@ -123,10 +123,15 @@ const PackageTable: React.FC = () => {
                         {index + 1}
                       </td>
                       <td className="whitespace-nowrap px-6 py-4">
-                        <Link href={item?.image?.url} target="_blank">
+                        <Link
+                          href={`/${item?.image?.url || "/images/broken/broken.png"}`}
+                          target="_blank"
+                        >
                           <div className="h-20 w-30 text-base font-medium text-gray-900">
                             <Image
-                              src={item?.image?.url}
+                              src={
+                                item?.image?.url || "/images/broken/broken.png"
+                              }
                               alt={item?.title}
                               width={1080}
                               height={720}
