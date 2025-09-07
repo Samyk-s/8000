@@ -1,5 +1,6 @@
 import { Params } from "@/types/utils-type";
 import { api } from "../axios-config/api";
+import { message } from "antd";
 
 class InquiryApi {
   async getInquiries(params: Params) {
@@ -11,9 +12,17 @@ class InquiryApi {
     }
   }
   async deleteInquiry(id: number) {
-    alert(id)
     try {
       const res = await api.delete(`/inquiry/${id}`)
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
+  async getInquiryById(id: number) {
+
+    try {
+      const res = await api.get(`/inquiry/${id}`)
       return res.data
     } catch (error) {
       throw error

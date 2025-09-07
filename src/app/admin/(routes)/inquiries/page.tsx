@@ -1,6 +1,6 @@
 "use client";
 import Breadcrumbs from "@/components/adminComponents/beadcrumb/bedcrumb";
-import IquiryTable from "@/components/adminComponents/pages-components/tables/inquiry-tabe";
+import IquiryTable from "@/components/adminComponents/pages-components/tables/inquiry-table";
 import React from "react";
 
 const InquiryPage = () => {

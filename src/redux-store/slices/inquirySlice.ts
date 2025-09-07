@@ -1,8 +1,6 @@
 // store/packagesSlice.ts
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { FetchPackagePayload, Meta, Params } from "@/types/utils-type";
-import { ItineraryItem } from "@/types/itinerary";
-import itineraryApi from "@/lib/api/itineraryApi";
+import { Meta, Params } from "@/types/utils-type";
 import { InquiryItem } from "@/types/inquiry";
 import inquiryApi from "@/lib/api/inquiryApi";
 import { message } from "antd";
@@ -48,7 +46,7 @@ export const deleteInquiry = createAsyncThunk<
   { id: number },
   { rejectValue: string }
 >(
-  "itineraries/deleteItinerary",
+  "inquiries/deleteInquiries",
   async ({ id }, { rejectWithValue }) => {
     try {
       const res = await inquiryApi.deleteInquiry(id);
@@ -57,6 +55,26 @@ export const deleteInquiry = createAsyncThunk<
     } catch (err: any) {
       message.error("Failed to delete inquiry")
       return rejectWithValue(err?.message || "Failed to delete Inquiry");
+    }
+  }
+);
+// get by id
+export const getInquiry = createAsyncThunk<
+  InquiryItem,
+  number,
+  { rejectValue: string }
+>(
+  "inquiries/getInquiriesById",
+  async (id, { rejectWithValue }) => {
+    try {
+      const res = await inquiryApi.getInquiryById(id);
+      // Return the actual inquiry data
+      // console.log("res", res)
+      return res as InquiryItem;
+
+    } catch (err: any) {
+      message.error("Failed to fetch inquiry");
+      return rejectWithValue(err?.message || "Failed to fetch Inquiry");
     }
   }
 );
@@ -79,6 +97,7 @@ interface InquiryState {
   meta: Meta;
   error: string | null;
   loading: boolean;
+  inquiry: InquiryItem | null
 }
 
 const initialState: InquiryState = {
@@ -92,6 +111,7 @@ const initialState: InquiryState = {
   },
   error: null,
   loading: false,
+  inquiry: null
 };
 
 // ================= Slice =================
@@ -112,6 +132,20 @@ const inquiriesSlice = createSlice({
         state.loading = false;
       })
       .addCase(fetchInquiries.rejected, (state, action: PayloadAction<any>) => {
+        state.error = action.payload || "Failed to fetch itineraries";
+        state.loading = false;
+      });
+    // get by id
+    builder
+      .addCase(getInquiry.pending, (state) => {
+        state.error = null;
+      })
+      .addCase(getInquiry.fulfilled, (state, action) => {
+
+        state.inquiry = action.payload;
+        state.loading = false;
+      })
+      .addCase(getInquiry.rejected, (state, action: PayloadAction<any>) => {
         state.error = action.payload || "Failed to fetch itineraries";
         state.loading = false;
       });
