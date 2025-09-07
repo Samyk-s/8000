@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import seoApi from "@/lib/api/seoApi";
 import { MediaFile } from "@/types/utils-type";
 import Loader from "../../loader/loader";
+import resourceApi from "@/lib/api/resourceApi";
 
 const TextEditor = dynamic(() => import("../../text-editor/text-editor"), {
   ssr: false,
@@ -14,21 +15,52 @@ const TextEditor = dynamic(() => import("../../text-editor/text-editor"), {
 const SeoForm = ({ id, type }: { id: string; type: string }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const [fileList, setFileList] = useState<any[]>([]);
+  const [file, setFile] = useState<MediaFile | null>(null);
+  const [uploading, setUploading] = useState(false);
 
-  // Fetch SEO data by ID
+  // ================= Handle file upload =================
+  const handleFileUpload = async (rawFile: File) => {
+    const formData = new FormData();
+    formData.append("file", rawFile);
+
+    try {
+      setUploading(true);
+      const res = await resourceApi.createResource(formData);
+      setUploading(false);
+
+      if (res) {
+        setFile(res);
+        setFileList([
+          {
+            uid: res.uid,
+            name: res?.name,
+            status: "done",
+            url: res?.url,
+          },
+        ]);
+        message.success("File uploaded successfully!");
+      } else {
+        message.error("File upload failed");
+      }
+    } catch (error) {
+      console.error(error);
+      setUploading(false);
+      message.error("File upload failed");
+    }
+  };
+
+  // ================= Fetch SEO by ID =================
   useEffect(() => {
     async function fetchSeoById() {
       setLoading(true);
       try {
         const res = await seoApi.getSeo(type, Number(id));
+
         form.setFieldsValue({
           title: res.title,
           keywords: res.keywords,
           description: res.description,
-          status: res.status ?? true,
-          isMenu: res.isMenu ?? false,
-          isMainMenu: res.isMainMenu ?? false,
-          isFooterMenu: res.isFooterMenu ?? false,
           image: res.image
             ? [
                 {
@@ -40,40 +72,67 @@ const SeoForm = ({ id, type }: { id: string; type: string }) => {
               ]
             : [],
         });
+
+        // Keep old image in fileList state
+        if (res.image) {
+          setFileList([
+            {
+              uid: res.image.uid,
+              name: res.image.name,
+              url: res.image.url,
+              status: "done",
+            },
+          ]);
+        }
       } catch (error) {
         console.error("Failed to fetch SEO:", error);
         message.error("Failed to load SEO data");
-        setLoading(false);
       } finally {
         setLoading(false);
       }
     }
     fetchSeoById();
-  }, [id, form]);
+  }, [id, type, form]);
 
+  // ================= Submit =================
   const onFinish = async (values: any) => {
     try {
-      // Validate image
-      if (!values.image || values.image.length === 0) {
+      // Decide which image to use: new upload or old one
+      const selectedImage = file
+        ? {
+            uid: file?.uid,
+            name: file?.name,
+            url: file?.url,
+            alt: values?.alt || file?.name,
+            type: "image",
+            size: file?.size,
+          }
+        : values?.image && values?.image?.length > 0
+          ? {
+              uid: values.image[0]?.uid,
+              name: values.image[0]?.name,
+              url: values.image[0]?.url,
+              alt: values.alt || values?.image[0]?.name,
+              type: "image",
+              size: "0",
+            }
+          : null;
+
+      if (!selectedImage) {
         message.error("Image is required");
         return;
       }
 
-      // Convert image to MediaFile format
-      const image: MediaFile = {
-        uid: values.image[0].uid,
-        name: values.image[0].name,
-        url: values.image[0].url || "",
-        alt: values.image[0].name,
-        type: "image",
-        size: "0", // set actual size if available
+      // ✅ Final payload
+      const payload = {
+        title: values.title,
+        keywords: values.keywords,
+        description: values.description,
+        image: selectedImage,
       };
 
-      const payload = { ...values, image };
-      console.log("Updated SEO Payload:", payload);
-
-      // Call API to update SEO
-      // await seoApi.updateSeo("page", Number(id), payload);
+      console.log("Final SEO Payload:", payload);
+      await seoApi.updateSeo(Number(id), payload);
       message.success("SEO updated successfully");
     } catch (error) {
       console.error("Failed to update SEO:", error);
@@ -81,9 +140,11 @@ const SeoForm = ({ id, type }: { id: string; type: string }) => {
     }
   };
 
+  // ================= Render =================
   if (loading) {
     return <Loader />;
   }
+
   return (
     <div className="h-full dark:bg-[#020D1A]">
       <Form
@@ -128,22 +189,27 @@ const SeoForm = ({ id, type }: { id: string; type: string }) => {
               rules={[
                 {
                   validator: (_, value) =>
-                    value && value.length > 0
+                    (value && value.length > 0) || file
                       ? Promise.resolve()
                       : Promise.reject(new Error("Image is required")),
                 },
               ]}
             >
               <Upload
-                beforeUpload={() => false}
+                beforeUpload={(file) => {
+                  handleFileUpload(file);
+                  return false; // prevent default upload
+                }}
                 listType="picture"
                 accept=".jpg,.jpeg,.png,.webp"
                 maxCount={1}
-                className="!bg-transparent"
+                fileList={fileList}
+                onChange={({ fileList }) => setFileList(fileList)}
               >
                 <Button
                   className="bg-transparent dark:text-white"
                   icon={<UploadOutlined />}
+                  loading={uploading}
                 >
                   Click to Upload
                 </Button>

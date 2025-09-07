@@ -1,5 +1,6 @@
 import { Params } from "@/types/utils-type";
 import { api } from "../axios-config/api";
+import { PageItem } from "@/types/page";
 
 class PackageApi {
 
@@ -12,9 +13,10 @@ class PackageApi {
       throw error
     }
   }
-  async createPackage(data: any) {
+  async createPackage(data: PageItem) {
     try {
-      const response = await api.post("/packages", data)
+      const response = await api.post("/packages", data);
+      return response;
     } catch (error) {
       console.error(error)
       throw error

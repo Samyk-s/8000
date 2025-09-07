@@ -131,6 +131,7 @@ const PageTable: React.FC = () => {
                               alt={item?.title}
                               width={1080}
                               height={720}
+                              loading="lazy"
                               className="aspect-video"
                             />
                           </div>
