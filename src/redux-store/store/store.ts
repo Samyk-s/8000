@@ -8,6 +8,7 @@ import itineraryReducer from "../slices/itinerarySlice"
 import departureReducer from "../slices/departureSlice"
 import fileReducer from "../slices/fileSlice"
 import packageReviewReducer from "../slices/packageReviewSlice"
+import inquiryReducer from "../slices/inquirySlice"
 
 const rootReducer = combineReducers({
   packges: packageReducer,
@@ -15,7 +16,8 @@ const rootReducer = combineReducers({
   itineraries: itineraryReducer,
   departures: departureReducer,
   files: fileReducer,
-  packgeReviews: packageReviewReducer
+  packgeReviews: packageReviewReducer,
+  inquiries: inquiryReducer
 });
 
 const persistConfig = {
