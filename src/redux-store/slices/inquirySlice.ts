@@ -5,6 +5,7 @@ import { ItineraryItem } from "@/types/itinerary";
 import itineraryApi from "@/lib/api/itineraryApi";
 import { InquiryItem } from "@/types/inquiry";
 import inquiryApi from "@/lib/api/inquiryApi";
+import { message } from "antd";
 
 // ================= Async Thunks =================
 
@@ -22,17 +23,6 @@ export const fetchInquiries = createAsyncThunk<
   }
 });
 
-// Define payloads
-
-interface TogglePackagePayload {
-  packageId: number;
-  itineraryId: number;
-}
-
-interface DeleteItineraryPayload {
-  packageId: number;
-  itineraryId: number;
-}
 
 // Create
 // export const createItinerary = createAsyncThunk<
@@ -48,57 +38,28 @@ interface DeleteItineraryPayload {
 //   }
 // });
 
-// Toggle Status
-// export const toggleItineraryStatus = createAsyncThunk<
-//   ItineraryItem,
-//   TogglePackagePayload,
-//   { rejectValue: string }
-// >(
-//   "itineraries/toggleItinerariesStatus",
-//   async ({ packageId, itineraryId }, { rejectWithValue }) => {
-//     try {
-//       const res = await itineraryApi.toggleItinerary(packageId, itineraryId);
-//       return res.data as ItineraryItem;
-//     } catch (err: any) {
-//       return rejectWithValue(err?.message || "Failed to toggle itinerary status");
-//     }
-//   }
-// );
 
-// Update
-// export const updateItinerary = createAsyncThunk<
-//   ItineraryItem,
-//   UpdateItineraryPayload,
-//   { rejectValue: string }
-// >(
-//   "itineraries/updateItinerary",
-//   async ({ packageId, itineraryId, data }, { rejectWithValue }) => {
-//     try {
-//       const res = await itineraryApi.updateItinerary(packageId, itineraryId, data as ItineraryItem);
-//       console.log(res.data, "data")
-//       return res.data as ItineraryItem;
-//     } catch (err: any) {
-//       return rejectWithValue(err?.message || "Failed to update itinerary");
-//     }
-//   }
-// );
+
+
 
 // Delete
-// export const deleteItinerary = createAsyncThunk<
-//   { id: number }, // return only the deleted id
-//   DeleteItineraryPayload,
-//   { rejectValue: string }
-// >(
-//   "itineraries/deleteItinerary",
-//   async ({ packageId, itineraryId }, { rejectWithValue }) => {
-//     try {
-//       await itineraryApi.deleteItinerary(packageId, itineraryId);
-//       return { id: itineraryId };
-//     } catch (err: any) {
-//       return rejectWithValue(err?.message || "Failed to delete itinerary");
-//     }
-//   }
-// );
+export const deleteInquiry = createAsyncThunk<
+  { id: number },
+  { id: number },
+  { rejectValue: string }
+>(
+  "itineraries/deleteItinerary",
+  async ({ id }, { rejectWithValue }) => {
+    try {
+      const res = await inquiryApi.deleteInquiry(id);
+      message.success(res?.message)
+      return { id };
+    } catch (err: any) {
+      message.error("Failed to delete inquiry")
+      return rejectWithValue(err?.message || "Failed to delete Inquiry");
+    }
+  }
+);
 
 //search
 // export const searchItineraries = createAsyncThunk<
@@ -172,58 +133,23 @@ const inquiriesSlice = createSlice({
     //   state.loading = false;
     // });
 
-    // toggle
-    // builder
-    //   .addCase(toggleItineraryStatus.pending, (state) => {
-    //     state.loading = true;
-    //     state.error = null;
-    //   })
-    //   .addCase(toggleItineraryStatus.fulfilled, (state, action) => {
-    //     const index = state.items.findIndex((item) => item.id === action.payload.id);
-    //     if (index !== -1) {
-    //       state.items[index] = action.payload;
-    //     }
-    //     state.loading = false;
-    //   })
-    // .addCase(toggleItineraryStatus.rejected, (state, action: PayloadAction<any>) => {
-    //   state.error = action.payload || "Failed to toggle itinerary status";
-    //   state.loading = false;
-    // });
-
-    // update
-    // builder
-    //   .addCase(updateItinerary.pending, (state) => {
-    //     state.loading = true;
-    //     state.error = null;
-    //   })
-    //   .addCase(updateItinerary.fulfilled, (state, action) => {
-    //     const index = state.items.findIndex((item) => item.id === action.payload.id);
-    //     if (index !== -1) {
-    //       state.items[index] = action.payload;
-    //     }
-    //     state.loading = false;
-    //   })
-    //   .addCase(updateItinerary.rejected, (state, action: PayloadAction<any>) => {
-    //     state.error = action.payload || "Failed to update itinerary";
-    //     state.loading = false;
-    //   });
 
     // delete
-    // builder
-    //   .addCase(deleteItinerary.pending, (state) => {
-    //     state.loading = true;
-    //     state.error = null;
-    //   })
-    //   .addCase(deleteItinerary.fulfilled, (state, action) => {
-    //     state.items = state.items.filter((item) => item.id !== action.payload.id);
-    //     state.meta.itemCount -= 1;
-    //     state.meta.totalItems -= 1;
-    //     state.loading = false;
-    //   })
-    //   .addCase(deleteItinerary.rejected, (state, action: PayloadAction<any>) => {
-    //     state.error = action.payload || "Failed to delete itinerary";
-    //     state.loading = false;
-    //   });
+    builder
+      .addCase(deleteInquiry.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteInquiry.fulfilled, (state, action) => {
+        state.items = state.items.filter((item) => item.id !== action.payload.id);
+        state.meta.itemCount -= 1;
+        state.meta.totalItems -= 1;
+        state.loading = false;
+      })
+      .addCase(deleteInquiry.rejected, (state, action: PayloadAction<any>) => {
+        state.error = action.payload || "Failed to delete itinerary";
+        state.loading = false;
+      });
     // //search
     // builder.addCase(searchItineraries.pending, (state) => {
     //   state.loading = true;

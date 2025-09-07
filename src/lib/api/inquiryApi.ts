@@ -10,6 +10,15 @@ class InquiryApi {
       throw error
     }
   }
+  async deleteInquiry(id: number) {
+    alert(id)
+    try {
+      const res = await api.delete(`/inquiry/${id}`)
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
 }
 
 export default new InquiryApi()

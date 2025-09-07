@@ -20,7 +20,10 @@ import { ItineraryItem } from "@/types/itinerary";
 import ItineraryForm from "../forms/itinerary-form/itinerary-form";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import InquiryTabs from "../../tabs/inquiry-tabs";
-import { fetchInquiries } from "@/redux-store/slices/inquirySlice";
+import {
+  deleteInquiry,
+  fetchInquiries,
+} from "@/redux-store/slices/inquirySlice";
 import { InquiryItem } from "@/types/inquiry";
 
 const IquiryTable: React.FC = () => {
@@ -86,15 +89,6 @@ const IquiryTable: React.FC = () => {
           <div className="flex flex-col gap-3 border-b border-gray-200 p-6">
             <div className="flex flex-wrap-reverse items-center justify-center gap-3 md:justify-between">
               <InquiryTabs />
-              <Button
-                className="flex w-fit items-center gap-1 rounded-md bg-black px-2 py-1 text-white hover:!bg-black hover:!text-white dark:bg-white dark:text-black"
-                onClick={() => {
-                  setIsModalOpen(true);
-                }}
-              >
-                <PlusIcon />
-                <span>Create</span>
-              </Button>
             </div>
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <Entry
@@ -157,14 +151,13 @@ const IquiryTable: React.FC = () => {
                           </button>
 
                           <Popconfirm
-                            title="Delete the Itinerary"
-                            description="Are you sure to delete this itinerary?"
+                            title="Delete the Inquiry"
+                            description="Are you sure to delete this inquiry?"
                             onCancel={() => message.error("Cancelled")}
                             onConfirm={() =>
                               dispatch(
-                                deleteItinerary({
-                                  packageId: Number(id),
-                                  itineraryId: Number(item?.id),
+                                deleteInquiry({
+                                  id: Number(item?.id),
                                 }),
                               )
                             }
