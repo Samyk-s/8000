@@ -9,6 +9,7 @@ import departureReducer from "../slices/departureSlice"
 import fileReducer from "../slices/fileSlice"
 import packageReviewReducer from "../slices/packageReviewSlice"
 import inquiryReducer from "../slices/inquirySlice"
+import newsLetterReducer from "../slices/newsLetterSlice"
 
 const rootReducer = combineReducers({
   packges: packageReducer,
@@ -17,7 +18,8 @@ const rootReducer = combineReducers({
   departures: departureReducer,
   files: fileReducer,
   packgeReviews: packageReviewReducer,
-  inquiries: inquiryReducer
+  inquiries: inquiryReducer,
+  newsLetter: newsLetterReducer
 });
 
 const persistConfig = {
