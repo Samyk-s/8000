@@ -30,5 +30,17 @@ class PageApi {
       throw error
     }
   }
+  async searchPages(params: Params) {
+
+    try {
+      const res = await api?.get(
+        `/pages/search?keyword=${params?.search || ''}&page=${params?.page || 1}&limit=${params?.limit || 10}`
+      );
+
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
 }
 export default new PageApi()

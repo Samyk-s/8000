@@ -4,6 +4,10 @@ import { Meta, Params } from "@/types/utils-type";
 import pageApi from "@/lib/api/pageApi";
 import { message } from "antd";
 
+export interface FetchPagePayload {
+  params: Params;
+}
+
 export const fetchPages = createAsyncThunk<{ items: PageItem[]; meta: Meta }, Params>(
   "packages/fetchPackages",
   async (params: Params, { rejectWithValue }) => {
@@ -36,7 +40,19 @@ export const togglePageStatus = createAsyncThunk<
     }
   }
 );
-
+//search
+export const searchPages = createAsyncThunk<
+  { items: PageItem[]; meta: Meta },
+  FetchPagePayload
+>("pages/searchpages", async ({ params }, { rejectWithValue }) => {
+  try {
+    const res = await pageApi.searchPages(params);
+    console.log(res.items, "search")
+    return res;
+  } catch (err: any) {
+    return rejectWithValue(err.message);
+  }
+});
 interface PageItemState {
   items: PageItem[];
   meta: Meta;
@@ -93,6 +109,21 @@ const pageSlice = createSlice({
       .addCase(togglePageStatus.rejected, (state, action: PayloadAction<any>) => {
         state.loading = false;
         state.error = action.payload || "Failed to toggle package status";
+      });
+    // search
+    builder
+      .addCase(searchPages.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(searchPages.fulfilled, (state, action) => {
+        state.items = action.payload.items;
+        state.meta = action.payload.meta;
+        state.loading = false;
+      })
+      .addCase(searchPages.rejected, (state, action: PayloadAction<any>) => {
+        state.error = action.payload || "Failed to fetch pages";
+        state.loading = false;
       });
 
   }

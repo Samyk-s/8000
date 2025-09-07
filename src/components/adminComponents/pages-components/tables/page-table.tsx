@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { EditIcon, GalleryIcon, SeoIcon } from "@/components/icons/icnos";
 import Image from "next/image";
 import Link from "next/link";
@@ -10,29 +10,50 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux-store/store/store";
 import ToggleButton from "../../toggle-button/toggle-button";
 import { PlusIcon } from "@/assets/icons";
-import { fetchPages, togglePageStatus } from "@/redux-store/slices/pageSlice";
+import { v4 as uuidv4 } from "uuid";
+
+import {
+  fetchPages,
+  searchPages,
+  togglePageStatus,
+} from "@/redux-store/slices/pageSlice";
 import { PageItem } from "@/types/page";
 import Loader from "../loader/loader";
 import { message } from "antd";
 
 const PageTable: React.FC = () => {
-  const [value, setValue] = useState(10);
   const { items, loading, error, meta } = useSelector(
     (state: RootState) => state?.pages,
   );
-  console.log("pages", items);
-  const [currentPage, setCurrentPage] = useState(meta?.currentPage);
   const dispatch = useDispatch<AppDispatch>();
-  const totalPages = Math.ceil(meta?.totalPages / meta?.itemsPerPage);
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState<number>(10);
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
   // call api for getting packages
   useEffect(() => {
-    dispatch(fetchPages({ page: 1, limit: 10 }));
-  }, [dispatch]);
+    dispatch(fetchPages({ page: page, limit: limit }));
+  }, [dispatch, page, limit]);
 
-  function handleSearchPackage(value: string | number) {
-    setValue(Number(value));
-  }
+  // search itinerary
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearch(value);
 
+    // Clear previous timeout
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+
+    // Set new timeout
+    debounceRef.current = setTimeout(async () => {
+      await dispatch(
+        searchPages({
+          params: { limit, page, search: value },
+        }),
+      );
+    }, 300); // 300ms debounce
+  };
   if (loading) {
     return <Loader />;
   }
@@ -55,10 +76,15 @@ const PageTable: React.FC = () => {
             </div>
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <Entry
-                onChange={(value) => handleSearchPackage(value)}
-                value={value}
+                onChange={(value) => setLimit(Number(value))}
+                value={limit}
+                total={meta?.totalItems}
               />
-              <Search placeholder="Search package..." />
+              <Search
+                placeholder="Search pages..."
+                search={search}
+                onChange={handleSearch}
+              />
             </div>
           </div>
 
@@ -90,15 +116,18 @@ const PageTable: React.FC = () => {
               <tbody className="divide-y divide-gray-200 bg-white dark:bg-[#020D1A]">
                 {items && items?.length > 0 ? (
                   items?.map((item: PageItem, index) => (
-                    <tr key={item?.id}>
+                    <tr key={uuidv4()}>
                       <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900 dark:text-white">
                         {index + 1}
                       </td>
                       <td className="whitespace-nowrap px-6 py-4">
-                        <Link href={item?.image?.url as string} target="_blank">
+                        <Link
+                          href={`/${item?.image?.url || "/images/broken/broken.png"}`}
+                          target="_blank"
+                        >
                           <div className="h-20 w-30 text-base font-medium text-gray-900">
                             <Image
-                              src={item?.image?.url as string}
+                              src={`${item?.image?.url || "/images/broken/broken.png"}`}
                               alt={item?.title}
                               width={1080}
                               height={720}
@@ -152,7 +181,7 @@ const PageTable: React.FC = () => {
                       colSpan={7}
                       className="px-6 py-8 text-center text-base text-gray-500"
                     >
-                      No packages found matching your search criteria.
+                      No Pages found matching your search criteria.
                     </td>
                   </tr>
                 )}
@@ -160,11 +189,11 @@ const PageTable: React.FC = () => {
             </table>
           </div>
           <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            itemsPerPage={meta?.itemsPerPage}
+            currentPage={meta?.currentPage}
+            totalPages={meta?.totalPages}
+            itemsPerPage={limit}
             totalItems={meta?.totalItems}
-            onPageChange={(page) => setCurrentPage(page)}
+            onPageChange={(page) => setPage(page)}
           />
         </div>
       </div>
