@@ -33,6 +33,14 @@ class TeamApi {
       throw error
     }
   }
+  async searchTeam(params: Params) {
+    try {
+      const res = await api.get(`/teams/search?keyword=${params?.search}&page=${params?.page}&limit=${params?.limit}`)
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
 
 }
 

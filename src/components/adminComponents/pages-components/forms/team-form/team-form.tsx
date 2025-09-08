@@ -334,7 +334,7 @@ const TeamForm = () => {
           </Col>
 
           {/* STATUS */}
-          <Col span={4}>
+          <Col span={8}>
             <Form.Item
               label="Status"
               name="status"

@@ -19,6 +19,19 @@ export const fetchTeams = createAsyncThunk<
     return rejectWithValue(err.message);
   }
 });
+// search
+export const searchTeam = createAsyncThunk<
+  { items: TeamItem[]; meta: Meta },
+  { params?: Params }
+>("teams/searchTeams", async ({ params }, { rejectWithValue }) => {
+  try {
+    const res = await teamsApi.searchTeam(params as Params);
+    console.log(res, "teams")
+    return res;
+  } catch (err: any) {
+    return rejectWithValue(err.message);
+  }
+});
 
 //create team
 export const createTeam = createAsyncThunk<
@@ -73,6 +86,21 @@ const teamSlice = createSlice({
         state.loading = false;
       })
       .addCase(fetchTeams.rejected, (state, action) => {
+        state.error = action.payload as any
+        state.loading = false;
+      });
+    //SEARCH
+    builder
+      .addCase(searchTeam.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(searchTeam.fulfilled, (state, action) => {
+        state.items = action.payload.items
+        state.meta = action.payload.meta
+        state.loading = false;
+      })
+      .addCase(searchTeam.rejected, (state, action) => {
         state.error = action.payload as any
         state.loading = false;
       });

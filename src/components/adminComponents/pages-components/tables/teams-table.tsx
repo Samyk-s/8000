@@ -17,7 +17,7 @@ import Loader from "../loader/loader";
 import { message } from "antd";
 import { TeamCatgoryItem, TeamItem } from "@/types/teams";
 import TeamTabs from "../../tabs/team-tab";
-import { fetchTeams } from "@/redux-store/slices/teamSlice";
+import { fetchTeams, searchTeam } from "@/redux-store/slices/teamSlice";
 
 const TeamsTable: React.FC = () => {
   const { items, loading, error, meta } = useSelector(
@@ -53,7 +53,7 @@ const TeamsTable: React.FC = () => {
     // Set new timeout
     debounceRef.current = setTimeout(async () => {
       await dispatch(
-        searchPages({
+        searchTeam({
           params: { limit, page, search: value },
         }),
       );
