@@ -21,7 +21,7 @@ import { PageItem } from "@/types/page";
 import Loader from "../loader/loader";
 import { message } from "antd";
 
-const PageTable: React.FC = () => {
+const BlogTable: React.FC = () => {
   const { items, loading, error, meta } = useSelector(
     (state: RootState) => state?.pages,
   );
@@ -202,4 +202,4 @@ const PageTable: React.FC = () => {
   );
 };
 
-export default PageTable;
+export default BlogTable;

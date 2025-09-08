@@ -40,19 +40,6 @@ const PackageTable: React.FC = () => {
     dispatch(fetchPackages({ page: 1, limit: 10 }));
   }, [dispatch]);
 
-  const handleEdit = (id: number): void => {
-    router.push(`/admin/packagebooking/editbooking?id=${id}`);
-  };
-
-  const handleDelete = async (id: number): Promise<void> => {
-    if (!window.confirm("Are you sure you want to delete this booking?"))
-      return;
-    try {
-    } catch (error) {
-      alert(error instanceof Error ? error.message : "Error deleting booking");
-    }
-  };
-
   function handleSearchPackage(value: string | number) {
     setValue(Number(value));
   }
