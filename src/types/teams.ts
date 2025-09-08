@@ -11,7 +11,11 @@ export interface TeamCatgoryItem {
   updatedAt: string;
 }
 
-
+export interface TeamCategoryPayload {
+  name: string;
+  description: string;
+  order: number;
+}
 
 
 // teams 

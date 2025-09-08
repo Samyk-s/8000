@@ -1,9 +1,13 @@
 import teamsApi from "@/lib/api/teamsApi";
 import { Meta } from "@/types/booking";
-import { TeamCatgoryItem } from "@/types/teams";
+import { TeamCategoryPayload, TeamCatgoryItem } from "@/types/teams";
 import { Params } from "@/types/utils-type";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { message } from "antd";
+interface UpdateTeamPayload {
+  id: number;
+  values: TeamCategoryPayload;
+}
 
 
 // get team category 
@@ -13,7 +17,7 @@ export const fetchTeamsCategories = createAsyncThunk<
   { params?: Params }
 >("teamCategoreis/fetchAllTeamsCategories", async ({ params }, { rejectWithValue }) => {
   try {
-    const res = await teamsApi.getBlogCategory(params as Params);
+    const res = await teamsApi.getTeamCategory(params as Params);
     // console.log(res, "teams")
     return res;
   } catch (err: any) {
@@ -33,8 +37,7 @@ export const searchTeamCategory = createAsyncThunk<
     return rejectWithValue(err.message);
   }
 });
-//toggle team
-
+//toggle team category
 export const toggleTeamCategory = createAsyncThunk<
   TeamCatgoryItem, // return type
   number,   // argument type
@@ -56,12 +59,84 @@ export const toggleTeamCategory = createAsyncThunk<
 );
 
 
+// Delete team category
+export const deleteTeamCategory = createAsyncThunk<
+  number,
+  number,
+  { rejectValue: string }
+>(
+  "teamsCategories/deleteTeamCategory",
+  async (id, { rejectWithValue }) => {
+    try {
+      const res = await teamsApi.deleteTeamCategory(id);
+      message.success(res?.message);
+      return id; // return deleted team's ID
+    } catch (err: any) {
+      message.error(err?.message);
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
+// get team by id
+export const getTeamCategory = createAsyncThunk<
+  TeamCatgoryItem,   // return type
+  number,     // argument type
+  { rejectValue: string }
+>(
+  "teamsCategories/getTeamCategory",
+  async (id, { rejectWithValue }) => {
+    try {
+      const res = await teamsApi.getTeamCategoryId(id);
+      console.log("res", res)
+      return res; // return the fetched TeamItem
+    } catch (err: any) {
+      message.error(err?.message);
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
+//create team
+export const createTeamCategory = createAsyncThunk<
+  { items: TeamCatgoryItem[]; meta: Meta },
+  { values: TeamCategoryPayload }
+>("teamsCategories/createTeamsCategory", async ({ values }, { rejectWithValue }) => {
+  try {
+    const res = await teamsApi.createTeamCategory(values);
+    console.log(res, "teams")
+    return res;
+  } catch (err: any) {
+    return rejectWithValue(err.message);
+  }
+});
+
+//update
+export const updateTeamCategory = createAsyncThunk<
+  TeamCatgoryItem,             // return type
+  UpdateTeamPayload,    // argument type
+  { rejectValue: string }
+>(
+  "teamsCategories/updateTeamCategory",
+  async ({ id, values }, { rejectWithValue }) => {
+    try {
+      const res = await teamsApi.updateTeamCategory(id, values);
+      message.success(res?.message || "Team updated successfully!");
+      return res.data; // return updated TeamItem
+    } catch (err: any) {
+      message.error(err?.message || "Failed to update team");
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
 
 interface TeamCategoryState {
   items: TeamCatgoryItem[],
   meta: Meta;
   error: string | null;
   loading: boolean;
+  teamCategory: TeamCatgoryItem | null
 }
 
 const initialState: TeamCategoryState = {
@@ -75,6 +150,7 @@ const initialState: TeamCategoryState = {
   },
   error: null,
   loading: false,
+  teamCategory: null
 };
 
 const teamCategoriesSlice = createSlice({
@@ -128,6 +204,78 @@ const teamCategoriesSlice = createSlice({
         state.loading = false;
       })
       .addCase(toggleTeamCategory.rejected, (state, action) => {
+        state.error = action.payload as string;
+        state.loading = false;
+      });
+    // delete
+    builder
+      .addCase(deleteTeamCategory.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteTeamCategory.fulfilled, (state, action: PayloadAction<number>) => {
+        // Remove the deleted team from state.items
+        state.items = state.items.filter(item => item.id !== action.payload);
+        state.loading = false;
+      })
+      .addCase(deleteTeamCategory.rejected, (state, action) => {
+        state.error = action.payload as string;
+        state.loading = false;
+      });
+    // get team by id
+    builder
+      .addCase(getTeamCategory.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getTeamCategory.fulfilled, (state, action: PayloadAction<TeamCatgoryItem>) => {
+        // Remove the deleted team from state.items
+        state.teamCategory = action.payload
+        state.loading = false;
+      })
+      .addCase(getTeamCategory.rejected, (state, action) => {
+        state.error = action.payload as string;
+        state.loading = false;
+      });
+    // update team category
+    builder
+      .addCase(updateTeamCategory.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateTeamCategory.fulfilled, (state, action: PayloadAction<TeamCatgoryItem>) => {
+        const updatedTeam = action.payload;
+        // Update the team in the items array if it exists
+        const index = state.items.findIndex(item => item.id === updatedTeam.id);
+        if (index !== -1) {
+          state.items[index] = updatedTeam;
+        }
+        // Also update the single team object (useful for edit form)
+        state.teamCategory = updatedTeam;
+        state.loading = false;
+      })
+      .addCase(updateTeamCategory.rejected, (state, action) => {
+        state.error = action.payload as string;
+        state.loading = false;
+      });
+    // update
+    builder
+      .addCase(createTeamCategory.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createTeamCategory.fulfilled, (state, action: PayloadAction<any>) => {
+        const updatedTeam = action.payload;
+        // Update the team in the items array if it exists
+        const index = state.items.findIndex(item => item.id === updatedTeam.id);
+        if (index !== -1) {
+          state.items[index] = updatedTeam;
+        }
+        // Also update the single team object (useful for edit form)
+        state.teamCategory = updatedTeam;
+        state.loading = false;
+      })
+      .addCase(createTeamCategory.rejected, (state, action) => {
         state.error = action.payload as string;
         state.loading = false;
       });

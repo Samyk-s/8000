@@ -1,10 +1,10 @@
 import { Params } from "@/types/utils-type";
 import { api } from "../axios-config/api";
-import { TeamPayload } from "@/types/teams";
+import { TeamCategoryPayload, TeamPayload } from "@/types/teams";
 
 class TeamApi {
-  // get blog category
-  async getBlogCategory(params: Params) {
+  // get  team category
+  async getTeamCategory(params: Params) {
     try {
       const res = await api.get(`/teams-categories?page=${params?.page}&limit=${params?.limit}`);
       return res.data
@@ -12,7 +12,16 @@ class TeamApi {
       throw error
     }
   }
-  //search blog category
+  // get  team category by id
+  async getTeamCategoryId(id: number) {
+    try {
+      const res = await api.get(`/teams-categories/by-id/${id}`);
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
+  //search team category
   async searchTeamCategory(params: Params) {
     try {
       const res = await api.get(`/teams-categories/search?keyword=${params?.search}&page=${params?.page}&limit=${params?.limit}`);
@@ -30,7 +39,34 @@ class TeamApi {
       throw error
     }
   }
-
+  //toggle blog category
+  async deleteTeamCategory(id: number) {
+    try {
+      const res = await api.delete(`/teams-categories/${id}`);
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
+  //update team
+  async updateTeamCategory(id: number, values: TeamCategoryPayload) {
+    try {
+      const res = await api.patch(`/teams-categories/${id}`, values)
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
+  //create category
+  async createTeamCategory(data: TeamCategoryPayload) {
+    console.log(data, "dsfd")
+    try {
+      const res = await api.post(`/teams-categories`, data)
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
 
 
   // teams
@@ -91,7 +127,7 @@ class TeamApi {
   //update team
   async updateTeam(id: number, values: TeamPayload) {
     try {
-      const res = await api.patch(`/teams/${id}`)
+      const res = await api.patch(`/teams/${id}`, values)
       return res.data
     } catch (error) {
       throw error

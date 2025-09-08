@@ -8,12 +8,13 @@ import Pagination from "../../pagination/pagination";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux-store/store/store";
 import ToggleButton from "../../toggle-button/toggle-button";
-import { PlusIcon } from "@/assets/icons";
+import { PlusIcon, TrashIcon } from "@/assets/icons";
 import { v4 as uuidv4 } from "uuid";
 import Loader from "../loader/loader";
-import { message } from "antd";
+import { message, Popconfirm } from "antd";
 import { TeamCatgoryItem } from "@/types/teams";
 import {
+  deleteTeamCategory,
   fetchTeamsCategories,
   searchTeamCategory,
   toggleTeamCategory,
@@ -74,7 +75,7 @@ const TeamCategoryTable: React.FC = () => {
             <div className="flex justify-center md:justify-between">
               <TeamTabs />
               <Link
-                href={"/admin/pages/create-page"}
+                href={"/admin/teams/categories/create"}
                 className="flex w-fit items-center gap-1 rounded-md bg-black px-2 py-1 text-white dark:bg-white dark:text-black"
               >
                 <PlusIcon />
@@ -133,13 +134,30 @@ const TeamCategoryTable: React.FC = () => {
                       </td>
 
                       <td className="whitespace-nowrap px-6 py-4 text-base font-medium dark:text-white">
-                        <div className="flex space-x-2">
+                        <div className="flex items-center space-x-2">
                           <Link
-                            href={`/admin/pages/${item?.id}`}
+                            href={`/admin/teams/categories/${item?.id}`}
                             title="Edit Category"
                           >
                             <EditIcon />
                           </Link>
+                          <Popconfirm
+                            title="Delete the Category"
+                            description="Are you sure to delete this category?"
+                            onCancel={() => message.error("Cancelled")}
+                            onConfirm={() =>
+                              dispatch(deleteTeamCategory(Number(item?.id)))
+                            }
+                            okText="Yes"
+                            cancelText="No"
+                          >
+                            <button
+                              className="rounded p-1 text-red-600 hover:bg-red-50 hover:text-red-900"
+                              title="Delete Team"
+                            >
+                              <TrashIcon />
+                            </button>
+                          </Popconfirm>
                           <ToggleButton
                             onChange={() => {
                               dispatch(toggleTeamCategory(item?.id));
