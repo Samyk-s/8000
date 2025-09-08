@@ -9,15 +9,16 @@ import Pagination from "../../pagination/pagination";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux-store/store/store";
 import ToggleButton from "../../toggle-button/toggle-button";
-import { PlusIcon } from "@/assets/icons";
+import { PlusIcon, TrashIcon } from "@/assets/icons";
 import { v4 as uuidv4 } from "uuid";
 
 import { searchPages, togglePageStatus } from "@/redux-store/slices/pageSlice";
 import Loader from "../loader/loader";
-import { message } from "antd";
+import { message, Popconfirm } from "antd";
 import { TeamCatgoryItem, TeamItem } from "@/types/teams";
 import TeamTabs from "../../tabs/team-tab";
 import {
+  deleteTeam,
   fetchTeams,
   searchTeam,
   toggleTeam,
@@ -150,7 +151,7 @@ const TeamsTable: React.FC = () => {
                       </td>
 
                       <td className="whitespace-nowrap px-6 py-4 text-base font-medium dark:text-white">
-                        <div className="flex space-x-2">
+                        <div className="flex items-center space-x-2">
                           <Link
                             href={`/admin/pages/${item?.id}/seo`}
                             title="SEO"
@@ -164,6 +165,23 @@ const TeamsTable: React.FC = () => {
                           >
                             <EditIcon />
                           </Link>
+                          <Popconfirm
+                            title="Delete the Member"
+                            description="Are you sure to delete this member?"
+                            onCancel={() => message.error("Cancelled")}
+                            onConfirm={() =>
+                              dispatch(deleteTeam(Number(item?.id)))
+                            }
+                            okText="Yes"
+                            cancelText="No"
+                          >
+                            <button
+                              className="rounded p-1 text-red-600 hover:bg-red-50 hover:text-red-900"
+                              title="Delete Itinerary"
+                            >
+                              <TrashIcon />
+                            </button>
+                          </Popconfirm>
                           <ToggleButton
                             onChange={() => {
                               dispatch(toggleTeam(item?.id));

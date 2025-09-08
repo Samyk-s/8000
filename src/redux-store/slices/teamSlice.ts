@@ -69,6 +69,25 @@ export const toggleTeam = createAsyncThunk<
   }
 );
 
+// Delete team
+export const deleteTeam = createAsyncThunk<
+  number,
+  number,
+  { rejectValue: string }
+>(
+  "teams/deleteTeam",
+  async (id, { rejectWithValue }) => {
+    try {
+      const res = await teamsApi.deleteTeam(id);
+      message.success(res?.message);
+      return id; // return deleted team's ID
+    } catch (err: any) {
+      message.error(err?.message);
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
 
 interface TeamState {
   items: TeamItem[],
@@ -156,6 +175,21 @@ const teamSlice = createSlice({
         state.loading = false;
       })
       .addCase(toggleTeam.rejected, (state, action) => {
+        state.error = action.payload as string;
+        state.loading = false;
+      });
+    // delete
+    builder
+      .addCase(deleteTeam.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteTeam.fulfilled, (state, action: PayloadAction<number>) => {
+        // Remove the deleted team from state.items
+        state.items = state.items.filter(item => item.id !== action.payload);
+        state.loading = false;
+      })
+      .addCase(deleteTeam.rejected, (state, action) => {
         state.error = action.payload as string;
         state.loading = false;
       });

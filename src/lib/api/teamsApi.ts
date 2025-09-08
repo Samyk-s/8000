@@ -52,6 +52,15 @@ class TeamApi {
       throw error
     }
   }
+  //Delete
+  async deleteTeam(id: number) {
+    try {
+      const res = await api.delete(`/teams/${id}`)
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
 
 }
 
