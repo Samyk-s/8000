@@ -35,7 +35,7 @@ class PackageApi {
   }
   async searchPackages(param: Params) {
     try {
-      const response = await api.patch(`/packages?keyword=${param?.search}&page=${param?.page}&limit=${param?.limit}`)
+      const response = await api.get(`/packages/search?keyword=${param?.search}&page=${param?.page}&limit=${param?.limit}`)
       return response.data
     } catch (error) {
       console.error(error)

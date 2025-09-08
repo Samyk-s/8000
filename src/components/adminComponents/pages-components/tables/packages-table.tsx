@@ -18,13 +18,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux-store/store/store";
 import {
   fetchPackages,
+  searchPackages,
   togglePackageStatus,
 } from "@/redux-store/slices/packageSlice";
 import ToggleButton from "../../toggle-button/toggle-button";
 import { PlusIcon } from "@/assets/icons";
 import Loader from "../loader/loader";
 import { message } from "antd";
-import { searchPages } from "@/redux-store/slices/pageSlice";
 
 const PackageTable: React.FC = () => {
   const [limit, setLimit] = useState(10);
@@ -38,7 +38,7 @@ const PackageTable: React.FC = () => {
 
   // call api for getting packages
   useEffect(() => {
-    dispatch(fetchPackages({ page: 1, limit: 10 }));
+    dispatch(fetchPackages({ page, limit }));
   }, [dispatch]);
 
   // search itinerary
@@ -54,11 +54,15 @@ const PackageTable: React.FC = () => {
     // Set new timeout
     debounceRef.current = setTimeout(() => {
       dispatch(
-        searchPages({
-          params: { limit, page, search: value },
+        searchPackages({
+          params: {
+            limit,
+            page,
+            search,
+          },
         }),
       );
-    }, 300); // 300ms debounce
+    }, 300);
   };
 
   if (loading) {
@@ -151,7 +155,7 @@ const PackageTable: React.FC = () => {
                         {item?.title}
                       </td>
                       <td className="whitespace-nowrap px-6 py-4">
-                        <div className="text-base font-medium text-gray-900">
+                        <div className="text-base text-gray-600">
                           {item?.altitude}
                         </div>
                       </td>

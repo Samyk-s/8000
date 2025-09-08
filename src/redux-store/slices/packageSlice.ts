@@ -23,8 +23,8 @@ export const fetchPackages = createAsyncThunk<
 // Search packages
 export const searchPackages = createAsyncThunk<
   { items: PackageItem[]; meta: Meta },
-  Params
->("packages/searchPackages", async (params, { rejectWithValue }) => {
+  { params: Params }
+>("packages/searchPackages", async ({ params }, { rejectWithValue }) => {
   try {
     const res = await packageApi.searchPackages(params);
     return res;
