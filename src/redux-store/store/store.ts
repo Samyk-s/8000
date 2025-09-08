@@ -10,6 +10,8 @@ import fileReducer from "../slices/fileSlice"
 import packageReviewReducer from "../slices/reviewSlice"
 import inquiryReducer from "../slices/inquirySlice"
 import newsLetterReducer from "../slices/newsLetterSlice"
+import teamsCategoryReducer from "../slices/teamCategorySlice"
+import teamReducer from "../slices/teamSlice"
 
 const rootReducer = combineReducers({
   packges: packageReducer,
@@ -19,7 +21,9 @@ const rootReducer = combineReducers({
   files: fileReducer,
   packgeReviews: packageReviewReducer,
   inquiries: inquiryReducer,
-  newsLetter: newsLetterReducer
+  newsLetter: newsLetterReducer,
+  teamsCategory: teamsCategoryReducer,
+  teams: teamReducer
 });
 
 const persistConfig = {
