@@ -10,6 +10,7 @@ import inquiryReducer from "../slices/inquirySlice";
 import newsLetterReducer from "../slices/newsLetterSlice";
 import teamsCategoryReducer from "../slices/teamCategorySlice";
 import teamReducer from "../slices/teamSlice";
+import testimonialReducer from "../slices/testimonialSlice"
 
 const rootReducer = combineReducers({
   packges: packageReducer,
@@ -22,6 +23,7 @@ const rootReducer = combineReducers({
   newsLetter: newsLetterReducer,
   teamsCategory: teamsCategoryReducer,
   teams: teamReducer,
+  testimonials: testimonialReducer
 });
 
 export const store = configureStore({
