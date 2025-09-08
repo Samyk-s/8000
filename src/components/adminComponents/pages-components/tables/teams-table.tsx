@@ -1,6 +1,11 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import { EditIcon, GalleryIcon, SeoIcon } from "@/components/icons/icnos";
+import {
+  EditIcon,
+  GalleryIcon,
+  SeoIcon,
+  ViewIcon,
+} from "@/components/icons/icnos";
 import Image from "next/image";
 import Link from "next/link";
 import Entry from "../../entry/entry";
@@ -115,6 +120,9 @@ const TeamsTable: React.FC = () => {
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
                     Name
                   </th>
+                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                    Post
+                  </th>
 
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
                     Actions
@@ -149,6 +157,9 @@ const TeamsTable: React.FC = () => {
                       <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900 dark:text-white">
                         {item?.name}
                       </td>
+                      <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900 dark:text-white">
+                        {item?.post}
+                      </td>
 
                       <td className="whitespace-nowrap px-6 py-4 text-base font-medium dark:text-white">
                         <div className="flex items-center space-x-2">
@@ -156,11 +167,11 @@ const TeamsTable: React.FC = () => {
                             href={`/admin/pages/${item?.id}/seo`}
                             title="SEO"
                           >
-                            <SeoIcon />
+                            <ViewIcon />
                           </Link>
 
                           <Link
-                            href={`/admin/pages/${item?.id}`}
+                            href={`/admin/teams/${item?.id}`}
                             title="Edit Page"
                           >
                             <EditIcon />

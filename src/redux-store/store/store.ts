@@ -1,17 +1,15 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
-import storage from "redux-persist/lib/storage";
-import { persistReducer, persistStore } from "redux-persist";
-import packageReducer from "../slices/packageSlice"
-import pageReducer from "../slices/pageSlice"
-import itineraryReducer from "../slices/itinerarySlice"
-import departureReducer from "../slices/departureSlice"
-import fileReducer from "../slices/fileSlice"
-import packageReviewReducer from "../slices/reviewSlice"
-import inquiryReducer from "../slices/inquirySlice"
-import newsLetterReducer from "../slices/newsLetterSlice"
-import teamsCategoryReducer from "../slices/teamCategorySlice"
-import teamReducer from "../slices/teamSlice"
+import packageReducer from "../slices/packageSlice";
+import pageReducer from "../slices/pageSlice";
+import itineraryReducer from "../slices/itinerarySlice";
+import departureReducer from "../slices/departureSlice";
+import fileReducer from "../slices/fileSlice";
+import packageReviewReducer from "../slices/reviewSlice";
+import inquiryReducer from "../slices/inquirySlice";
+import newsLetterReducer from "../slices/newsLetterSlice";
+import teamsCategoryReducer from "../slices/teamCategorySlice";
+import teamReducer from "../slices/teamSlice";
 
 const rootReducer = combineReducers({
   packges: packageReducer,
@@ -23,26 +21,16 @@ const rootReducer = combineReducers({
   inquiries: inquiryReducer,
   newsLetter: newsLetterReducer,
   teamsCategory: teamsCategoryReducer,
-  teams: teamReducer
+  teams: teamReducer,
 });
-
-const persistConfig = {
-  key: "root",
-  storage,
-  whitelist: ["auth", "category"],
-};
-
-const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
-  reducer: persistedReducer,
+  reducer: rootReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: false, // needed for redux-persist
+      serializableCheck: false,
     }),
 });
-
-export const persistor = persistStore(store);
 
 // Types
 export type RootState = ReturnType<typeof store.getState>;

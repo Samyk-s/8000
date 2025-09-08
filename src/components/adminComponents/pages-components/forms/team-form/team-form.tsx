@@ -15,33 +15,66 @@ import { UploadOutlined } from "@ant-design/icons";
 import dynamic from "next/dynamic";
 import resourceApi from "@/lib/api/resourceApi";
 import { MediaFile } from "@/types/utils-type";
-import Loader from "../../loader/loader";
-import { PageTemplate } from "@/types/page-template";
+import { TeamItem, TeamPayload } from "@/types/teams";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux-store/store/store";
-import { createTeam } from "@/redux-store/slices/teamSlice";
-import { TeamCatgoryItem, TeamPayload } from "@/types/teams";
+import { createTeam, updateTeam } from "@/redux-store/slices/teamSlice";
 import { fetchTeamsCategories } from "@/redux-store/slices/teamCategorySlice";
+import { useRouter } from "next/navigation";
 
 const TextEditor = dynamic(() => import("../../text-editor/text-editor"), {
   ssr: false,
 });
 
-const TeamForm = () => {
-  const [form] = Form.useForm();
-  const [loading, setLoading] = useState(false);
+interface TeamFormProps {
+  team?: TeamItem;
+}
 
-  // Separate states for each file
+const TeamForm: React.FC<TeamFormProps> = ({ team }) => {
+  const [form] = Form.useForm();
+  const [uploading, setUploading] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
   const [image, setImage] = useState<MediaFile | null>(null);
   const [coverImage, setCoverImage] = useState<MediaFile | null>(null);
   const [bioData, setBioData] = useState<MediaFile | null>(null);
 
-  const [uploading, setUploading] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
-  const { items, meta } = useSelector(
+  const router = useRouter();
+
+  const { items: categories } = useSelector(
     (state: RootState) => state?.teamsCategory,
   );
-  // ================= Handle file upload =================
+
+  useEffect(() => {
+    setIsClient(true); // ensure client rendering
+    dispatch(fetchTeamsCategories({}));
+
+    if (team) {
+      // Set initial form values for edit
+      form.setFieldsValue({
+        name: team?.name,
+        post: team?.post,
+        page_id: team?.category?.id,
+        email: team?.email,
+        phoneNo: team?.phone_no,
+        fbLink: team?.fblink,
+        instagramLink: team?.instagramlink,
+        twitter: team?.twitter,
+        linkedIn: team?.linkedIn,
+        youtube: team?.youtube,
+        order: team?.order,
+        status: team?.status === 1,
+        description: team?.description,
+      });
+
+      // Initialize Upload state with existing files
+      if (team?.image) setImage(team?.image);
+      if (team?.cover_image) setCoverImage(team?.cover_image);
+      if (team?.bio_data) setBioData(team?.bio_data);
+    }
+  }, [dispatch, team, form]);
+
   const handleFileUpload = async (
     rawFile: File,
     setter: (file: MediaFile) => void,
@@ -68,298 +101,254 @@ const TeamForm = () => {
     return false; // prevent auto upload
   };
 
-  // ================= Submit =================
-  const onFinish = async (values: any) => {
+  const onFinish = (values: any) => {
     const payload: TeamPayload = {
-      name: values.name,
-      categoryId: values.page_id,
-      post: values.post,
-      image: image as MediaFile,
-      coverImage: coverImage as MediaFile,
-      bioData: bioData as MediaFile,
-      description: values.description,
-      email: values.email,
-      phoneNo: values.phoneNo,
-      fbLink: values.fbLink,
-      instagramLink: values.instagramLink,
-      twitter: values.twitter,
-      linkedIn: values.linkedIn,
-      youtube: values.youtube,
-      order: Number(values.order),
-      status: values.status ? 1 : 0,
+      name: values?.name,
+      categoryId: values?.page_id,
+      post: values?.post,
+      image: image || (team?.image as MediaFile),
+      coverImage: coverImage || (team?.cover_image as MediaFile),
+      bioData: bioData || (team?.bio_data as MediaFile),
+      description: values?.description,
+      email: values?.email,
+      phoneNo: values?.phoneNo,
+      fbLink: values?.fbLink,
+      instagramLink: values?.instagramLink,
+      twitter: values?.twitter,
+      linkedIn: values?.linkedIn,
+      youtube: values?.youtube,
+      order: Number(values?.order) || 0,
+      status: values?.status ? 1 : 0,
     };
 
-    dispatch(createTeam({ values: payload }));
+    if (team?.id) {
+      dispatch(updateTeam({ id: team?.id, values: payload }));
+      router.back();
+    } else {
+      dispatch(createTeam({ values: payload }));
+      router.back();
+    }
   };
 
-  useEffect(() => {
-    dispatch(fetchTeamsCategories({}));
-  }, [dispatch]);
-
-  if (loading) return <Loader />;
+  if (!isClient) return null;
 
   return (
-    <div className="h-full dark:bg-[#020D1A]">
-      <Form
-        form={form}
-        name="team-form"
-        autoComplete="off"
-        layout="vertical"
-        onFinish={onFinish}
-      >
-        <Row gutter={16}>
-          {/* NAME */}
-          <Col xs={24} md={12}>
-            <Form.Item
-              label={
-                <span className="uppercase dark:text-white">Full Name</span>
+    <Form
+      form={form}
+      name="team-form"
+      autoComplete="off"
+      layout="vertical"
+      onFinish={onFinish}
+    >
+      <Row gutter={16}>
+        {/* NAME */}
+        <Col xs={24} md={12}>
+          <Form.Item
+            label="Full Name"
+            name="name"
+            rules={[{ required: true, message: "Fullname is required" }]}
+          >
+            <Input />
+          </Form.Item>
+        </Col>
+
+        {/* POST */}
+        <Col xs={24} md={12}>
+          <Form.Item
+            label="Post"
+            name="post"
+            rules={[{ required: true, message: "Post is required" }]}
+          >
+            <Input />
+          </Form.Item>
+        </Col>
+
+        {/* EMAIL */}
+        <Col xs={24} md={12}>
+          <Form.Item
+            label="Email"
+            name="email"
+            rules={[{ required: true, message: "Email is required" }]}
+          >
+            <Input type="email" />
+          </Form.Item>
+        </Col>
+
+        {/* PHONE */}
+        <Col xs={24} md={12}>
+          <Form.Item
+            label="Phone"
+            name="phoneNo"
+            rules={[{ required: true, message: "Phone is required" }]}
+          >
+            <Input />
+          </Form.Item>
+        </Col>
+
+        {/* SOCIAL LINKS */}
+        <Col xs={24} md={12}>
+          <Form.Item label="Facebook" name="fbLink">
+            <Input />
+          </Form.Item>
+        </Col>
+        <Col xs={24} md={12}>
+          <Form.Item label="Instagram" name="instagramLink">
+            <Input />
+          </Form.Item>
+        </Col>
+        <Col xs={24} md={12}>
+          <Form.Item label="Twitter" name="twitter">
+            <Input />
+          </Form.Item>
+        </Col>
+        <Col xs={24} md={12}>
+          <Form.Item label="LinkedIn" name="linkedIn">
+            <Input />
+          </Form.Item>
+        </Col>
+        <Col xs={24} md={12}>
+          <Form.Item label="YouTube" name="youtube">
+            <Input />
+          </Form.Item>
+        </Col>
+        {/* CATEGORY */}
+        <Col xs={24} md={12}>
+          <Form.Item
+            label="Category"
+            name="page_id"
+            rules={[{ required: true, message: "Category is required" }]}
+          >
+            <Select placeholder="Select category" allowClear>
+              {categories?.map((item) => (
+                <Select.Option key={item?.id} value={item?.id}>
+                  {item?.name}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Col>
+        {/* IMAGE */}
+        <Col xs={24} md={12} lg={8}>
+          <Form.Item label="Image" name="image">
+            <Upload
+              beforeUpload={(file) => handleFileUpload(file, setImage)}
+              listType="picture"
+              accept=".jpg,.jpeg,.png,.webp"
+              maxCount={1}
+              fileList={
+                image
+                  ? [
+                      {
+                        uid: image?.uid,
+                        name: image?.name,
+                        url: image?.url,
+                      },
+                    ]
+                  : []
               }
-              name="name"
-              rules={[{ required: true, message: "Fullname is required" }]}
+              onRemove={() => setImage(null)}
             >
-              <Input className="bg-transparent" />
-            </Form.Item>
-          </Col>
-          {/* POST */}
-          <Col xs={24} md={12}>
-            <Form.Item
-              label={<span className="uppercase dark:text-white">Post</span>}
-              name="post"
-              rules={[{ required: true, message: "Post is required" }]}
-            >
-              <Input className="bg-transparent" />
-            </Form.Item>
-          </Col>
-
-          {/* IMAGE */}
-          <Col xs={24} md={12} lg={8}>
-            <Form.Item
-              label={<span className="uppercase dark:text-white">Image</span>}
-              name="image"
-              rules={[{ required: true, message: "Image is required" }]}
-            >
-              <Upload
-                beforeUpload={(file) => handleFileUpload(file, setImage)}
-                listType="picture"
-                accept=".jpg,.jpeg,.png,.webp"
-                maxCount={1}
-                fileList={
-                  image
-                    ? [{ uid: image.uid, name: image.name, url: image.url }]
-                    : []
-                }
-              >
-                <Button
-                  className="bg-transparent dark:text-white"
-                  icon={<UploadOutlined />}
-                  loading={uploading}
-                >
-                  Upload Image
-                </Button>
-              </Upload>
-            </Form.Item>
-          </Col>
-
-          {/* COVER IMAGE */}
-          <Col xs={24} md={12} lg={8}>
-            <Form.Item
-              label={
-                <span className="uppercase dark:text-white">Cover Image</span>
-              }
-              name="coverImage"
-              rules={[{ required: true, message: "Cover image is required" }]}
-            >
-              <Upload
-                beforeUpload={(file) => handleFileUpload(file, setCoverImage)}
-                listType="picture"
-                accept=".jpg,.jpeg,.png,.webp"
-                maxCount={1}
-                fileList={
-                  coverImage
-                    ? [
-                        {
-                          uid: coverImage.uid,
-                          name: coverImage.name,
-                          url: coverImage.url,
-                        },
-                      ]
-                    : []
-                }
-              >
-                <Button
-                  className="bg-transparent dark:text-white"
-                  icon={<UploadOutlined />}
-                  loading={uploading}
-                >
-                  Upload Cover
-                </Button>
-              </Upload>
-            </Form.Item>
-          </Col>
-
-          {/* BIO DATA */}
-          <Col xs={24} md={12} lg={8}>
-            <Form.Item
-              label={
-                <span className="uppercase dark:text-white">Bio Data</span>
-              }
-              name="bioData"
-              rules={[{ required: true, message: "Bio data is required" }]}
-            >
-              <Upload
-                beforeUpload={(file) => {
-                  // reject video files
-                  if (file.type.startsWith("video/")) {
-                    message.error("Video files are not allowed");
-                    return Upload.LIST_IGNORE;
-                  }
-                  return handleFileUpload(file, setBioData);
-                }}
-                maxCount={1}
-                fileList={
-                  bioData
-                    ? [
-                        {
-                          uid: bioData.uid,
-                          name: bioData.name,
-                          url: bioData.url,
-                        },
-                      ]
-                    : []
-                }
-              >
-                <Button
-                  className="bg-transparent dark:text-white"
-                  icon={<UploadOutlined />}
-                  loading={uploading}
-                >
-                  Upload Bio Data
-                </Button>
-              </Upload>
-            </Form.Item>
-          </Col>
-
-          {/* CATEGORY */}
-          <Col xs={24} md={12} lg={8}>
-            <Form.Item
-              label={
-                <span className="uppercase dark:text-white">Category</span>
-              }
-              name="page_id"
-              rules={[{ required: true, message: "Template is required" }]}
-            >
-              <Select
-                placeholder="Select a template"
-                allowClear
-                className="!bg-transparent"
-              >
-                {items?.map((item: TeamCatgoryItem) => (
-                  <Select.Option value={item?.id}>{item?.name}</Select.Option>
-                ))}
-              </Select>
-            </Form.Item>
-          </Col>
-
-          {/* EMAIL */}
-          <Col xs={24} md={12} lg={8}>
-            <Form.Item
-              label={<span className="uppercase dark:text-white">Email</span>}
-              name="email"
-              rules={[{ required: true, message: "Email is required" }]}
-            >
-              <Input className="bg-transparent" type="email" />
-            </Form.Item>
-          </Col>
-
-          {/* PHONE */}
-          <Col xs={24} md={12} lg={8}>
-            <Form.Item
-              label={<span className="uppercase dark:text-white">Phone</span>}
-              name="phoneNo"
-              rules={[{ required: true, message: "Phone is required" }]}
-            >
-              <Input className="bg-transparent" />
-            </Form.Item>
-          </Col>
-
-          {/* SOCIAL LINKS */}
-          <Col xs={24} md={12} lg={8}>
-            <Form.Item label="Facebook" name="fbLink">
-              <Input className="bg-transparent" />
-            </Form.Item>
-          </Col>
-          <Col xs={24} md={12} lg={8}>
-            <Form.Item label="Instagram" name="instagramLink">
-              <Input className="bg-transparent" />
-            </Form.Item>
-          </Col>
-          <Col xs={24} md={12} lg={8}>
-            <Form.Item label="Twitter" name="twitter">
-              <Input className="bg-transparent" />
-            </Form.Item>
-          </Col>
-          <Col xs={24} md={12} lg={8}>
-            <Form.Item label="LinkedIn" name="linkedIn">
-              <Input className="bg-transparent" />
-            </Form.Item>
-          </Col>
-          <Col xs={24} md={12} lg={8}>
-            <Form.Item label="YouTube" name="youtube">
-              <Input className="bg-transparent" />
-            </Form.Item>
-          </Col>
-
-          {/* ORDER */}
-          <Col xs={24} md={12} lg={8}>
-            <Form.Item
-              label="Order"
-              name="order"
-              rules={[{ required: true, message: "Order is required" }]}
-            >
-              <Input className="bg-transparent" type="number" />
-            </Form.Item>
-          </Col>
-
-          {/* DESCRIPTION */}
-          <Col span={24}>
-            <Form.Item
-              label={
-                <span className="uppercase dark:text-white">Description</span>
-              }
-              name="description"
-              rules={[{ required: true, message: "Description is required" }]}
-            >
-              <TextEditor />
-            </Form.Item>
-          </Col>
-
-          {/* STATUS */}
-          <Col span={8}>
-            <Form.Item
-              label="Status"
-              name="status"
-              valuePropName="checked"
-              rules={[{ required: true, message: "Status is required" }]}
-            >
-              <Checkbox />
-            </Form.Item>
-          </Col>
-
-          {/* SUBMIT */}
-          <Col span={24}>
-            <Form.Item>
-              <Button
-                htmlType="submit"
-                type="default"
-                className="!bg-black !text-white hover:!bg-black hover:!text-white dark:!bg-white dark:!text-black"
-              >
-                SAVE
+              <Button icon={<UploadOutlined />} loading={uploading}>
+                Upload Image
               </Button>
-            </Form.Item>
-          </Col>
-        </Row>
-      </Form>
-    </div>
+            </Upload>
+          </Form.Item>
+        </Col>
+
+        {/* COVER IMAGE */}
+        <Col xs={24} md={12} lg={8}>
+          <Form.Item label="Cover Image" name="coverImage">
+            <Upload
+              beforeUpload={(file) => handleFileUpload(file, setCoverImage)}
+              listType="picture"
+              accept=".jpg,.jpeg,.png,.webp"
+              maxCount={1}
+              fileList={
+                coverImage
+                  ? [
+                      {
+                        uid: coverImage?.uid,
+                        name: coverImage?.name,
+                        url: coverImage?.url,
+                      },
+                    ]
+                  : []
+              }
+              onRemove={() => setCoverImage(null)}
+            >
+              <Button icon={<UploadOutlined />} loading={uploading}>
+                Upload Cover
+              </Button>
+            </Upload>
+          </Form.Item>
+        </Col>
+
+        {/* BIO DATA */}
+        <Col xs={24} md={12} lg={8}>
+          <Form.Item label="Bio Data" name="bioData">
+            <Upload
+              beforeUpload={(file) => handleFileUpload(file, setBioData)}
+              listType="picture"
+              maxCount={1}
+              fileList={
+                bioData
+                  ? [
+                      {
+                        uid: bioData?.uid,
+                        name: bioData?.name,
+                        url: bioData?.url,
+                      },
+                    ]
+                  : []
+              }
+              onRemove={() => setBioData(null)}
+            >
+              <Button icon={<UploadOutlined />} loading={uploading}>
+                Upload Bio Data
+              </Button>
+            </Upload>
+          </Form.Item>
+        </Col>
+
+        {/* ORDER */}
+        <Col xs={24} md={12} lg={8}>
+          <Form.Item
+            label="Order"
+            name="order"
+            rules={[{ required: true, message: "Order is required" }]}
+          >
+            <Input type="number" />
+          </Form.Item>
+        </Col>
+
+        {/* STATUS */}
+        <Col xs={24} md={12} lg={8}>
+          <Form.Item label="Status" name="status" valuePropName="checked">
+            <Checkbox />
+          </Form.Item>
+        </Col>
+
+        {/* DESCRIPTION */}
+        <Col span={24}>
+          <Form.Item label="Description" name="description">
+            <TextEditor />
+          </Form.Item>
+        </Col>
+
+        {/* SUBMIT */}
+        <Col span={24}>
+          <Form.Item>
+            <Button
+              type="primary"
+              className="bg-black text-white hover:!bg-black hover:!text-white"
+              htmlType="submit"
+            >
+              {team?.id ? "Update Team" : "Create Team"}
+            </Button>
+          </Form.Item>
+        </Col>
+      </Row>
+    </Form>
   );
 };
 

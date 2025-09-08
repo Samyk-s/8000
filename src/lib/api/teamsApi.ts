@@ -1,6 +1,7 @@
 import { Params } from "@/types/utils-type";
 import { api } from "../axios-config/api";
 import { TeamPayload } from "@/types/teams";
+import { message } from "antd";
 
 class TeamApi {
   // function get blog category
@@ -61,7 +62,24 @@ class TeamApi {
       throw error
     }
   }
-
+  // get by id
+  async getTeamId(id: number) {
+    try {
+      const res = await api.get(`/teams/${id}`)
+      return res
+    } catch (error) {
+      throw error
+    }
+  }
+  //update team
+  async updateTeam(id: number, values: TeamPayload) {
+    try {
+      const res = await api.patch(`/teams/${id}`)
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
 }
 
 export default new TeamApi()

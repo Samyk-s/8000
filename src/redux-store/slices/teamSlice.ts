@@ -6,6 +6,10 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { message } from "antd";
 
 
+interface UpdateTeamPayload {
+  id: number;
+  values: TeamPayload;
+}
 
 // get alll
 export const fetchTeams = createAsyncThunk<
@@ -87,13 +91,50 @@ export const deleteTeam = createAsyncThunk<
     }
   }
 );
+// get team by id
+export const getTeam = createAsyncThunk<
+  TeamItem,   // return type
+  number,     // argument type
+  { rejectValue: string }
+>(
+  "teams/getTeam",
+  async (id, { rejectWithValue }) => {
+    try {
+      const res = await teamsApi.getTeamId(id);
+      // console.log("res", res)
+      return res.data; // return the fetched TeamItem
+    } catch (err: any) {
+      message.error(err?.message);
+      return rejectWithValue(err.message);
+    }
+  }
+);
 
+//update
+export const updateTeam = createAsyncThunk<
+  TeamItem,             // return type
+  UpdateTeamPayload,    // argument type
+  { rejectValue: string }
+>(
+  "teams/updateTeam",
+  async ({ id, values }, { rejectWithValue }) => {
+    try {
+      const res = await teamsApi.updateTeam(id, values);
+      message.success(res?.message || "Team updated successfully!");
+      return res.data; // return updated TeamItem
+    } catch (err: any) {
+      message.error(err?.message || "Failed to update team");
+      return rejectWithValue(err.message);
+    }
+  }
+);
 
 interface TeamState {
   items: TeamItem[],
   meta: Meta;
   error: string | null;
   loading: boolean;
+  team: TeamItem | null
 }
 
 const initialState: TeamState = {
@@ -107,6 +148,7 @@ const initialState: TeamState = {
   },
   error: null,
   loading: false,
+  team: null
 };
 
 const teamSlice = createSlice({
@@ -190,6 +232,42 @@ const teamSlice = createSlice({
         state.loading = false;
       })
       .addCase(deleteTeam.rejected, (state, action) => {
+        state.error = action.payload as string;
+        state.loading = false;
+      });
+    // get team by id
+    builder
+      .addCase(getTeam.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getTeam.fulfilled, (state, action: PayloadAction<TeamItem>) => {
+        // Remove the deleted team from state.items
+        state.team = action.payload
+        state.loading = false;
+      })
+      .addCase(getTeam.rejected, (state, action) => {
+        state.error = action.payload as string;
+        state.loading = false;
+      });
+    // update team
+    builder
+      .addCase(updateTeam.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateTeam.fulfilled, (state, action: PayloadAction<TeamItem>) => {
+        const updatedTeam = action.payload;
+        // Update the team in the items array if it exists
+        const index = state.items.findIndex(item => item.id === updatedTeam.id);
+        if (index !== -1) {
+          state.items[index] = updatedTeam;
+        }
+        // Also update the single team object (useful for edit form)
+        state.team = updatedTeam;
+        state.loading = false;
+      })
+      .addCase(updateTeam.rejected, (state, action) => {
         state.error = action.payload as string;
         state.loading = false;
       });
