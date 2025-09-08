@@ -16,7 +16,7 @@ class TeamApi {
 
 
   // teams
-  //create teams fucntion
+  //get teams fucntion
   async getTeams(params: Params) {
     try {
       const res = await api.get(`/teams?page=${params?.page}&limit=${params?.limit}`);
@@ -25,6 +25,7 @@ class TeamApi {
       throw error
     }
   }
+  //create
   async createTeam(data: TeamPayload) {
     try {
       const res = await api.post(`/teams`, data)
@@ -33,9 +34,19 @@ class TeamApi {
       throw error
     }
   }
+  //search
   async searchTeam(params: Params) {
     try {
       const res = await api.get(`/teams/search?keyword=${params?.search}&page=${params?.page}&limit=${params?.limit}`)
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
+  //toggle
+  async toggleTeam(id: number) {
+    try {
+      const res = await api.patch(`/teams/${id}/toggle-status`)
       return res.data
     } catch (error) {
       throw error

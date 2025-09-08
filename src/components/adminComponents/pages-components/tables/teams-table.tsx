@@ -17,7 +17,11 @@ import Loader from "../loader/loader";
 import { message } from "antd";
 import { TeamCatgoryItem, TeamItem } from "@/types/teams";
 import TeamTabs from "../../tabs/team-tab";
-import { fetchTeams, searchTeam } from "@/redux-store/slices/teamSlice";
+import {
+  fetchTeams,
+  searchTeam,
+  toggleTeam,
+} from "@/redux-store/slices/teamSlice";
 
 const TeamsTable: React.FC = () => {
   const { items, loading, error, meta } = useSelector(
@@ -162,7 +166,7 @@ const TeamsTable: React.FC = () => {
                           </Link>
                           <ToggleButton
                             onChange={() => {
-                              dispatch(togglePageStatus(item?.id));
+                              dispatch(toggleTeam(item?.id));
                             }}
                             checked={item?.status === 1 ? true : false}
                             title={
