@@ -122,7 +122,7 @@ const PageTable: React.FC = () => {
                       </td>
                       <td className="whitespace-nowrap px-6 py-4">
                         <Link
-                          href={`/${item?.image?.url || "/images/broken/broken.png"}`}
+                          href={`${item?.image?.url || "/images/broken/broken.png"}`}
                           target="_blank"
                         >
                           <div className="h-20 w-30 text-base font-medium text-gray-900">
