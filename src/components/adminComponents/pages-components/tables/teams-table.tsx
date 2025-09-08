@@ -164,15 +164,15 @@ const TeamsTable: React.FC = () => {
                       <td className="whitespace-nowrap px-6 py-4 text-base font-medium dark:text-white">
                         <div className="flex items-center space-x-2">
                           <Link
-                            href={`/admin/pages/${item?.id}/seo`}
+                            href={`/admin/teams/${item?.id}/seo`}
                             title="SEO"
                           >
-                            <ViewIcon />
+                            <SeoIcon />
                           </Link>
 
                           <Link
                             href={`/admin/teams/${item?.id}`}
-                            title="Edit Page"
+                            title="Edit Team"
                           >
                             <EditIcon />
                           </Link>
@@ -188,7 +188,7 @@ const TeamsTable: React.FC = () => {
                           >
                             <button
                               className="rounded p-1 text-red-600 hover:bg-red-50 hover:text-red-900"
-                              title="Delete Itinerary"
+                              title="Delete Team"
                             >
                               <TrashIcon />
                             </button>
@@ -200,8 +200,8 @@ const TeamsTable: React.FC = () => {
                             checked={item?.status === 1 ? true : false}
                             title={
                               item?.status === 1
-                                ? "Deactive Package"
-                                : "Active Package"
+                                ? "Deactive Team"
+                                : "Active Team"
                             }
                           />
                         </div>
