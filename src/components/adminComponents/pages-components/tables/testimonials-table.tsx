@@ -15,7 +15,7 @@ import {
   toggleReviewStatus,
 } from "@/redux-store/slices/reviewSlice";
 import ReviewView from "../../view/review-view";
-import { ViewIcon } from "@/components/icons/icnos";
+import { EditIcon, ViewIcon } from "@/components/icons/icnos";
 import Link from "next/link";
 import {
   deleteTestimonial,
@@ -163,7 +163,12 @@ const TestimonialsTable: React.FC = () => {
                           <button onClick={() => handleOpenModal(item?.id)}>
                             <ViewIcon />
                           </button>
-
+                          <Link
+                            href={`/admin/testimonials/${item?.id}`}
+                            title="Edit Team"
+                          >
+                            <EditIcon />
+                          </Link>
                           <Popconfirm
                             title="Delete the Testimonial"
                             description="Are you sure to delete this testimonial?"

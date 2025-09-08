@@ -45,6 +45,23 @@ export const deleteTestimonial = createAsyncThunk<
   }
 });
 
+// Get testimonial by ID
+export const getTestimonialById = createAsyncThunk<
+  TestimonialItem, // returns the testimonial object
+  number           // testimonial ID to fetch
+>(
+  "testimonials/getTestimonialById",
+  async (id, { rejectWithValue }) => {
+    try {
+      const res = await testimonialApi.getTestimonialById(id); // call correct API
+      // console.log("res", res)
+      return res; // return testimonial object
+    } catch (err: any) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
 // Toggle testimonial status
 export const toggleTestimonialStatus = createAsyncThunk<
   TestimonialItem, // return updated testimonial
@@ -61,12 +78,31 @@ export const toggleTestimonialStatus = createAsyncThunk<
   }
 });
 
+// Update testimonial
+export const updateTestimonial = createAsyncThunk<
+  TestimonialItem, // returns updated testimonial
+  { id: number; values: TestimonialPayload } // payload: id + updated data
+>(
+  "testimonials/updateTestimonial",
+  async ({ id, values }, { rejectWithValue }) => {
+    try {
+      const res = await testimonialApi.updateTesimonial(id, values);
+      message.success("Testimonial updated successfully");
+      return res;
+    } catch (err: any) {
+      message.error(err.message || "Update failed");
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
 // ================= State Types =================
 interface TestimonialState {
   items: TestimonialItem[];
   meta: Meta;
   loading: boolean;
   error: string | null;
+  testimonial: TestimonialItem | null
 }
 
 // ================= Initial State =================
@@ -81,6 +117,7 @@ const initialState: TestimonialState = {
   },
   loading: false,
   error: null,
+  testimonial: null
 };
 
 // ================= Slice =================
@@ -152,6 +189,41 @@ const testimonialSlice = createSlice({
         if (index !== -1) state.items[index] = action.payload;
       })
       .addCase(toggleTestimonialStatus.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
+    // get by id
+    builder
+      .addCase(getTestimonialById.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getTestimonialById.fulfilled, (state, action: PayloadAction<TestimonialItem>) => {
+        state.loading = false;
+        state.testimonial = action.payload
+      })
+      .addCase(getTestimonialById.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
+    // ===== UPDATE TESTIMONIAL =====
+    builder
+      .addCase(updateTestimonial.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateTestimonial.fulfilled, (state, action: PayloadAction<TestimonialItem>) => {
+        state.loading = false;
+        const index = state.items.findIndex((item) => item.id === action.payload.id);
+        if (index !== -1) {
+          state.items[index] = action.payload; // update existing item in array
+        }
+        // Also update single testimonial if it's being edited
+        if (state.testimonial?.id === action.payload.id) {
+          state.testimonial = action.payload;
+        }
+      })
+      .addCase(updateTestimonial.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

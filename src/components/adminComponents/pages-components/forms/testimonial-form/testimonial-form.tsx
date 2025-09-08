@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Form, Input, Button, Row, Col, Upload, message } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import dynamic from "next/dynamic";
@@ -9,36 +9,56 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux-store/store/store";
 import { useRouter } from "next/navigation";
 import Loader from "../../loader/loader";
-import { createTestimonial } from "@/redux-store/slices/testimonialSlice";
-import { TestimonialPayload } from "@/types/testimonials";
+import {
+  createTestimonial,
+  updateTestimonial,
+} from "@/redux-store/slices/testimonialSlice";
+import { TestimonialPayload, TestimonialItem } from "@/types/testimonials";
 
 const TextEditor = dynamic(() => import("../../text-editor/text-editor"), {
   ssr: false,
 });
 
-const TestimonialForm = () => {
+interface TestimonialFormProps {
+  testimonial?: TestimonialItem;
+}
+
+const TestimonialForm: React.FC<TestimonialFormProps> = ({ testimonial }) => {
   const [form] = Form.useForm();
   const [uploading, setUploading] = useState(false);
-  const [image, setImage] = useState<MediaFile | null>(null);
+  const [image, setImage] = useState<MediaFile | null>(
+    testimonial?.image || null,
+  );
 
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
+  const { loading } = useSelector((state: RootState) => state.testimonials);
 
-  const { loading } = useSelector((state: RootState) => state?.testimonials);
+  // Pre-fill form on edit
+  useEffect(() => {
+    if (testimonial) {
+      form.setFieldsValue({
+        name: testimonial.name,
+        country: testimonial.country,
+        order: testimonial.order,
+        description: testimonial.description,
+        image: testimonial.image,
+      });
+      setImage(testimonial.image || null);
+    }
+  }, [testimonial, form]);
 
-  // ========== Upload Handler ==========
+  // Upload handler
   const handleFileUpload = async (
     rawFile: File,
     setter: (file: MediaFile) => void,
   ) => {
     const formData = new FormData();
     formData.append("file", rawFile);
-
     try {
       setUploading(true);
       const res = await resourceApi.createResource(formData);
       setUploading(false);
-
       if (res) {
         setter(res);
         message.success("File uploaded successfully!");
@@ -46,17 +66,16 @@ const TestimonialForm = () => {
         message.error("File upload failed");
       }
     } catch (error) {
-      console.error(error);
       setUploading(false);
       message.error("File upload failed");
     }
-    return false; // prevent Antd auto upload
+    return false; // prevent auto upload
   };
 
-  // ========== Submit ==========
+  // Submit handler
   const onFinish = (values: TestimonialPayload) => {
     if (!image) {
-      message.error("Please upload an image before submitting");
+      message.error("Please upload an image");
       return;
     }
 
@@ -66,9 +85,19 @@ const TestimonialForm = () => {
       image,
     };
 
-    dispatch(createTestimonial({ values: payload })).then(() => {
-      router.push("/admin/testimonials");
-    });
+    if (testimonial?.id) {
+      // Update
+      dispatch(updateTestimonial({ id: testimonial.id, values: payload })).then(
+        () => {
+          router.push("/admin/testimonials");
+        },
+      );
+    } else {
+      // Create
+      dispatch(createTestimonial({ values: payload })).then(() => {
+        router.push("/admin/testimonials");
+      });
+    }
   };
 
   if (loading) return <Loader />;
@@ -82,7 +111,6 @@ const TestimonialForm = () => {
       onFinish={onFinish}
     >
       <Row gutter={16}>
-        {/* NAME */}
         <Col xs={24} md={12}>
           <Form.Item
             label="Full Name"
@@ -93,7 +121,6 @@ const TestimonialForm = () => {
           </Form.Item>
         </Col>
 
-        {/* COUNTRY */}
         <Col xs={24} md={12}>
           <Form.Item
             label="Country"
@@ -104,7 +131,6 @@ const TestimonialForm = () => {
           </Form.Item>
         </Col>
 
-        {/* IMAGE */}
         <Col xs={24} md={12}>
           <Form.Item
             label="Image"
@@ -136,7 +162,6 @@ const TestimonialForm = () => {
           </Form.Item>
         </Col>
 
-        {/* ORDER */}
         <Col xs={24} md={12}>
           <Form.Item
             label="Order"
@@ -147,7 +172,6 @@ const TestimonialForm = () => {
           </Form.Item>
         </Col>
 
-        {/* DESCRIPTION */}
         <Col span={24}>
           <Form.Item
             label="Description"
@@ -158,13 +182,12 @@ const TestimonialForm = () => {
           </Form.Item>
         </Col>
 
-        {/* SUBMIT */}
         <Col span={24}>
           <Form.Item>
             <Button
               type="primary"
-              className="bg-black text-white hover:!bg-black hover:!text-white"
               htmlType="submit"
+              className="bg-black text-white hover:!bg-black hover:!text-white"
             >
               Save
             </Button>

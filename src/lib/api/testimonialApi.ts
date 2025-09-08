@@ -39,6 +39,25 @@ class TestmonialApi {
       throw error;
     }
   }
+  // toggle testimonials
+  async getTestimonialById(id: number) {
+    try {
+      const res = await api.get(`/testimonials/by-id/${id}`)
+      return res.data
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  // create testimonial
+  async updateTesimonial(id: number, data: TestimonialPayload) {
+    try {
+      const res = await api.patch(`/testimonials/${id}`, data)
+      return res.data
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default new TestmonialApi()
