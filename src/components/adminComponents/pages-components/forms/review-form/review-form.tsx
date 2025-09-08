@@ -86,7 +86,9 @@ const ReviewForm = ({
           {/* Full Name*/}
           <Col xs={24} md={12}>
             <Form.Item
-              label={<span className="uppercase dark:text-white">Day</span>}
+              label={
+                <span className="uppercase dark:text-white">Fullanme</span>
+              }
               name="fullName"
               rules={[{ required: true, message: "Fullname is required" }]}
             >
@@ -97,10 +99,8 @@ const ReviewForm = ({
           {/* TITLE */}
           <Col xs={24} md={12}>
             <Form.Item
-              label={
-                <span className="uppercase dark:text-white">short Title</span>
-              }
-              name="shortTitle"
+              label={<span className="uppercase dark:text-white"> Title</span>}
+              name="title"
               rules={[{ required: true, message: "Title is required" }]}
             >
               <Input className="bg-transparent" />

@@ -52,10 +52,10 @@ export const getAllReviews = createAsyncThunk<
 
 
 // Define payloads
-// interface CreateItineraryPayload {
-//   id: number;
-//   data: Partial<ItineraryItem>;
-// }
+interface CreateReviewPayload {
+  id: number;
+  data: Partial<ReviewItem>;
+}
 interface ReviewPayload {
   id: number
 }
@@ -102,23 +102,23 @@ export const toggleReviewStatus = createAsyncThunk<
   }
 );
 
-// Update
-// export const updateItinerary = createAsyncThunk<
-// ItineraryItem,
-//   UpdateItineraryPayload,
-//   { rejectValue: string }
-// >(
-//   "itineraries/updateItinerary",
-//   async ({ packageId, itineraryId, data }, { rejectWithValue }) => {
-//     try {
-//       const res = await itineraryApi.updateItinerary(packageId, itineraryId, data as ItineraryItem);
-//       console.log(res.data, "data")
-//       return res.data as ItineraryItem;
-//     } catch (err: any) {
-//       return rejectWithValue(err?.message || "Failed to update itinerary");
-//     }
-//   }
-// );
+// create
+export const createReview = createAsyncThunk<
+  ReviewItem,
+  CreateReviewPayload,
+  { rejectValue: string }
+>(
+  "itineraries/updateItinerary",
+  async ({ id, data }, { rejectWithValue }) => {
+    try {
+      const res = await reviewApi.createReview(id, data as ReviewItem);
+      console.log(res.data, "data")
+      return res.data as ReviewItem;
+    } catch (err: any) {
+      return rejectWithValue(err?.message || "Failed to update itinerary");
+    }
+  }
+);
 
 // Delete
 export const deleteReview = createAsyncThunk<
@@ -236,21 +236,21 @@ const reviewsSlice = createSlice({
       });
 
     // create
-    // builder
-    //   .addCase(createItinerary.pending, (state) => {
-    //     state.loading = true;
-    //     state.error = null;
-    //   })
-    //   .addCase(createItinerary.fulfilled, (state, action) => {
-    //     state.items.push(action.payload);
-    //     state.meta.itemCount += 1;
-    //     state.meta.totalItems += 1;
-    //     state.loading = false;
-    //   })
-    //   .addCase(createItinerary.rejected, (state, action: PayloadAction<any>) => {
-    //     state.error = action.payload || "Failed to create itinerary";
-    //     state.loading = false;
-    //   });
+    builder
+      .addCase(createReview.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createReview.fulfilled, (state, action) => {
+        state.items.push(action.payload);
+        state.meta.itemCount += 1;
+        state.meta.totalItems += 1;
+        state.loading = false;
+      })
+      .addCase(createReview.rejected, (state, action: PayloadAction<any>) => {
+        state.error = action.payload || "Failed to create itinerary";
+        state.loading = false;
+      });
 
     // toggle
     builder

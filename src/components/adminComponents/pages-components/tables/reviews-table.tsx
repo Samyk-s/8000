@@ -12,17 +12,13 @@ import { Button, message, Modal, Popconfirm } from "antd";
 import PackageTabs from "../../tabs/package-tabs";
 import { useParams } from "next/navigation";
 import dynamic from "next/dynamic";
-import Link from "next/link";
-import Image from "next/image";
 import {
   deleteReview,
   fetchReviews,
-  searchReviews,
   searchReviewsBypackage,
   toggleReviewStatus,
 } from "@/redux-store/slices/reviewSlice";
 import { ReviewItem } from "@/types/packge-review";
-import { EditIcon } from "@/components/icons/icnos";
 const ReviewForm = dynamic(() => import("../forms/review-form/review-form"), {
   ssr: false,
 });
@@ -160,12 +156,6 @@ const ReviewTable: React.FC = () => {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center space-x-2">
-                          <Link
-                            href={`/admin/pages/${item?.id}`}
-                            title="Edit Page"
-                          >
-                            <EditIcon />
-                          </Link>
                           <Popconfirm
                             title="Delete the Review"
                             description="Are you sure to delete this review?"

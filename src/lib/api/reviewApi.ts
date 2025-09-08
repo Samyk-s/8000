@@ -1,6 +1,6 @@
 import { Params } from "@/types/utils-type";
 import { api } from "../axios-config/api";
-import { ItineraryItem } from "@/types/itinerary";
+import { ReviewItem } from "@/types/packge-review";
 
 class ReviewApi {
   async getPackageReviews(id: number, parms: Params) {
@@ -11,9 +11,9 @@ class ReviewApi {
       throw error
     }
   }
-  async createItinerary(id: number, values: ItineraryItem) {
+  async createReview(id: number, values: ReviewItem) {
     try {
-      const res = await api.post(`/packages/${id}/itineraries`, values);
+      const res = await api.post(`/reiviews/${id}`, values);
       return res.data
     } catch (error) {
       throw error
@@ -27,14 +27,7 @@ class ReviewApi {
       throw error
     }
   }
-  async updateItinerary(packageId: number, itineraryId: number, data: ItineraryItem) {
-    try {
-      const res = await api.patch(`/packages/${packageId}/itineraries/${itineraryId}`, data);
-      return res.data
-    } catch (error) {
-      throw error
-    }
-  }
+
   async deleteReview(id: number) {
     try {
       const res = await api.delete(`/reviews/${id}`);
