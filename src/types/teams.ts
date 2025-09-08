@@ -34,3 +34,27 @@ export interface TeamPayload {
   order: number;
   status: number;
 }
+
+
+export interface TeamItem {
+  id: number;
+  name: string;
+  slug: string;
+  category: TeamCatgoryItem;
+  post: string;
+  image: MediaFile;
+  cover_image: MediaFile;
+  bio_data: MediaFile;
+  description: string;
+  email: string;
+  phone_no: string | null;
+  fblink: string | null;
+  instagramlink: string | null;
+  twitter: string | null;
+  linkedIn: string | null;
+  youtube: string | null;
+  order: number;
+  status: number;
+  created_at: string;
+  updated_at: string;
+}

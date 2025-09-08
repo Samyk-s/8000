@@ -17,6 +17,14 @@ class TeamApi {
 
   // teams
   //create teams fucntion
+  async getTeams(params: Params) {
+    try {
+      const res = await api.get(`/teams?page=${params?.page}&limit=${params?.limit}`);
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
   async createTeam(data: TeamPayload) {
     try {
       const res = await api.post(`/teams`, data)

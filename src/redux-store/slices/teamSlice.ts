@@ -1,14 +1,28 @@
 import teamsApi from "@/lib/api/teamsApi";
 import { Meta } from "@/types/booking";
-import { TeamCatgoryItem, TeamPayload } from "@/types/teams";
+import { TeamCatgoryItem, TeamItem, TeamPayload } from "@/types/teams";
 import { Params } from "@/types/utils-type";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 
-// get team category 
+
 // get alll
+export const fetchTeams = createAsyncThunk<
+  { items: TeamItem[]; meta: Meta },
+  { params?: Params }
+>("teams/fetchTeams", async ({ params }, { rejectWithValue }) => {
+  try {
+    const res = await teamsApi.getTeams(params as Params);
+    console.log(res, "teams")
+    return res;
+  } catch (err: any) {
+    return rejectWithValue(err.message);
+  }
+});
+
+//create team
 export const createTeam = createAsyncThunk<
-  { items: TeamCatgoryItem[]; meta: Meta },
+  { items: TeamItem[]; meta: Meta },
   { values: TeamPayload }
 >("teams/createTeams", async ({ values }, { rejectWithValue }) => {
   try {
@@ -22,14 +36,14 @@ export const createTeam = createAsyncThunk<
 
 
 
-interface TeamCategoryState {
-  items: TeamCatgoryItem[],
+interface TeamState {
+  items: TeamItem[],
   meta: Meta;
   error: string | null;
   loading: boolean;
 }
 
-const initialState: TeamCategoryState = {
+const initialState: TeamState = {
   items: [],
   meta: {
     currentPage: 1,
@@ -49,6 +63,22 @@ const teamSlice = createSlice({
   extraReducers: (builder) => {
     // fetch
     builder
+      .addCase(fetchTeams.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchTeams.fulfilled, (state, action) => {
+        state.items = action.payload.items
+        state.meta = action.payload.meta
+        state.loading = false;
+      })
+      .addCase(fetchTeams.rejected, (state, action) => {
+        state.error = action.payload as any
+        state.loading = false;
+      });
+
+    //create
+    builder
       .addCase(createTeam.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -61,7 +91,7 @@ const teamSlice = createSlice({
       .addCase(createTeam.rejected, (state, action) => {
         state.error = action.payload as any
         state.loading = false;
-      })
+      });
   }
 })
 export default teamSlice.reducer;

@@ -9,10 +9,10 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 // get alll
 export const fetchTeamsCategories = createAsyncThunk<
   { items: TeamCatgoryItem[]; meta: Meta },
-  { params: Params }
+  { params?: Params }
 >("reviews/fetchAllReviews", async ({ params }, { rejectWithValue }) => {
   try {
-    const res = await teamsApi.getBlogCategory(params);
+    const res = await teamsApi.getBlogCategory(params as Params);
     console.log(res, "teams")
     return res;
   } catch (err: any) {

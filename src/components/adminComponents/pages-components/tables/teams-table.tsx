@@ -12,20 +12,16 @@ import ToggleButton from "../../toggle-button/toggle-button";
 import { PlusIcon } from "@/assets/icons";
 import { v4 as uuidv4 } from "uuid";
 
-import {
-  fetchPages,
-  searchPages,
-  togglePageStatus,
-} from "@/redux-store/slices/pageSlice";
+import { searchPages, togglePageStatus } from "@/redux-store/slices/pageSlice";
 import Loader from "../loader/loader";
 import { message } from "antd";
-import { TeamCatgoryItem } from "@/types/teams";
-import { fetchTeamsCategories } from "@/redux-store/slices/teamCategorySlice";
+import { TeamCatgoryItem, TeamItem } from "@/types/teams";
 import TeamTabs from "../../tabs/team-tab";
+import { fetchTeams } from "@/redux-store/slices/teamSlice";
 
 const TeamsTable: React.FC = () => {
   const { items, loading, error, meta } = useSelector(
-    (state: RootState) => state?.teamsCategory,
+    (state: RootState) => state?.teams,
   );
   const dispatch = useDispatch<AppDispatch>();
   const [search, setSearch] = useState("");
@@ -35,7 +31,7 @@ const TeamsTable: React.FC = () => {
   // call api for getting packages
   useEffect(() => {
     dispatch(
-      fetchTeamsCategories({
+      fetchTeams({
         params: {
           limit,
           page,
@@ -109,10 +105,10 @@ const TeamsTable: React.FC = () => {
                     S.N.
                   </th>
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
-                    Name
+                    Image
                   </th>
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
-                    Slug
+                    Name
                   </th>
 
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
@@ -122,17 +118,31 @@ const TeamsTable: React.FC = () => {
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white dark:bg-[#020D1A]">
                 {items && items?.length > 0 ? (
-                  items?.map((item: TeamCatgoryItem, index) => (
+                  items?.map((item: TeamItem, index) => (
                     <tr key={uuidv4()}>
                       <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900 dark:text-white">
                         {index + 1}
                       </td>
-
-                      <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900 dark:text-white">
-                        {item?.name}
+                      <td className="whitespace-nowrap px-6 py-4">
+                        <Link
+                          href={`${item?.image?.url || "/images/broken/broken.png"}`}
+                          target="_blank"
+                        >
+                          <div className="h-20 w-30 text-base font-medium text-gray-900">
+                            <Image
+                              src={
+                                item?.image?.url || "/images/broken/broken.png"
+                              }
+                              alt={item?.name}
+                              width={1080}
+                              height={720}
+                              className="aspect-video"
+                            />
+                          </div>
+                        </Link>
                       </td>
                       <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900 dark:text-white">
-                        {item?.slug}
+                        {item?.name}
                       </td>
 
                       <td className="whitespace-nowrap px-6 py-4 text-base font-medium dark:text-white">
@@ -171,7 +181,7 @@ const TeamsTable: React.FC = () => {
                       colSpan={7}
                       className="px-6 py-8 text-center text-base text-gray-500"
                     >
-                      No Pages found matching your search criteria.
+                      No Team found matching your search criteria.
                     </td>
                   </tr>
                 )}
