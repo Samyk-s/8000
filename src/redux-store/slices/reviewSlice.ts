@@ -1,7 +1,7 @@
 // store/packagesSlice.ts
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { FetchPackagePayload, Meta, Params } from "@/types/utils-type";
-import { ReviewItem } from "@/types/packge-review";
+import { ReviewItem, ReviewPayloads } from "@/types/packge-review";
 import reviewApi from "@/lib/api/reviewApi";
 import { message } from "antd";
 
@@ -54,7 +54,7 @@ export const getAllReviews = createAsyncThunk<
 // Define payloads
 interface CreateReviewPayload {
   id: number;
-  data: Partial<ReviewItem>;
+  data: ReviewPayloads;
 }
 interface ReviewPayload {
   id: number
@@ -111,8 +111,7 @@ export const createReview = createAsyncThunk<
   "itineraries/updateItinerary",
   async ({ id, data }, { rejectWithValue }) => {
     try {
-      const res = await reviewApi.createReview(id, data as ReviewItem);
-      console.log(res.data, "data")
+      const res = await reviewApi.createReview(id, data);
       return res.data as ReviewItem;
     } catch (err: any) {
       return rejectWithValue(err?.message || "Failed to update itinerary");

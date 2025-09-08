@@ -50,11 +50,6 @@ const AllReviewTable: React.FC = () => {
     );
   }, [dispatch, id, limit, page]);
 
-  // Close modal
-  const handleClose = () => {
-    setIsModalOpen(false);
-  };
-
   // search itinerary
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;

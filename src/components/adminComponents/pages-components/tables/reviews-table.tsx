@@ -1,5 +1,11 @@
 "use client";
-import React, { Suspense, useEffect, useRef, useState } from "react";
+import React, {
+  Suspense,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import Entry from "../../entry/entry";
 import Search from "../../search/search";
 import Pagination from "../../pagination/pagination";
@@ -19,9 +25,9 @@ import {
   toggleReviewStatus,
 } from "@/redux-store/slices/reviewSlice";
 import { ReviewItem } from "@/types/packge-review";
-const ReviewForm = dynamic(() => import("../forms/review-form/review-form"), {
-  ssr: false,
-});
+import ReviewView from "../../view/review-view";
+import { ViewIcon } from "@/components/icons/icnos";
+import Link from "next/link";
 
 const ReviewTable: React.FC = () => {
   const { items, loading, error, meta } = useSelector(
@@ -35,6 +41,7 @@ const ReviewTable: React.FC = () => {
   const [limit, setLimit] = useState<number>(10);
   const [search, setSearch] = useState("");
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
+  const [reviewId, setReviewId] = useState<number>(0);
   useEffect(() => {
     dispatch(
       fetchReviews({
@@ -46,11 +53,6 @@ const ReviewTable: React.FC = () => {
       }),
     );
   }, [dispatch, id, limit, page]);
-
-  // Close modal
-  const handleClose = () => {
-    setIsModalOpen(false);
-  };
 
   // search itinerary
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -72,6 +74,16 @@ const ReviewTable: React.FC = () => {
       );
     }, 300); // 300ms debounce
   };
+  const handleOpenModal = useCallback((rId: number) => {
+    setReviewId(rId);
+    setIsModalOpen(true);
+  }, []);
+
+  // Close modal handler
+  const handleCloseModal = useCallback(() => {
+    setIsModalOpen(false);
+    setReviewId(0);
+  }, []);
 
   if (loading) return <Loader />;
   if (error) message.error(error);
@@ -84,7 +96,8 @@ const ReviewTable: React.FC = () => {
           <div className="flex flex-col gap-3 border-b border-gray-200 p-6">
             <div className="flex flex-wrap-reverse items-center justify-center gap-3 md:justify-between">
               <PackageTabs />
-              <Button
+              <Link
+                href={`/admin/packages/${id}/review/create-review`}
                 className="flex w-fit items-center gap-1 rounded-md bg-black px-2 py-1 text-white hover:!bg-black hover:!text-white dark:bg-white dark:text-black"
                 onClick={() => {
                   setIsModalOpen(true);
@@ -92,7 +105,7 @@ const ReviewTable: React.FC = () => {
               >
                 <PlusIcon />
                 <span>Create</span>
-              </Button>
+              </Link>
             </div>
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <Entry
@@ -156,6 +169,10 @@ const ReviewTable: React.FC = () => {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center space-x-2">
+                          <button onClick={() => handleOpenModal(item?.id)}>
+                            <ViewIcon />
+                          </button>
+
                           <Popconfirm
                             title="Delete the Review"
                             description="Are you sure to delete this review?"
@@ -222,17 +239,15 @@ const ReviewTable: React.FC = () => {
 
       {/* Create / Edit Modal */}
       <Modal
-        title="Add Review"
         open={isModalOpen}
-        onCancel={handleClose}
+        onCancel={handleCloseModal}
         footer={null}
         centered
         width={800}
-        style={{ maxWidth: "90%", padding: "0" }}
+        style={{ maxWidth: "90%", padding: 0 }}
+        title="Review Details"
       >
-        <Suspense fallback={null}>
-          <ReviewForm setIsModalOpen={setIsModalOpen} />
-        </Suspense>
+        <ReviewView reviewId={reviewId} />
       </Modal>
     </>
   );

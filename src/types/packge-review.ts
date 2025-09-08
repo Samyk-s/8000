@@ -1,4 +1,5 @@
 import { Package } from "./package";
+import { MediaFile } from "./utils-type";
 
 export interface ReviewItem {
   id: number;
@@ -12,4 +13,14 @@ export interface ReviewItem {
   status: number;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface ReviewPayloads {
+  fullName: string;
+  email: string;
+  country: string;
+  rating: number;
+  image: MediaFile;
+  shortTitle: string;
+  review: string;
 }

@@ -1,6 +1,6 @@
 import { Params } from "@/types/utils-type";
 import { api } from "../axios-config/api";
-import { ReviewItem } from "@/types/packge-review";
+import { ReviewItem, ReviewPayloads } from "@/types/packge-review";
 
 class ReviewApi {
   async getPackageReviews(id: number, parms: Params) {
@@ -11,9 +11,9 @@ class ReviewApi {
       throw error
     }
   }
-  async createReview(id: number, values: ReviewItem) {
+  async createReview(package_id: number, values: ReviewPayloads) {
     try {
-      const res = await api.post(`/reiviews/${id}`, values);
+      const res = await api.post(`/reviews/${package_id}`, values);
       return res.data
     } catch (error) {
       throw error
