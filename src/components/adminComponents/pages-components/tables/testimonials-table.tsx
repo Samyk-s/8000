@@ -17,7 +17,11 @@ import {
 import ReviewView from "../../view/review-view";
 import { ViewIcon } from "@/components/icons/icnos";
 import Link from "next/link";
-import { getTestimonials } from "@/redux-store/slices/testimonialSlice";
+import {
+  deleteTestimonial,
+  getTestimonials,
+  toggleTestimonialStatus,
+} from "@/redux-store/slices/testimonialSlice";
 import { TestimonialItem } from "@/types/testimonials";
 import Image from "next/image";
 
@@ -161,15 +165,11 @@ const TestimonialsTable: React.FC = () => {
                           </button>
 
                           <Popconfirm
-                            title="Delete the Review"
-                            description="Are you sure to delete this review?"
+                            title="Delete the Testimonial"
+                            description="Are you sure to delete this testimonial?"
                             onCancel={() => message.error("Cancelled")}
                             onConfirm={() =>
-                              dispatch(
-                                deleteReview({
-                                  id: item?.id,
-                                }),
-                              )
+                              dispatch(deleteTestimonial(item?.id))
                             }
                             okText="Yes"
                             cancelText="No"
@@ -184,11 +184,7 @@ const TestimonialsTable: React.FC = () => {
 
                           <ToggleButton
                             onChange={() =>
-                              dispatch(
-                                toggleReviewStatus({
-                                  id: item?.id,
-                                }),
-                              )
+                              dispatch(toggleTestimonialStatus(item?.id))
                             }
                             checked={item.status === 1}
                             title={

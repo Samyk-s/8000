@@ -21,6 +21,24 @@ class TestmonialApi {
       throw error;
     }
   }
+  // toggle testimonials
+  async toggleTestimonial(id: number) {
+    try {
+      const res = await api.patch(`/testimonials/${id}/toggle-status`)
+      return res.data
+    } catch (error) {
+      throw error;
+    }
+  }
+  // toggle testimonials
+  async deleteTestimonial(id: number) {
+    try {
+      const res = await api.delete(`/testimonials/${id}`)
+      return res.data
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default new TestmonialApi()

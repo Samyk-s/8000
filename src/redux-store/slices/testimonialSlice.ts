@@ -2,33 +2,61 @@ import testimonialApi from "@/lib/api/testimonialApi";
 import { TestimonialPayload, TestimonialItem } from "@/types/testimonials";
 import { Meta, Params } from "@/types/utils-type";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { message } from "antd";
 
 // ================= Async Thunks =================
 
 // Create testimonial
 export const createTestimonial = createAsyncThunk<
-  TestimonialItem, // returns single item
+  TestimonialItem,
   { values: TestimonialPayload }
 >("testimonials/createTestimonials", async ({ values }, { rejectWithValue }) => {
   try {
     const res = await testimonialApi.createTestimonial(values);
-    // console.log("res", res)
     return res;
   } catch (err: any) {
     return rejectWithValue(err.message);
   }
 });
 
-// Get testimonials (with pagination/filters)
+// Get testimonials
 export const getTestimonials = createAsyncThunk<
   { items: TestimonialItem[]; meta: Meta },
   Params
 >("testimonials/getTestimonials", async (params, { rejectWithValue }) => {
   try {
     const res = await testimonialApi.getTestimonial(params);
-    console.log("testimonial", res)
     return res;
   } catch (err: any) {
+    return rejectWithValue(err.message);
+  }
+});
+
+// Delete testimonial
+export const deleteTestimonial = createAsyncThunk<
+  number, // return deleted testimonial id
+  number  // testimonial id to delete
+>("testimonials/deleteTestimonial", async (id, { rejectWithValue }) => {
+  try {
+    await testimonialApi.deleteTestimonial(id);
+    return id;
+  } catch (err: any) {
+    return rejectWithValue(err.message);
+  }
+});
+
+// Toggle testimonial status
+export const toggleTestimonialStatus = createAsyncThunk<
+  TestimonialItem, // return updated testimonial
+  number           // testimonial id to toggle
+>("testimonials/toggleTestimonialStatus", async (id, { rejectWithValue }) => {
+  try {
+    const res = await testimonialApi.toggleTestimonial(id);
+    // console.log(res.data)
+    message.success(res?.message)
+    return res.data;
+  } catch (err: any) {
+    message.error(err?.message)
     return rejectWithValue(err.message);
   }
 });
@@ -69,9 +97,7 @@ const testimonialSlice = createSlice({
       })
       .addCase(createTestimonial.fulfilled, (state, action: PayloadAction<TestimonialItem>) => {
         state.loading = false;
-        // Push new testimonial at the top
-        state.items.push(action.payload);
-        // Increase totalItems count
+        state.items.unshift(action.payload); // add to top
         state.meta.totalItems += 1;
       })
       .addCase(createTestimonial.rejected, (state, action) => {
@@ -94,6 +120,38 @@ const testimonialSlice = createSlice({
         },
       )
       .addCase(getTestimonials.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
+
+    // ===== DELETE TESTIMONIAL =====
+    builder
+      .addCase(deleteTestimonial.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteTestimonial.fulfilled, (state, action: PayloadAction<number>) => {
+        state.loading = false;
+        state.items = state.items.filter((item) => item.id !== action.payload);
+        state.meta.totalItems -= 1;
+      })
+      .addCase(deleteTestimonial.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
+
+    // ===== TOGGLE TESTIMONIAL STATUS =====
+    builder
+      .addCase(toggleTestimonialStatus.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(toggleTestimonialStatus.fulfilled, (state, action: PayloadAction<TestimonialItem>) => {
+        state.loading = false;
+        const index = state.items.findIndex((item) => item.id === action.payload.id);
+        if (index !== -1) state.items[index] = action.payload;
+      })
+      .addCase(toggleTestimonialStatus.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });
