@@ -11,17 +11,14 @@ import { AppDispatch, RootState } from "@/redux-store/store/store";
 import ToggleButton from "../../toggle-button/toggle-button";
 import { PlusIcon } from "@/assets/icons";
 import { v4 as uuidv4 } from "uuid";
-
-import {
-  fetchPages,
-  searchPages,
-  togglePageStatus,
-} from "@/redux-store/slices/pageSlice";
-import { PageItem } from "@/types/page";
+import { togglePageStatus } from "@/redux-store/slices/pageSlice";
 import Loader from "../loader/loader";
 import { message } from "antd";
 import { TeamCatgoryItem } from "@/types/teams";
-import { fetchTeamsCategories } from "@/redux-store/slices/teamCategorySlice";
+import {
+  fetchTeamsCategories,
+  searchTeamCategory,
+} from "@/redux-store/slices/teamCategorySlice";
 import TeamTabs from "../../tabs/team-tab";
 
 const TeamCategoryTable: React.FC = () => {
@@ -58,7 +55,7 @@ const TeamCategoryTable: React.FC = () => {
     // Set new timeout
     debounceRef.current = setTimeout(async () => {
       await dispatch(
-        searchPages({
+        searchTeamCategory({
           params: { limit, page, search: value },
         }),
       );

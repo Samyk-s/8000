@@ -1,13 +1,21 @@
 import { Params } from "@/types/utils-type";
 import { api } from "../axios-config/api";
 import { TeamPayload } from "@/types/teams";
-import { message } from "antd";
 
 class TeamApi {
-  // function get blog category
+  // get blog category
   async getBlogCategory(params: Params) {
     try {
       const res = await api.get(`/teams-categories?page=${params?.page}&limit=${params?.limit}`);
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
+  //search blog category
+  async searchTeamCategory(params: Params) {
+    try {
+      const res = await api.get(`/teams-categories/search?keyword=${params?.search}&page=${params?.page}&limit=${params?.limit}`);
       return res.data
     } catch (error) {
       throw error

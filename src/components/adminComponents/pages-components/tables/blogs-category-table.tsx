@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import { EditIcon, GalleryIcon, SeoIcon } from "@/components/icons/icnos";
+import { EditIcon, SeoIcon } from "@/components/icons/icnos";
 import Image from "next/image";
 import Link from "next/link";
 import Entry from "../../entry/entry";
@@ -12,14 +12,14 @@ import ToggleButton from "../../toggle-button/toggle-button";
 import { PlusIcon } from "@/assets/icons";
 import { v4 as uuidv4 } from "uuid";
 
-import {
-  fetchPages,
-  searchPages,
-  togglePageStatus,
-} from "@/redux-store/slices/pageSlice";
+import { fetchPages, togglePageStatus } from "@/redux-store/slices/pageSlice";
 import { PageItem } from "@/types/page";
 import Loader from "../loader/loader";
 import { message } from "antd";
+import {
+  fetchTeamsCategories,
+  searchTeamCategory,
+} from "@/redux-store/slices/teamCategorySlice";
 
 const BlogTable: React.FC = () => {
   const { items, loading, error, meta } = useSelector(
@@ -32,7 +32,11 @@ const BlogTable: React.FC = () => {
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
   // call api for getting packages
   useEffect(() => {
-    dispatch(fetchPages({ page: page, limit: limit }));
+    dispatch(
+      fetchTeamsCategories({
+        params: { page: page, limit: limit },
+      }),
+    );
   }, [dispatch, page, limit]);
 
   // search page
@@ -48,7 +52,7 @@ const BlogTable: React.FC = () => {
     // Set new timeout
     debounceRef.current = setTimeout(async () => {
       await dispatch(
-        searchPages({
+        searchTeamCategory({
           params: { limit, page, search: value },
         }),
       );

@@ -10,10 +10,23 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 export const fetchTeamsCategories = createAsyncThunk<
   { items: TeamCatgoryItem[]; meta: Meta },
   { params?: Params }
->("reviews/fetchAllReviews", async ({ params }, { rejectWithValue }) => {
+>("teamCategoreis/fetchAllTeamsCategories", async ({ params }, { rejectWithValue }) => {
   try {
     const res = await teamsApi.getBlogCategory(params as Params);
-    console.log(res, "teams")
+    // console.log(res, "teams")
+    return res;
+  } catch (err: any) {
+    return rejectWithValue(err.message);
+  }
+});
+// search
+export const searchTeamCategory = createAsyncThunk<
+  { items: TeamCatgoryItem[]; meta: Meta },
+  { params?: Params }
+>("teamCategoreis/searchTeamsCategories", async ({ params }, { rejectWithValue }) => {
+  try {
+    const res = await teamsApi.searchTeamCategory(params as Params);
+    console.log(res, "jsbfsdk ")
     return res;
   } catch (err: any) {
     return rejectWithValue(err.message);
@@ -62,6 +75,21 @@ const teamCategoriesSlice = createSlice({
         state.error = action.payload as any
         state.loading = false;
       })
+    //SEARCH
+    builder
+      .addCase(searchTeamCategory.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(searchTeamCategory.fulfilled, (state, action) => {
+        state.items = action.payload.items
+        state.meta = action.payload.meta
+        state.loading = false;
+      })
+      .addCase(searchTeamCategory.rejected, (state, action) => {
+        state.error = action.payload as any
+        state.loading = false;
+      });
   }
 })
 export default teamCategoriesSlice.reducer;
