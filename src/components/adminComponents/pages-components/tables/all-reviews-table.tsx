@@ -9,25 +9,23 @@ import ToggleButton from "../../toggle-button/toggle-button";
 import { PlusIcon, TrashIcon } from "@/assets/icons";
 import Loader from "../loader/loader";
 import { Button, message, Modal, Popconfirm } from "antd";
-import PackageTabs from "../../tabs/package-tabs";
 import { useParams } from "next/navigation";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import Image from "next/image";
 import {
   deleteReview,
-  fetchReviews,
+  getAllReviews,
   searchReviews,
-  searchReviewsBypackage,
   toggleReviewStatus,
 } from "@/redux-store/slices/reviewSlice";
 import { ReviewItem } from "@/types/packge-review";
-import { EditIcon } from "@/components/icons/icnos";
+import { EditIcon, ViewIcon } from "@/components/icons/icnos";
 const ReviewForm = dynamic(() => import("../forms/review-form/review-form"), {
   ssr: false,
 });
 
-const ReviewTable: React.FC = () => {
+const AllReviewTable: React.FC = () => {
   const { items, loading, error, meta } = useSelector(
     (state: RootState) => state?.packgeReviews,
   );
@@ -41,8 +39,7 @@ const ReviewTable: React.FC = () => {
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
   useEffect(() => {
     dispatch(
-      fetchReviews({
-        id: Number(id),
+      getAllReviews({
         params: {
           limit: limit,
           page: page,
@@ -69,8 +66,7 @@ const ReviewTable: React.FC = () => {
     // Set new timeout
     debounceRef.current = setTimeout(() => {
       dispatch(
-        searchReviewsBypackage({
-          id: Number(id),
+        searchReviews({
           params: { limit, page, search: value },
         }),
       );
@@ -86,8 +82,7 @@ const ReviewTable: React.FC = () => {
         <div className="rounded-lg bg-white shadow-sm">
           {/* Header */}
           <div className="flex flex-col gap-3 border-b border-gray-200 p-6">
-            <div className="flex flex-wrap-reverse items-center justify-center gap-3 md:justify-between">
-              <PackageTabs />
+            <div className="flex flex-wrap-reverse items-center justify-end gap-3">
               <Button
                 className="flex w-fit items-center gap-1 rounded-md bg-black px-2 py-1 text-white hover:!bg-black hover:!text-white dark:bg-white dark:text-black"
                 onClick={() => {
@@ -130,6 +125,9 @@ const ReviewTable: React.FC = () => {
                     Country
                   </th>
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                    package
+                  </th>
+                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
@@ -158,6 +156,9 @@ const ReviewTable: React.FC = () => {
                       <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
                         {item?.country}
                       </td>
+                      <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
+                        {item?.package?.title}
+                      </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center space-x-2">
                           <Link
@@ -180,6 +181,9 @@ const ReviewTable: React.FC = () => {
                             okText="Yes"
                             cancelText="No"
                           >
+                            <button className="rounded p-1" title="View Review">
+                              <ViewIcon />
+                            </button>
                             <button
                               className="rounded p-1 text-red-600 hover:bg-red-50 hover:text-red-900"
                               title="Delete Review"
@@ -248,4 +252,4 @@ const ReviewTable: React.FC = () => {
   );
 };
 
-export default ReviewTable;
+export default AllReviewTable;

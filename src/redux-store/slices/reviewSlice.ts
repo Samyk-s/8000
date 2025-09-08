@@ -1,6 +1,6 @@
 // store/packagesSlice.ts
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { FetchPackagePayload, Meta } from "@/types/utils-type";
+import { FetchPackagePayload, Meta, Params } from "@/types/utils-type";
 import { ReviewItem } from "@/types/packge-review";
 import reviewApi from "@/lib/api/reviewApi";
 import { message } from "antd";
@@ -20,6 +20,20 @@ export const fetchReviews = createAsyncThunk<
     return rejectWithValue(err.message);
   }
 });
+// get al
+export const getAllReviews = createAsyncThunk<
+  { items: ReviewItem[]; meta: Meta },
+  { params: Params }
+>("reviews/fetchAllReviews", async ({ params }, { rejectWithValue }) => {
+  try {
+    const res = await reviewApi.getAllReviews(params);
+    console.log(res, "reviews")
+    return res;
+  } catch (err: any) {
+    return rejectWithValue(err.message);
+  }
+});
+
 
 // Define payloads
 // interface CreateItineraryPayload {
@@ -112,8 +126,19 @@ export const deleteReview = createAsyncThunk<
 //search
 export const searchReviews = createAsyncThunk<
   { items: ReviewItem[]; meta: Meta },
-  FetchPackagePayload
+  { params: Params }
 >("reviews/searchReviews", async ({ params }, { rejectWithValue }) => {
+  try {
+    const res = await reviewApi.searchReviews(params);
+    return res;
+  } catch (err: any) {
+    return rejectWithValue(err.message);
+  }
+});
+export const searchReviewsBypackage = createAsyncThunk<
+  { items: ReviewItem[]; meta: Meta },
+  FetchPackagePayload
+>("reviews/searchReviewsPackages", async ({ params }, { rejectWithValue }) => {
   try {
     const res = await reviewApi.searchReviews(params);
     return res;
@@ -160,6 +185,21 @@ const reviewsSlice = createSlice({
         state.loading = false;
       })
       .addCase(fetchReviews.rejected, (state, action: PayloadAction<any>) => {
+        state.error = action.payload || "Failed to fetch itineraries";
+        state.loading = false;
+      });
+    // get all
+    builder
+      .addCase(getAllReviews.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAllReviews.fulfilled, (state, action) => {
+        state.items = action.payload.items;
+        state.meta = action.payload.meta;
+        state.loading = false;
+      })
+      .addCase(getAllReviews.rejected, (state, action: PayloadAction<any>) => {
         state.error = action.payload || "Failed to fetch itineraries";
         state.loading = false;
       });
@@ -246,6 +286,18 @@ const reviewsSlice = createSlice({
         state.loading = false;
       })
       .addCase(searchReviews.rejected, (state, action: PayloadAction<any>) => {
+        state.error = action.payload;
+        state.loading = false;
+      })
+    builder.addCase(searchReviewsBypackage.pending, (state) => {
+      state.loading = true;
+    })
+      .addCase(searchReviewsBypackage.fulfilled, (state, action: PayloadAction<any>) => {
+        state.items = action.payload.items;
+        state.meta = action.payload.meta
+        state.loading = false;
+      })
+      .addCase(searchReviewsBypackage.rejected, (state, action: PayloadAction<any>) => {
         state.error = action.payload;
         state.loading = false;
       })

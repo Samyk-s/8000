@@ -55,6 +55,31 @@ class ReviewApi {
       throw error
     }
   }
+  async searchReviewsByPackageId(id: number, params: Params) {
+
+    try {
+      const res = await api.get(
+        `/reviews/search/${id}?keyword=${params?.search || ''}&page=${params?.page || 1}&limit=${params?.limit || 10}`
+      );
+
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
+  async getAllReviews(params: Params) {
+
+    try {
+      const res = await api.get(
+        `/reviews?page=${params?.page || 1}&limit=${params?.limit || 10}`
+      );
+
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
+
 }
 
 export default new ReviewApi();

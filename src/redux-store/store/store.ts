@@ -7,7 +7,7 @@ import pageReducer from "../slices/pageSlice"
 import itineraryReducer from "../slices/itinerarySlice"
 import departureReducer from "../slices/departureSlice"
 import fileReducer from "../slices/fileSlice"
-import packageReviewReducer from "../slices/packageReviewSlice"
+import packageReviewReducer from "../slices/reviewSlice"
 import inquiryReducer from "../slices/inquirySlice"
 import newsLetterReducer from "../slices/newsLetterSlice"
 
