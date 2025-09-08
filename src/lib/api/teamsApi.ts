@@ -21,6 +21,15 @@ class TeamApi {
       throw error
     }
   }
+  //toggle blog category
+  async toggleTeamCategory(id: number) {
+    try {
+      const res = await api.patch(`/teams-categories/${id}/toggle-status`);
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
 
 
 

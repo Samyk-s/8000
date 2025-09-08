@@ -202,6 +202,7 @@ const teamSlice = createSlice({
         state.error = action.payload as any
         state.loading = false;
       });
+    //toggle
     builder
       .addCase(toggleTeam.pending, (state) => {
         state.loading = true;

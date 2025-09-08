@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import { EditIcon, GalleryIcon, SeoIcon } from "@/components/icons/icnos";
-import Image from "next/image";
+import { EditIcon } from "@/components/icons/icnos";
 import Link from "next/link";
 import Entry from "../../entry/entry";
 import Search from "../../search/search";
@@ -11,13 +10,13 @@ import { AppDispatch, RootState } from "@/redux-store/store/store";
 import ToggleButton from "../../toggle-button/toggle-button";
 import { PlusIcon } from "@/assets/icons";
 import { v4 as uuidv4 } from "uuid";
-import { togglePageStatus } from "@/redux-store/slices/pageSlice";
 import Loader from "../loader/loader";
 import { message } from "antd";
 import { TeamCatgoryItem } from "@/types/teams";
 import {
   fetchTeamsCategories,
   searchTeamCategory,
+  toggleTeamCategory,
 } from "@/redux-store/slices/teamCategorySlice";
 import TeamTabs from "../../tabs/team-tab";
 
@@ -136,27 +135,20 @@ const TeamCategoryTable: React.FC = () => {
                       <td className="whitespace-nowrap px-6 py-4 text-base font-medium dark:text-white">
                         <div className="flex space-x-2">
                           <Link
-                            href={`/admin/pages/${item?.id}/seo`}
-                            title="SEO"
-                          >
-                            <SeoIcon />
-                          </Link>
-
-                          <Link
                             href={`/admin/pages/${item?.id}`}
-                            title="Edit Page"
+                            title="Edit Category"
                           >
                             <EditIcon />
                           </Link>
                           <ToggleButton
                             onChange={() => {
-                              dispatch(togglePageStatus(item?.id));
+                              dispatch(toggleTeamCategory(item?.id));
                             }}
                             checked={item?.status === 1 ? true : false}
                             title={
                               item?.status === 1
-                                ? "Deactive Package"
-                                : "Active Package"
+                                ? "Deactive Category"
+                                : "Active Category"
                             }
                           />
                         </div>
