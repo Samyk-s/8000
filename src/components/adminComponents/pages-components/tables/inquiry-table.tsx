@@ -13,7 +13,6 @@ import InquiryTabs from "../../tabs/inquiry-tabs";
 import { TrashIcon } from "@/assets/icons";
 import Pagination from "../../pagination/pagination";
 import Entry from "../../entry/entry";
-import Search from "../../search/search";
 import Loader from "../loader/loader";
 import { Button, message, Modal, Popconfirm } from "antd";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -148,12 +147,9 @@ const InquiryTable: React.FC = () => {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center space-x-2">
-                          <Button
-                            type="default"
-                            onClick={() => handleOpenModal(item.id)}
-                          >
+                          <button onClick={() => handleOpenModal(item.id)}>
                             <ViewIcon />
-                          </Button>
+                          </button>
 
                           <Popconfirm
                             title="Delete Inquiry"
@@ -203,6 +199,7 @@ const InquiryTable: React.FC = () => {
         centered
         width={800}
         style={{ maxWidth: "90%", padding: 0 }}
+        title="Inquiry Details"
       >
         {selectedId > 0 && <InquiryView id={selectedId} />}
       </Modal>

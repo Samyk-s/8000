@@ -79,6 +79,14 @@ class ReviewApi {
       throw error
     }
   }
+  async getReviewById(ReviewId: number) {
+    try {
+      const res = await api.get(`/reviews/id/${ReviewId}`);
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
 
 }
 

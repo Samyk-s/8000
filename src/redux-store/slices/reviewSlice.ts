@@ -20,7 +20,23 @@ export const fetchReviews = createAsyncThunk<
     return rejectWithValue(err.message);
   }
 });
-// get al
+export const fetchReview = createAsyncThunk<
+  ReviewItem,
+  { reviewId: number },
+  { rejectValue: string }
+>(
+  "reviews/fetchReviewById",
+  async ({ reviewId }, { rejectWithValue }) => {
+    try {
+      const res = await reviewApi.getReviewById(reviewId);
+      // console.log(res, "reviews");
+      return res as any;
+    } catch (err: any) {
+      return rejectWithValue(err?.message || "Failed to fetch review");
+    }
+  }
+);
+// get alll
 export const getAllReviews = createAsyncThunk<
   { items: ReviewItem[]; meta: Meta },
   { params: Params }
@@ -152,6 +168,7 @@ interface ReviewState {
   meta: Meta;
   error: string | null;
   loading: boolean;
+  review: ReviewItem | null
 }
 
 const initialState: ReviewState = {
@@ -165,6 +182,7 @@ const initialState: ReviewState = {
   },
   error: null,
   loading: false,
+  review: null
 };
 
 // ================= Slice =================
@@ -185,6 +203,19 @@ const reviewsSlice = createSlice({
         state.loading = false;
       })
       .addCase(fetchReviews.rejected, (state, action: PayloadAction<any>) => {
+        state.error = action.payload || "Failed to fetch itineraries";
+        state.loading = false;
+      });
+    builder
+      .addCase(fetchReview.pending, (state) => {
+        // state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchReview.fulfilled, (state, action) => {
+        state.review = action.payload as any;
+        state.loading = false;
+      })
+      .addCase(fetchReview.rejected, (state, action: PayloadAction<any>) => {
         state.error = action.payload || "Failed to fetch itineraries";
         state.loading = false;
       });

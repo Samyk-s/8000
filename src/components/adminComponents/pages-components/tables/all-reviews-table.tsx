@@ -1,18 +1,22 @@
 "use client";
-import React, { Suspense, useEffect, useRef, useState } from "react";
+import React, {
+  Suspense,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import Entry from "../../entry/entry";
 import Search from "../../search/search";
 import Pagination from "../../pagination/pagination";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux-store/store/store";
 import ToggleButton from "../../toggle-button/toggle-button";
-import { PlusIcon, TrashIcon } from "@/assets/icons";
+import { TrashIcon } from "@/assets/icons";
 import Loader from "../loader/loader";
-import { Button, message, Modal, Popconfirm } from "antd";
+import { message, Modal, Popconfirm } from "antd";
 import { useParams } from "next/navigation";
 import dynamic from "next/dynamic";
-import Link from "next/link";
-import Image from "next/image";
 import {
   deleteReview,
   getAllReviews,
@@ -20,11 +24,8 @@ import {
   toggleReviewStatus,
 } from "@/redux-store/slices/reviewSlice";
 import { ReviewItem } from "@/types/packge-review";
-import { EditIcon, ViewIcon } from "@/components/icons/icnos";
-const ReviewForm = dynamic(() => import("../forms/review-form/review-form"), {
-  ssr: false,
-});
-
+import { ViewIcon } from "@/components/icons/icnos";
+import ReviewView from "../../view/review-view";
 const AllReviewTable: React.FC = () => {
   const { items, loading, error, meta } = useSelector(
     (state: RootState) => state?.packgeReviews,
@@ -37,6 +38,7 @@ const AllReviewTable: React.FC = () => {
   const [limit, setLimit] = useState<number>(10);
   const [search, setSearch] = useState("");
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
+  const [reviewId, setReviewId] = useState<number>(0);
   useEffect(() => {
     dispatch(
       getAllReviews({
@@ -72,6 +74,17 @@ const AllReviewTable: React.FC = () => {
       );
     }, 300); // 300ms debounce
   };
+  // Open modal handler
+  const handleOpenModal = useCallback((rId: number) => {
+    setReviewId(rId);
+    setIsModalOpen(true);
+  }, []);
+
+  // Close modal handler
+  const handleCloseModal = useCallback(() => {
+    setIsModalOpen(false);
+    setReviewId(0);
+  }, []);
 
   if (loading) return <Loader />;
   if (error) message.error(error);
@@ -82,17 +95,7 @@ const AllReviewTable: React.FC = () => {
         <div className="rounded-lg bg-white shadow-sm">
           {/* Header */}
           <div className="flex flex-col gap-3 border-b border-gray-200 p-6">
-            <div className="flex flex-wrap-reverse items-center justify-end gap-3">
-              <Button
-                className="flex w-fit items-center gap-1 rounded-md bg-black px-2 py-1 text-white hover:!bg-black hover:!text-white dark:bg-white dark:text-black"
-                onClick={() => {
-                  setIsModalOpen(true);
-                }}
-              >
-                <PlusIcon />
-                <span>Create</span>
-              </Button>
-            </div>
+            <div className="flex flex-wrap-reverse items-center justify-end gap-3"></div>
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <Entry
                 onChange={(value) => setLimit(Number(value))}
@@ -161,12 +164,10 @@ const AllReviewTable: React.FC = () => {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center space-x-2">
-                          <Link
-                            href={`/admin/pages/${item?.id}`}
-                            title="Edit Page"
-                          >
-                            <EditIcon />
-                          </Link>
+                          <button onClick={() => handleOpenModal(item?.id)}>
+                            <ViewIcon />
+                          </button>
+
                           <Popconfirm
                             title="Delete the Review"
                             description="Are you sure to delete this review?"
@@ -181,9 +182,6 @@ const AllReviewTable: React.FC = () => {
                             okText="Yes"
                             cancelText="No"
                           >
-                            <button className="rounded p-1" title="View Review">
-                              <ViewIcon />
-                            </button>
                             <button
                               className="rounded p-1 text-red-600 hover:bg-red-50 hover:text-red-900"
                               title="Delete Review"
@@ -234,19 +232,17 @@ const AllReviewTable: React.FC = () => {
         </div>
       </div>
 
-      {/* Create / Edit Modal */}
+      {/* View Modal */}
       <Modal
-        title="Add Review"
         open={isModalOpen}
-        onCancel={handleClose}
+        onCancel={handleCloseModal}
         footer={null}
         centered
         width={800}
-        style={{ maxWidth: "90%", padding: "0" }}
+        style={{ maxWidth: "90%", padding: 0 }}
+        title="Review Details"
       >
-        <Suspense fallback={null}>
-          <ReviewForm setIsModalOpen={setIsModalOpen} />
-        </Suspense>
+        <ReviewView reviewId={reviewId} />
       </Modal>
     </>
   );
