@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import {
   Form,
   Input,
@@ -12,6 +12,7 @@ import {
   Typography,
   Space,
   Checkbox,
+  message,
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import CreatePackageTransfer from "../../drag-drop/drag-drop";
@@ -20,12 +21,30 @@ import TextEditor from "../../text-editor/text-editor";
 const { Option } = Select;
 
 const PackageForm: React.FC = () => {
+  const [loading, setLoading] = useState(false);
+
   const onFinish = (values: any) => {
-    console.log("Success:", values);
+    console.log("Form Values:", values);
+    message.success("Form submitted successfully!");
   };
 
   const onFinishFailed = (errorInfo: any) => {
     console.log("Failed:", errorInfo);
+    message.error("Please fill all required fields.");
+  };
+
+  const beforeUpload = (file: any) => {
+    const isValidType =
+      file.type === "image/jpeg" ||
+      file.type === "image/png" ||
+      file.type === "image/jpg" ||
+      file.type === "image/webp";
+
+    if (!isValidType) {
+      message.error("You can only upload JPG, JPEG, PNG, or WEBP files!");
+    }
+
+    return isValidType ? true : Upload.LIST_IGNORE;
   };
 
   return (
@@ -38,26 +57,29 @@ const PackageForm: React.FC = () => {
         onFinishFailed={onFinishFailed}
       >
         <Row gutter={[16, 10]}>
-          <Col span={12}>
+          {/* Title */}
+          <Col xs={24} md={12}>
             <Form.Item
-              label="TITLE"
+              label="Title"
               name="title"
               rules={[{ required: true, message: "Title is required" }]}
             >
               <Input />
             </Form.Item>
           </Col>
-          <Col span={12}>
+          {/* Country */}
+          <Col xs={24} md={12}>
             <Form.Item
-              label="Slug"
-              name="slug"
-              rules={[{ required: true, message: "Slug is required" }]}
+              label="Country"
+              name="country"
+              rules={[{ required: true, message: "Country is required" }]}
             >
               <Input />
             </Form.Item>
           </Col>
 
-          <Col span={8}>
+          {/* Image */}
+          <Col xs={24} md={12} lg={8}>
             <Form.Item
               label="Image"
               name="image"
@@ -66,9 +88,8 @@ const PackageForm: React.FC = () => {
               rules={[{ required: true, message: "Image is required" }]}
             >
               <Upload
-                beforeUpload={() => false}
+                beforeUpload={beforeUpload}
                 listType="picture"
-                accept=".jpg,.jpeg,.png,.webp"
                 maxCount={1}
               >
                 <Button icon={<UploadOutlined />}>Click to Upload</Button>
@@ -76,18 +97,18 @@ const PackageForm: React.FC = () => {
             </Form.Item>
           </Col>
 
-          <Col span={8}>
+          {/* Cover Image */}
+          <Col xs={24} md={12} lg={8}>
             <Form.Item
-              label="COVER IMAGE"
+              label="Cover Image"
               name="cover_image"
               valuePropName="fileList"
               getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
               rules={[{ required: true, message: "Cover image is required" }]}
             >
               <Upload
-                beforeUpload={() => false}
+                beforeUpload={beforeUpload}
                 listType="picture"
-                accept=".jpg,.jpeg,.png,.webp"
                 maxCount={1}
               >
                 <Button icon={<UploadOutlined />}>Click to Upload</Button>
@@ -95,18 +116,18 @@ const PackageForm: React.FC = () => {
             </Form.Item>
           </Col>
 
-          <Col span={8}>
+          {/* Route Map */}
+          <Col xs={24} md={12} lg={8}>
             <Form.Item
-              label="ROUTE MAP"
+              label="Route Map"
               name="route_map"
               valuePropName="fileList"
               getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
-              rules={[{ required: true, message: "Route is required" }]}
+              rules={[{ required: true, message: "Route map is required" }]}
             >
               <Upload
-                beforeUpload={() => false}
+                beforeUpload={beforeUpload}
                 listType="picture"
-                accept=".jpg,.jpeg,.png,.webp"
                 maxCount={1}
               >
                 <Button icon={<UploadOutlined />}>Click to Upload</Button>
@@ -114,29 +135,21 @@ const PackageForm: React.FC = () => {
             </Form.Item>
           </Col>
 
-          <Col span={8}>
+          {/* Altitude */}
+          <Col xs={24} md={12} lg={8}>
             <Form.Item
-              label="COUNTRY"
-              name="country"
-              rules={[{ required: true, message: "Country is required" }]}
-            >
-              <Input />
-            </Form.Item>
-          </Col>
-
-          <Col span={8}>
-            <Form.Item
-              label="ALTITUDE"
+              label="Altitude"
               name="altitude"
               rules={[{ required: true, message: "Altitude is required" }]}
             >
-              <Input />
+              <Input type="number" />
             </Form.Item>
           </Col>
 
-          <Col span={8}>
+          {/* Grade */}
+          <Col xs={24} md={12} lg={8}>
             <Form.Item
-              label="GRADE"
+              label="Grade"
               name="grade"
               rules={[{ required: true, message: "Grade is required" }]}
             >
@@ -149,9 +162,10 @@ const PackageForm: React.FC = () => {
             </Form.Item>
           </Col>
 
-          <Col span={6}>
+          {/* Group Size */}
+          <Col xs={24} md={12} lg={8}>
             <Form.Item
-              label="GROUP SIZE"
+              label="Group Size"
               name="groupSize"
               rules={[{ required: true, message: "Group size is required" }]}
             >
@@ -159,27 +173,30 @@ const PackageForm: React.FC = () => {
             </Form.Item>
           </Col>
 
-          <Col span={6}>
+          {/* Package Days */}
+          <Col xs={24} md={12} lg={8}>
             <Form.Item
-              label="PACKAGES DAYS"
+              label="Package Days"
               name="packageDays"
               rules={[{ required: true, message: "Package days are required" }]}
             >
-              <Input />
+              <Input type="number" />
             </Form.Item>
           </Col>
 
-          <Col span={6}>
+          {/* Best Season */}
+          <Col xs={24} md={12} lg={8}>
             <Form.Item
-              label="BEST SEASON"
+              label="Best Season"
               name="season"
-              rules={[{ required: true, message: "Best seasons are required" }]}
+              rules={[{ required: true, message: "Best season is required" }]}
             >
               <Input />
             </Form.Item>
           </Col>
 
-          <Col span={6}>
+          {/* Price */}
+          <Col xs={24} md={12} lg={8}>
             <Form.Item
               label="Price"
               name="price"
@@ -189,147 +206,116 @@ const PackageForm: React.FC = () => {
             </Form.Item>
           </Col>
 
+          {/* Parent Pages / Activities */}
           <Col span={24}>
             <Form.Item
               label="Activity/Destination/Pages"
-              name="page_id"
-              rules={[
-                {
-                  required: true,
-                  message: "Activity/Destination/Pages required",
-                },
-              ]}
+              name="parentPageIds"
+              rules={[{ required: true, message: "Select at least one page" }]}
             >
               <CreatePackageTransfer />
             </Form.Item>
           </Col>
+
+          {/* Description */}
           <Col span={24}>
             <Form.Item
               label="Description"
               name="description"
-              rules={[
-                {
-                  required: true,
-                  message: "Description is required",
-                },
-              ]}
-              className="uppercase"
+              rules={[{ required: true, message: "Description is required" }]}
             >
               <TextEditor />
             </Form.Item>
           </Col>
+
+          {/* Includes */}
           <Col xs={24} lg={12}>
             <Form.Item
               label="Includes"
               name="includes"
-              rules={[
-                {
-                  required: true,
-                  message: "Includes is required",
-                },
-              ]}
-              className="uppercase"
+              rules={[{ required: true, message: "Includes is required" }]}
             >
               <TextEditor />
             </Form.Item>
           </Col>
+          {/* Excludes */}
           <Col xs={24} lg={12}>
             <Form.Item
               label="Excludes"
               name="excludes"
-              rules={[
-                {
-                  required: true,
-                  message: "Excludes is required",
-                },
-              ]}
-              className="uppercase"
+              rules={[{ required: true, message: "Excludes is required" }]}
             >
               <TextEditor />
             </Form.Item>
           </Col>
+
+          {/* Trip Notes */}
           <Col span={24}>
-            <Space direction="vertical" className="w-full">
-              <Typography.Title level={4} className="font-semibold">
-                Gear Infromation
-              </Typography.Title>
-              <Form.Item
-                label="Gear List"
-                layout="vertical"
-                name="gear-list"
-                rules={[{ required: false }]}
-                className="uppercase"
-              >
-                <TextEditor />
-              </Form.Item>
-            </Space>
+            <Form.Item
+              label="Trip Notes"
+              name="tripNotes"
+              rules={[{ required: true, message: "Trip notes are required" }]}
+            >
+              <TextEditor />
+            </Form.Item>
           </Col>
-          <Col span={8}>
+
+          {/* Order */}
+          <Col xs={12} lg={8}>
             <Form.Item
               label="Order No."
               name="order"
-              layout="vertical"
-              rules={[
-                {
-                  required: true,
-                  message: "Order no. is required",
-                },
-              ]}
+              rules={[{ required: true, message: "Order number is required" }]}
             >
               <Input type="number" />
             </Form.Item>
           </Col>
-          <Col span={4}>
+
+          {/* Status */}
+          <Col xs={12} lg={8}>
             <Form.Item
               label="Status"
               name="status"
-              layout="vertical"
               valuePropName="checked"
+              rules={[{ required: true }]}
             >
-              <Checkbox type="checkbox" />
+              <Checkbox />
             </Form.Item>
           </Col>
-          <Col span={4}>
-            <Form.Item
-              label="Is Featured"
-              name="isFeatured"
-              layout="vertical"
-              valuePropName="checked"
-            >
-              <Checkbox type="checkbox" />
-            </Form.Item>
-          </Col>
-          <Col span={4}>
+
+          {/* Is Upcoming / Booking */}
+          <Col xs={12} lg={8}>
             <Form.Item
               label="Booking Open"
-              name="booking-open"
-              layout="vertical"
+              name="isBooking"
               valuePropName="checked"
             >
-              <Checkbox type="checkbox" />
+              <Checkbox />
             </Form.Item>
           </Col>
-          <Col span={4}>
+
+          <Col xs={12} lg={8}>
             <Form.Item
-              label="is popular"
-              name="isPopular"
-              layout="vertical"
+              label="Is Upcoming"
+              name="isUpcoming"
               valuePropName="checked"
             >
-              <Checkbox type="checkbox" />
-            </Form.Item>
-          </Col>
-          <Col span={24}>
-            <Form.Item>
-              <Button
-                className="hover: bg-black text-white hover:bg-black"
-                htmlType="submit"
-              >
-                {true ? "LOADING..." : "SAVE"}
-              </Button>
+              <Checkbox />
             </Form.Item>
           </Col>
         </Row>
+        {/* Submit Button */}
+
+        <Form.Item>
+          <Button
+            type="primary"
+            htmlType="submit"
+            loading={loading}
+            className="w-fit bg-black text-white hover:!bg-black hover:!text-white"
+          >
+            Submit
+          </Button>
+        </Form.Item>
       </Form>
     </div>
   );

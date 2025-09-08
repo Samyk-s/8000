@@ -1,20 +1,22 @@
 "use client";
 
 import React, { useState } from "react";
-import { Button, Space } from "antd";
+import { Button, Input } from "antd";
+import { CSS } from "@dnd-kit/utilities";
+// Correct imports
 import {
   DndContext,
   closestCenter,
   DragEndEvent,
   useDroppable,
 } from "@dnd-kit/core";
+
 import {
-  arrayMove,
   SortableContext,
-  verticalListSortingStrategy,
   useSortable,
+  arrayMove,
+  verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
 
 interface Item {
   key: string;
@@ -36,35 +38,39 @@ const mockData: Item[] = [
 const SortableItem: React.FC<{
   id: string;
   title: string;
+  isSelected?: boolean;
   onAdd?: () => void;
   onRemove?: () => void;
-  isSelected?: boolean;
-}> = ({ id, title, onAdd, onRemove, isSelected }) => {
+}> = ({ id, title, isSelected, onAdd, onRemove }) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id });
-  const style: React.CSSProperties = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    padding: "8px 12px",
-    marginBottom: 8,
-    border: "1px solid #d9d9d9",
-    borderRadius: 4,
-    background: "#f5f5f5",
-    cursor: "grab",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-  };
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+    <div
+      ref={setNodeRef}
+      {...attributes}
+      {...listeners}
+      style={{
+        transform: CSS.Transform.toString(transform),
+        transition,
+        padding: "8px 12px",
+        marginBottom: 8,
+        border: "1px solid #d9d9d9",
+        borderRadius: 4,
+        background: "#f5f5f5",
+        cursor: "grab",
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+      }}
+    >
       <span>{title}</span>
       {isSelected ? (
-        <Button onClick={onRemove} size="small">
+        <Button size="small" onClick={onRemove}>
           -
         </Button>
       ) : (
-        <Button onClick={onAdd} size="small">
+        <Button size="small" onClick={onAdd}>
           +
         </Button>
       )}
@@ -75,12 +81,17 @@ const SortableItem: React.FC<{
 // === Droppable List ===
 const DroppableList: React.FC<{
   id: string;
-  title: string;
   items: Item[];
+  title: string;
   onAddItem?: (item: Item) => void;
   onRemoveItem?: (item: Item) => void;
-}> = ({ id, title, items, onAddItem, onRemoveItem }) => {
+  search?: string;
+}> = ({ id, items, title, onAddItem, onRemoveItem, search = "" }) => {
   const { setNodeRef } = useDroppable({ id });
+
+  const filteredItems = items.filter((item) =>
+    item.title.toLowerCase().includes(search.toLowerCase()),
+  );
 
   return (
     <div
@@ -90,22 +101,22 @@ const DroppableList: React.FC<{
         border: "1px solid #d9d9d9",
         borderRadius: 4,
         padding: 8,
-        minHeight: 200,
+        minHeight: 300,
       }}
     >
       <h4>{title}</h4>
       <SortableContext
-        items={items.map((i) => i.key)}
+        items={filteredItems.map((i) => i.key)}
         strategy={verticalListSortingStrategy}
       >
-        {items.map((item) => (
+        {filteredItems.map((item) => (
           <SortableItem
             key={item.key}
             id={item.key}
             title={item.title}
+            isSelected={!!onRemoveItem}
             onAdd={() => onAddItem && onAddItem(item)}
             onRemove={() => onRemoveItem && onRemoveItem(item)}
-            isSelected={!!onRemoveItem}
           />
         ))}
       </SortableContext>
@@ -113,88 +124,82 @@ const DroppableList: React.FC<{
   );
 };
 
-// === CreatePackageTransfer Component ===
-interface CreatePackageTransferProps {
-  value?: Item[];
-  onChange?: (value: Item[]) => void;
-}
-
-const CreatePackageTransfer: React.FC<CreatePackageTransferProps> = ({
-  value = [],
-  onChange,
-}) => {
-  const [selected, setSelected] = useState<Item[]>(value);
+// === Main Component ===
+const CreatePackageTransfer: React.FC = () => {
+  const [available, setAvailable] = useState<Item[]>(mockData);
+  const [selected, setSelected] = useState<Item[]>([]);
   const [search, setSearch] = useState("");
-
-  // Derive available items dynamically
-  const available = mockData.filter(
-    (i) => !selected.some((v) => v.key === i.key),
-  );
-  const filteredAvailable = available.filter((item) =>
-    item.title.toLowerCase().includes(search.toLowerCase()),
-  );
-
-  const updateSelected = (newSelected: Item[]) => {
-    setSelected(newSelected);
-    onChange?.(newSelected);
-  };
-
-  const handleAdd = (item: Item) => updateSelected([...selected, item]);
-  const handleRemove = (item: Item) =>
-    updateSelected(selected.filter((i) => i.key !== item.key));
-  const handleAddAll = () => updateSelected([...selected, ...available]);
-  const handleRemoveAll = () => updateSelected([]);
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over) return;
-
     const activeId = active.id as string;
-    const overId = over.id as string;
 
-    if (
-      selected.some((i) => i.key === activeId) &&
-      selected.some((i) => i.key === overId)
-    ) {
-      const oldIndex = selected.findIndex((i) => i.key === activeId);
-      const newIndex = selected.findIndex((i) => i.key === overId);
-      updateSelected(arrayMove(selected, oldIndex, newIndex));
+    // Move inside Available
+    if (available.find((i) => i.key === activeId) && over.id === "available") {
+      const oldIndex = available.findIndex((i) => i.key === activeId);
+      const newIndex = available.findIndex((i) => i.key === over.id);
+      setAvailable(arrayMove(available, oldIndex, newIndex));
     }
+
+    // Move inside Selected
+    if (selected.find((i) => i.key === activeId) && over.id === "selected") {
+      const oldIndex = selected.findIndex((i) => i.key === activeId);
+      const newIndex = selected.findIndex((i) => i.key === over.id);
+      setSelected(arrayMove(selected, oldIndex, newIndex));
+    }
+
+    // Move from Available → Selected
+    if (available.find((i) => i.key === activeId) && over.id === "selected") {
+      const item = available.find((i) => i.key === activeId);
+      if (!item) return;
+      setSelected([...selected, item]);
+      setAvailable(available.filter((i) => i.key !== activeId));
+    }
+
+    // Move from Selected → Available
+    if (selected.find((i) => i.key === activeId) && over.id === "available") {
+      const item = selected.find((i) => i.key === activeId);
+      if (!item) return;
+      setAvailable([...available, item]);
+      setSelected(selected.filter((i) => i.key !== activeId));
+    }
+  };
+
+  const handleAdd = (item: Item) => {
+    setSelected([...selected, item]);
+    setAvailable(available.filter((i) => i.key !== item.key));
+  };
+
+  const handleRemove = (item: Item) => {
+    setAvailable([...available, item]);
+    setSelected(selected.filter((i) => i.key !== item.key));
   };
 
   return (
     <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-      <div className="flex w-full items-start gap-4">
+      <div className="flex flex-col gap-4 lg:flex-row">
         <div style={{ flex: 1 }}>
-          <Space className="my-5 flex items-center justify-between">
-            <input
-              type="text"
-              placeholder="Search available items..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              style={{ padding: 8, width: 300 }}
-            />
-            <Button onClick={handleAddAll}>Add All</Button>
-          </Space>
+          <Input
+            placeholder="Search available items..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={{ marginBottom: 8 }}
+          />
           <DroppableList
             id="available"
             title="Available"
-            items={filteredAvailable}
+            items={available}
             onAddItem={handleAdd}
+            search={search}
           />
         </div>
-
-        <div style={{ flex: 1 }}>
-          <Space className="my-5 w-full justify-end">
-            <Button onClick={handleRemoveAll}>Remove All</Button>
-          </Space>
-          <DroppableList
-            id="selected"
-            title="Selected"
-            items={selected}
-            onRemoveItem={handleRemove}
-          />
-        </div>
+        <DroppableList
+          id="selected"
+          title="Selected"
+          items={selected}
+          onRemoveItem={handleRemove}
+        />
       </div>
     </DndContext>
   );

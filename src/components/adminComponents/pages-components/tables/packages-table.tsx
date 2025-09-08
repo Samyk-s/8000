@@ -1,6 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { useEffect, useRef, useState } from "react";
 import {
   EditIcon,
   ItinerayIcon,
@@ -9,7 +8,7 @@ import {
   ReviewIcon,
   SeoIcon,
 } from "@/components/icons/icnos";
-import { Package } from "@/types/package";
+import { PackageItem } from "@/types/package";
 import Image from "next/image";
 import Link from "next/link";
 import Entry from "../../entry/entry";
@@ -25,24 +24,42 @@ import ToggleButton from "../../toggle-button/toggle-button";
 import { PlusIcon } from "@/assets/icons";
 import Loader from "../loader/loader";
 import { message } from "antd";
+import { searchPages } from "@/redux-store/slices/pageSlice";
 
 const PackageTable: React.FC = () => {
-  const router = useRouter();
-  const [value, setValue] = useState(10);
+  const [limit, setLimit] = useState(10);
   const { items, loading, error, meta } = useSelector(
     (state: RootState) => state?.packges,
   );
-  const [currentPage, setCurrentPage] = useState(meta?.currentPage);
+  const [page, setPage] = useState(meta?.currentPage);
   const dispatch = useDispatch<AppDispatch>();
-  const totalPages = Math.ceil(meta?.totalPages / meta?.itemsPerPage);
+  const [search, setSearch] = useState("");
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
+
   // call api for getting packages
   useEffect(() => {
     dispatch(fetchPackages({ page: 1, limit: 10 }));
   }, [dispatch]);
 
-  function handleSearchPackage(value: string | number) {
-    setValue(Number(value));
-  }
+  // search itinerary
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearch(value);
+
+    // Clear previous timeout
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+
+    // Set new timeout
+    debounceRef.current = setTimeout(() => {
+      dispatch(
+        searchPages({
+          params: { limit, page, search: value },
+        }),
+      );
+    }, 300); // 300ms debounce
+  };
 
   if (loading) {
     return <Loader />;
@@ -53,26 +70,29 @@ const PackageTable: React.FC = () => {
   }
 
   return (
-    <>
-      <div className="min-h-screen p-1">
-        <div className="rounded-lg bg-white shadow-sm">
-          <div className="flex flex-col gap-3 border-b border-gray-200 p-6">
-            <div className="flex justify-end">
-              <Link
-                href={"/admin/packages/create-package"}
-                className="flex w-fit items-center gap-1 rounded-md bg-black px-2 py-1 text-white dark:bg-white dark:text-black"
-              >
-                <PlusIcon />
-                <span>Create</span>
-              </Link>
-            </div>
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <Entry
-                onChange={(value) => handleSearchPackage(value)}
-                value={value}
-              />
-              {/* <Search placeholder="Search package..." /> */}
-            </div>
+    <div className="min-h-screen p-1">
+      <div className="rounded-lg bg-white shadow-sm">
+        <div className="flex flex-col gap-3 border-b border-gray-200 p-6">
+          <div className="flex justify-end">
+            <Link
+              href={"/admin/packages/create-package"}
+              className="flex w-fit items-center gap-1 rounded-md bg-black px-2 py-1 text-white dark:bg-white dark:text-black"
+            >
+              <PlusIcon />
+              <span>Create</span>
+            </Link>
+          </div>
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <Entry
+              onChange={(value) => setLimit(Number(value))}
+              value={limit}
+              total={meta?.totalItems}
+            />
+            <Search
+              placeholder="Search package..."
+              search={search}
+              onChange={handleSearch}
+            />
           </div>
 
           <div className="overflow-x-auto">
@@ -104,7 +124,7 @@ const PackageTable: React.FC = () => {
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
                 {items && items?.length > 0 ? (
-                  items?.map((item: Package, index) => (
+                  items?.map((item: PackageItem, index) => (
                     <tr key={item?.id} className="hover:bg-gray-50">
                       <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
                         {index + 1}
@@ -211,16 +231,17 @@ const PackageTable: React.FC = () => {
               </tbody>
             </table>
           </div>
+          {/* Pagination */}
           <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            itemsPerPage={meta?.itemsPerPage}
+            currentPage={meta?.currentPage}
+            totalPages={meta?.totalPages}
+            itemsPerPage={limit}
             totalItems={meta?.totalItems}
-            onPageChange={(page) => setCurrentPage(page)}
+            onPageChange={(page) => setPage(page)}
           />
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
