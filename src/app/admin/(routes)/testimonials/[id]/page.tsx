@@ -8,6 +8,7 @@ import Breadcrumbs from "@/components/adminComponents/beadcrumb/bedcrumb";
 import TestimonialForm from "@/components/adminComponents/pages-components/forms/testimonial-form/testimonial-form";
 import { getTestimonialById } from "@/redux-store/slices/testimonialSlice";
 import Loader from "@/components/adminComponents/pages-components/loader/loader";
+import { TestimonialItem } from "@/types/testimonials";
 
 const EditTestimonialPage = () => {
   const { id } = useParams();
@@ -33,7 +34,7 @@ const EditTestimonialPage = () => {
         separator="/"
       />
       <Card>
-        <TestimonialForm testimonial={testimonial} />
+        <TestimonialForm testimonial={testimonial as TestimonialItem} />
       </Card>
     </div>
   );

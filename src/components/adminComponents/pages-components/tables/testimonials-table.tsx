@@ -1,21 +1,14 @@
 "use client";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Entry from "../../entry/entry";
-import Search from "../../search/search";
 import Pagination from "../../pagination/pagination";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux-store/store/store";
 import ToggleButton from "../../toggle-button/toggle-button";
 import { PlusIcon, TrashIcon } from "@/assets/icons";
 import Loader from "../loader/loader";
-import { message, Modal, Popconfirm } from "antd";
-import {
-  deleteReview,
-  searchReviewsBypackage,
-  toggleReviewStatus,
-} from "@/redux-store/slices/reviewSlice";
-import ReviewView from "../../view/review-view";
-import { EditIcon, ViewIcon } from "@/components/icons/icnos";
+import { message, Popconfirm } from "antd";
+import { EditIcon } from "@/components/icons/icnos";
 import Link from "next/link";
 import {
   deleteTestimonial,
@@ -30,7 +23,6 @@ const TestimonialsTable: React.FC = () => {
     (state: RootState) => state?.testimonials,
   );
   const dispatch = useDispatch<AppDispatch>();
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState<number>(10);
   const [search, setSearch] = useState("");
@@ -44,37 +36,6 @@ const TestimonialsTable: React.FC = () => {
       }),
     );
   }, [dispatch, limit, page]);
-
-  // search itinerary
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearch(value);
-
-    // Clear previous timeout
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
-    }
-
-    // Set new timeout
-    debounceRef.current = setTimeout(() => {
-      dispatch(
-        searchReviewsBypackage({
-          id: Number(1),
-          params: { limit, page, search: value },
-        }),
-      );
-    }, 300); // 300ms debounce
-  };
-  const handleOpenModal = useCallback((rId: number) => {
-    setReviewId(rId);
-    setIsModalOpen(true);
-  }, []);
-
-  // Close modal handler
-  const handleCloseModal = useCallback(() => {
-    setIsModalOpen(false);
-    setReviewId(0);
-  }, []);
 
   if (loading) return <Loader />;
   if (error) message.error(error);
@@ -99,11 +60,6 @@ const TestimonialsTable: React.FC = () => {
                 onChange={(value) => setLimit(Number(value))}
                 value={limit}
                 total={meta?.totalItems}
-              />
-              <Search
-                placeholder="Search package..."
-                search={search}
-                onChange={handleSearch}
               />
             </div>
           </div>
@@ -160,9 +116,6 @@ const TestimonialsTable: React.FC = () => {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center space-x-2">
-                          <button onClick={() => handleOpenModal(item?.id)}>
-                            <ViewIcon />
-                          </button>
                           <Link
                             href={`/admin/testimonials/${item?.id}`}
                             title="Edit Team"
@@ -224,19 +177,6 @@ const TestimonialsTable: React.FC = () => {
           />
         </div>
       </div>
-
-      {/* Create / Edit Modal */}
-      <Modal
-        open={isModalOpen}
-        onCancel={handleCloseModal}
-        footer={null}
-        centered
-        width={800}
-        style={{ maxWidth: "90%", padding: 0 }}
-        title="Review Details"
-      >
-        <ReviewView reviewId={reviewId} />
-      </Modal>
     </>
   );
 };
