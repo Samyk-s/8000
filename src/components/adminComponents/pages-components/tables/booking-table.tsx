@@ -10,9 +10,9 @@ import { useDispatch, useSelector } from "react-redux";
 import Loader from "../loader/loader";
 import Search from "../../search/search";
 import Entry from "../../entry/entry";
-import { Button, Modal } from "antd";
+import { Button, message, Modal, Popconfirm } from "antd";
 import { PlusIcon } from "@/assets/icons";
-import { fetchBooking } from "@/redux-store/slices/bookinSlice";
+import { deleteBooking, fetchBooking } from "@/redux-store/slices/bookinSlice";
 import Pagination from "../../pagination/pagination";
 import Link from "next/link";
 import BookingView from "../../view/booking-view";
@@ -181,12 +181,21 @@ const BookingTable: React.FC = () => {
                           >
                             <EditIcon />
                           </Link>
-                          <button
-                            className="rounded p-1 text-red-600 hover:bg-red-50 hover:text-red-900"
-                            title="Delete Booking"
+                          <Popconfirm
+                            title="Delete the Booking"
+                            description="Are you sure to delete this booking?"
+                            onCancel={() => message.error("Cancelled")}
+                            onConfirm={() => dispatch(deleteBooking(item?.id))}
+                            okText="Yes"
+                            cancelText="No"
                           >
-                            <TrashIcon />
-                          </button>
+                            <button
+                              className="rounded p-1 text-red-600 hover:bg-red-50 hover:text-red-900"
+                              title="Delete the booking"
+                            >
+                              <TrashIcon />
+                            </button>
+                          </Popconfirm>
                         </div>
                       </td>
                     </tr>

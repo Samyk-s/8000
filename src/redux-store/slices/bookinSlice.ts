@@ -90,22 +90,25 @@ export const viewBookingById = createAsyncThunk<
 //     return rejectWithValue(err?.message || "Failed to toggle departure status");
 //   }
 // });
+// Delete booking
+export const deleteBooking = createAsyncThunk<
+  { id: number },
+  number,
+  { rejectValue: string }
+>(
+  "bookings/deleteBooking",
+  async (id, { rejectWithValue }) => {
+    try {
+      const res = await bookingApi.deleteBooking(id);
+      message.success(res?.message);
+      return { id };
+    } catch (err: any) {
+      message.error("Failed to delete");
+      return rejectWithValue(err?.message || "Failed to delete booking");
+    }
+  }
+);
 
-// Delete departure
-// export const deleteDeparture = createAsyncThunk<
-//   { id: number },
-//   DeparturePayload,
-//   { rejectValue: string }
-// >("departures/deleteDeparture", async ({ packageId, departureId }, { rejectWithValue }) => {
-//   try {
-//     const res = await departureApi.deleteDeparture(packageId, departureId);
-//     message.success(res?.message)
-//     return { id: departureId };
-//   } catch (err: any) {
-//     message.error("Failed to delete")
-//     return rejectWithValue(err?.message || "Failed to delete departure");
-//   }
-// });
 
 //search
 // export const searchDeparture = createAsyncThunk<
@@ -174,7 +177,7 @@ const bookingsSlice = createSlice({
 
       })
       .addCase(fetchBookingById.rejected, (state, action) => {
-        state.error = action.payload as string || "Failed to fetch departures";
+        state.error = action.payload as string || "Failed to fetch booking";
 
       });
     // view
@@ -233,23 +236,23 @@ const bookingsSlice = createSlice({
     //   });
 
     // Delete
-    // builder
-    //   .addCase(deleteDeparture.pending, (state) => {
-    //     state.loading = true;
-    //     state.error = null;
-    //   })
-    //   .addCase(deleteDeparture.fulfilled, (state, action: PayloadAction<{ id: number }>) => {
-    //     if (Array.isArray(state.items)) {
-    //       state.items = state.items.filter((item) => item.id !== action.payload.id);
-    //     }
-    //     state.meta.itemCount = Math.max(0, state.meta.itemCount - 1);
-    //     state.meta.totalItems = Math.max(0, state.meta.totalItems - 1);
-    //     state.loading = false;
-    //   })
-    //   .addCase(deleteDeparture.rejected, (state, action) => {
-    //     state.error = action.payload as string || "Failed to delete departure";
-    //     state.loading = false;
-    //   });
+    builder
+      .addCase(deleteBooking.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteBooking.fulfilled, (state, action: PayloadAction<{ id: number }>) => {
+        if (Array.isArray(state.items)) {
+          state.items = state.items.filter((item) => item.id !== action.payload.id);
+        }
+        state.meta.itemCount = Math.max(0, state.meta.itemCount - 1);
+        state.meta.totalItems = Math.max(0, state.meta.totalItems - 1);
+        state.loading = false;
+      })
+      .addCase(deleteBooking.rejected, (state, action) => {
+        state.error = action.payload as string || "Failed to delete booking";
+        state.loading = false;
+      });
     //search
     // builder.addCase(searchDeparture.pending, (state) => {
     //   state.loading = true;

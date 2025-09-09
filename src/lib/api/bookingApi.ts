@@ -26,6 +26,14 @@ class BookingApi {
       throw error
     }
   }
+  async deleteBooking(id: number) {
+    try {
+      const res = await api.delete(`/bookings/${id}?id=${id}`);
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
 }
 
 
