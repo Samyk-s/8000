@@ -2,6 +2,7 @@ import { Params } from "@/types/utils-type";
 import { api } from "../axios-config/api";
 
 class BookingApi {
+  // get all bookins
   async getBookings(params: Params) {
     try {
       const res = await api.get(`/bookings?page=${params?.page}&limit=${params?.limit}`);
@@ -10,6 +11,16 @@ class BookingApi {
       throw error
     }
   }
+  // search booking
+  async searchBookings(params: Params) {
+    try {
+      const res = await api.get(`/bookings/search?keyword=${params?.search}&page=${params?.page}&limit=${params?.limit}`);
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
+  // get booking
   async getBooking(id: number) {
     try {
       const res = await api.get(`/bookings/${id}`);
@@ -18,6 +29,7 @@ class BookingApi {
       throw error
     }
   }
+  //view booking
   async viwBooking(id: number, view: number) {
     try {
       const res = await api.patch(`/bookings/${id}`, { isViewd: view });
@@ -26,6 +38,7 @@ class BookingApi {
       throw error
     }
   }
+  // delete booking
   async deleteBooking(id: number) {
     try {
       const res = await api.delete(`/bookings/${id}?id=${id}`);

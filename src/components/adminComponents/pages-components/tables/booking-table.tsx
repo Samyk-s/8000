@@ -12,7 +12,11 @@ import Search from "../../search/search";
 import Entry from "../../entry/entry";
 import { Button, message, Modal, Popconfirm } from "antd";
 import { PlusIcon } from "@/assets/icons";
-import { deleteBooking, fetchBooking } from "@/redux-store/slices/bookinSlice";
+import {
+  deleteBooking,
+  fetchBooking,
+  searchBooking,
+} from "@/redux-store/slices/bookinSlice";
 import Pagination from "../../pagination/pagination";
 import Link from "next/link";
 import BookingView from "../../view/booking-view";
@@ -29,7 +33,7 @@ const BookingTable: React.FC = () => {
   const [search, setSearch] = useState("");
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
-  // search itinerary
+  // search booking
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearch(value);
@@ -39,25 +43,15 @@ const BookingTable: React.FC = () => {
       clearTimeout(debounceRef.current);
     }
 
-    useEffect(() => {
-      dispatch(
-        fetchBooking({
-          params: { page, limit },
-        }),
-      );
-    }, [page, limit, dispatch]);
-
     // Set new timeout
     debounceRef.current = setTimeout(() => {
-      // dispatch(
-      //   searchDeparture({
-      //     id: Number(id),
-      //     params: { limit, page, search: value },
-      //   }),
-      // );
+      dispatch(
+        searchBooking({
+          params: { limit, page, search: value },
+        }),
+      );
     }, 300); // 300ms debounce
   };
-
   useEffect(() => {
     dispatch(
       fetchBooking({
@@ -65,14 +59,6 @@ const BookingTable: React.FC = () => {
       }),
     );
   }, [dispatch, limit, page]);
-
-  // Delete handler
-  // const handleDelete = useCallback(
-  //   (id: number) => {
-  //     dispatch(deleteInquiry({ id }));
-  //   },
-  //   [dispatch],
-  // );
 
   // Open modal handler
   const handleOpenModal = useCallback((id: number) => {
