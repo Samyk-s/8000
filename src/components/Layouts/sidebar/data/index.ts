@@ -24,7 +24,7 @@ export const NAV_DATA = [
     items: [
       {
         title: "Bookings",
-        url: "/admin/packagebooking",
+        url: "/admin/bookings",
         icon: Icons.BookingIcon,
         items: [],
       },
