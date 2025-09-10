@@ -27,8 +27,6 @@ const SummitterTable = () => {
   );
   const [page, setPage] = useState(meta?.currentPage);
   const dispatch = useDispatch<AppDispatch>();
-  const [search, setSearch] = useState("");
-  const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
   // call api for getting summiters
   useEffect(() => {
@@ -47,9 +45,6 @@ const SummitterTable = () => {
     <div className="min-h-screen p-1">
       <div className="rounded-lg bg-white shadow-sm">
         <div className="flex flex-col gap-3 border-b border-gray-200 p-6">
-          <div>
-            <SummitterTabs />
-          </div>
           <div className="flex justify-end">
             <Link
               href={"/admin/summitters/create"}

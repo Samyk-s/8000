@@ -11,8 +11,6 @@ import TextEditor from "../../text-editor/text-editor";
 import { useParams } from "next/navigation";
 import { createSummitterStory } from "@/redux-store/slices/storySlice";
 import { StoryPayload } from "@/types/summitter";
-import SummitterTabs from "@/components/adminComponents/tabs/summitter-tabs";
-
 const SummiterStoryForm = () => {
   const { loading } = useSelector((state: RootState) => state.teams);
   const dispatch = useDispatch<AppDispatch>();
@@ -117,7 +115,6 @@ const SummiterStoryForm = () => {
 
   return (
     <div className="flex flex-col gap-3">
-      <SummitterTabs />
       <Form
         form={form}
         name="summiter-story-form"

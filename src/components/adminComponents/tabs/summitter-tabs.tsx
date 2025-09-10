@@ -4,53 +4,34 @@ import { useParams, usePathname } from "next/navigation";
 import React from "react";
 
 const SummitterTabs = () => {
+  const { id } = useParams<{ id: string }>();
   const pathname = usePathname();
-  const { id } = useParams();
 
-  const isSummitterActive =
-    pathname === "/admin/summitters" ||
-    pathname === "/admin/summitters/create" ||
-    (pathname.startsWith("/admin/summitters/") && id);
-
-  const isStoriesActive = pathname.startsWith("/admin/summitters/stories");
+  // Define all tabs with label and path suffix
+  const tabs = [
+    { label: "Summiter", path: "" },
+    { label: "Stories", path: "stories" },
+  ];
 
   return (
-    <div className="flex items-center border-b pb-2">
-      {/* Summitter tab */}
-      <Link
-        href="/admin/summitters"
-        className={`px-4 py-1 text-sm font-semibold transition-colors md:text-base ${
-          isSummitterActive
-            ? "bg-blue-600 text-white"
-            : "bg-gray-300 text-gray-600 hover:bg-gray-400 hover:text-gray-600"
-        }`}
-      >
-        Summitter
-      </Link>
-
-      {/* Stories tab */}
-      <Link
-        href="/admin/summitters/stories"
-        className={`px-4 py-1 text-sm font-semibold transition-colors md:text-base ${
-          isStoriesActive
-            ? "bg-blue-600 text-white"
-            : "bg-gray-300 text-gray-600 hover:bg-gray-400 hover:text-gray-600"
-        }`}
-      >
-        Stories
-      </Link>
-
-      {/* Show Create Story button only when /summitters/[id] */}
-      {pathname.startsWith("/admin/summitters/") &&
-        id &&
-        !pathname.endsWith("stories") && (
+    <div className="flex flex-wrap justify-center md:justify-start">
+      {tabs.map((tab) => {
+        const tabPath = `/admin/summitters/${id}${tab.path ? `/${tab.path}` : ""}`;
+        const isActive = pathname === tabPath;
+        return (
           <Link
-            href={`/admin/summitters/${id}/create`}
-            className="ml-auto bg-black px-4 py-1 text-white hover:text-white"
+            key={tab.label}
+            href={tabPath}
+            className={`px-4 py-1 !text-[14px] !font-semibold md:!text-[16px] ${
+              isActive
+                ? "bg-blue-600 text-white"
+                : "bg-gray-300 text-gray-600 hover:text-gray-600"
+            }`}
           >
-            Create Story
+            {tab.label}
           </Link>
-        )}
+        );
+      })}
     </div>
   );
 };

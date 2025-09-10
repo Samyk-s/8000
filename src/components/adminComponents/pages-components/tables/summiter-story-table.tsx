@@ -24,6 +24,7 @@ import {
   fetchSummitterStories,
   toggleSummitterStory,
 } from "@/redux-store/slices/storySlice";
+import { useParams } from "next/navigation";
 
 const SummitterStoryTable = () => {
   const [limit, setLimit] = useState(10);
@@ -32,6 +33,7 @@ const SummitterStoryTable = () => {
   );
   const [page, setPage] = useState(meta?.currentPage);
   const dispatch = useDispatch<AppDispatch>();
+  const { id } = useParams();
   // call api for getting summiters
   useEffect(() => {
     dispatch(fetchSummitterStories({ page, limit }));
@@ -49,8 +51,15 @@ const SummitterStoryTable = () => {
     <div className="min-h-screen p-1">
       <div className="rounded-lg bg-white shadow-sm">
         <div className="flex flex-col gap-3 border-b border-gray-200 p-6">
-          <div>
+          <div className="flex flex-wrap-reverse items-center justify-center gap-3 md:justify-between">
             <SummitterTabs />
+            <Link
+              href={`/admin/summitters/${id}/stories/create`}
+              className="flex w-fit items-center gap-1 rounded-md bg-black px-2 py-1 text-white hover:!bg-black hover:!text-white dark:bg-white dark:text-black"
+            >
+              <PlusIcon />
+              <span>Create</span>
+            </Link>
           </div>
 
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -138,7 +147,7 @@ const SummitterStoryTable = () => {
                       <td className="whitespace-nowrap px-6 py-4 text-base font-medium">
                         <div className="flex items-center space-x-2">
                           <Link
-                            href={`/admin/summitters/stories/${item?.id}`}
+                            href={`/admin/summitters/${id}/stories/${item?.id}`}
                             title="Edit Story"
                           >
                             <EditIcon />

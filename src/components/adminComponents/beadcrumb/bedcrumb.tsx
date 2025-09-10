@@ -1,4 +1,5 @@
 import React, { FC } from "react";
+import { v4 as uuidv4 } from "uuid";
 
 export interface BreadcrumbItem {
   label: string;
@@ -23,10 +24,10 @@ const Breadcrumbs: FC<BreadcrumbsProps> = ({
     >
       <ol className="list-reset flex">
         {items.map((item, index) => {
-          const isLast = index === items.length - 1;
+          const isLast = index === items?.length - 1;
 
           return (
-            <li key={index} className="flex items-center">
+            <li key={uuidv4()} className="flex items-center">
               {isLast ? (
                 <span className="text-gray-700 dark:text-white">
                   {item.label}
