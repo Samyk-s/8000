@@ -49,9 +49,18 @@ class BookingApi {
     }
   }
   // update booking
-  async updateeBooking(id: number, data: BookingPayload) {
+  async updateBooking(id: number, data: BookingPayload) {
     try {
-      const res = await api.patch(`/bookings/${id}`,);
+      const res = await api.patch(`/bookings/${id}`, data);
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
+  // update booking
+  async assignBooking(booingId: number, teamId: number) {
+    try {
+      const res = await api.patch(`/bookings/${booingId}/assign/${teamId}?bookingId=${booingId}&teamMemberId=${teamId}`);
       return res.data
     } catch (error) {
       throw error

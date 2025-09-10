@@ -81,7 +81,22 @@ export const updateBooking = createAsyncThunk<
   { rejectValue: string }
 >("bookings/updateBooking", async ({ id, data }, { rejectWithValue }) => {
   try {
-    const res = await bookingApi.updateeBooking(id, data);
+    const res = await bookingApi.updateBooking(id, data);
+    message.success(res?.message)
+    return res.data as BookingItem;
+  } catch (err: any) {
+    message.error("Failed to update")
+    return rejectWithValue(err?.message || "Failed to update");
+  }
+});
+// update booking 
+export const assignBooking = createAsyncThunk<
+  BookingItem,
+  { bookingId: number, teamId: number },
+  { rejectValue: string }
+>("bookings/assignBooking", async ({ bookingId, teamId }, { rejectWithValue }) => {
+  try {
+    const res = await bookingApi.assignBooking(bookingId, teamId);
     message.success(res?.message)
     return res.data as BookingItem;
   } catch (err: any) {
@@ -216,7 +231,7 @@ const bookingsSlice = createSlice({
     //     state.loading = false;
     //   });
 
-    // Toggle
+    // update
     builder
       .addCase(updateBooking.pending, (state) => {
         state.loading = true;
@@ -230,6 +245,23 @@ const bookingsSlice = createSlice({
         state.loading = false;
       })
       .addCase(updateBooking.rejected, (state, action) => {
+        state.error = action.payload as string || "Failed to update";
+        state.loading = false;
+      });
+    //assign
+    builder
+      .addCase(assignBooking.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(assignBooking.fulfilled, (state, action: PayloadAction<BookingItem>) => {
+
+        const index = state.items.findIndex((item) => item?.id === action.payload?.id);
+        if (index !== -1) state.items[index] = action?.payload;
+
+        state.loading = false;
+      })
+      .addCase(assignBooking.rejected, (state, action) => {
         state.error = action.payload as string || "Failed to update";
         state.loading = false;
       });

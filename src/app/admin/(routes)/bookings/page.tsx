@@ -12,7 +12,7 @@ const BookingPage = () => {
             href: "/admin/dashboard",
           },
           {
-            label: "Bookins",
+            label: "Bookings",
             href: "/admin/bookins",
           },
         ]}

@@ -17,7 +17,7 @@ const BookingPage = () => {
           },
           {
             label: "Edit Bookings",
-            href: `/admin/bookins/${id}`,
+            href: `/admin/bookings/${id}`,
           },
         ]}
         separator="/"

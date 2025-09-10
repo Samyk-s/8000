@@ -1,7 +1,6 @@
 import teamsApi from "@/lib/api/teamsApi";
-import { Meta } from "@/types/booking";
 import { TeamItem, TeamPayload } from "@/types/teams";
-import { Params } from "@/types/utils-type";
+import { Meta, Params } from "@/types/utils-type";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { message } from "antd";
 

@@ -20,6 +20,7 @@ import {
 import Pagination from "../../pagination/pagination";
 import Link from "next/link";
 import BookingView from "../../view/booking-view";
+import { AffiliationIcon } from "@/components/Layouts/sidebar/icons";
 
 const BookingTable: React.FC = () => {
   const { items, loading, error, meta } = useSelector(
@@ -114,9 +115,9 @@ const BookingTable: React.FC = () => {
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
                     Created Date
                   </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  {/* <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
                     Status
-                  </th>
+                  </th> */}
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
                     Viewed
                   </th>
@@ -148,9 +149,9 @@ const BookingTable: React.FC = () => {
                       <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
                         {formatDate(item.createdAt)}
                       </td>
-                      <td className="whitespace-nowrap px-6 py-4">
+                      {/* <td className="whitespace-nowrap px-6 py-4">
                         <StatusBadge status={item.status} />
-                      </td>
+                      </td> */}
                       <td className="whitespace-nowrap px-6 py-4">
                         <ViewedBadge isViewed={item.isViewd} />
                       </td>
@@ -163,6 +164,13 @@ const BookingTable: React.FC = () => {
                           >
                             <EyeIcon />
                           </button>
+                          <Link
+                            href={`/admin/bookings/${item?.id}/assign`}
+                            className="rounded p-1 text-green-600 hover:bg-green-50 hover:text-green-900"
+                            title="Assign Booking"
+                          >
+                            <AffiliationIcon />
+                          </Link>
                           <Link
                             href={`/admin/bookings/${item?.id}`}
                             className="rounded p-1 text-green-600 hover:bg-green-50 hover:text-green-900"

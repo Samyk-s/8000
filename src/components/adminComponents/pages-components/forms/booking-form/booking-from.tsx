@@ -210,8 +210,8 @@ const BookingForm = ({ id }: { id: number }) => {
             >
               <Select placeholder="Select status">
                 <Option value="pending">Pending</Option>
-                <Option value="processing">Processing</Option>
                 <Option value="confirmed">Confirmed</Option>
+                <Option value="completed">Completed</Option>
                 <Option value="cancelled">Cancelled</Option>
               </Select>
             </Form.Item>
