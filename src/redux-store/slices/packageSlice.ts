@@ -31,6 +31,7 @@ export const searchPackages = createAsyncThunk<
 >("packages/searchPackages", async ({ params }, { rejectWithValue }) => {
   try {
     const res = await packageApi.searchPackages(params);
+    console.log("search", res)
     return res;
   } catch (err: any) {
     return rejectWithValue(err.message);

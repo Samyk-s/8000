@@ -11,7 +11,8 @@ import newsLetterReducer from "../slices/newsLetterSlice";
 import teamsCategoryReducer from "../slices/teamCategorySlice";
 import teamReducer from "../slices/teamSlice";
 import testimonialReducer from "../slices/testimonialSlice"
-import bookinReducer from "../slices/bookinSlice"
+import bookinReducer from "../slices/bookinSlice";
+import summiterReducer from "../slices/summiterSlice"
 
 const rootReducer = combineReducers({
   packges: packageReducer,
@@ -25,7 +26,8 @@ const rootReducer = combineReducers({
   teamsCategory: teamsCategoryReducer,
   teams: teamReducer,
   testimonials: testimonialReducer,
-  bookings: bookinReducer
+  bookings: bookinReducer,
+  summiter: summiterReducer
 });
 
 export const store = configureStore({

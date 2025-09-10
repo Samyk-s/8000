@@ -77,8 +77,8 @@ export const NAV_DATA = [
         items: [],
       },
       {
-        title: "Gears",
-        url: "/admin/gears",
+        title: "Summitter",
+        url: "/admin/summitters",
         icon: Icons.GearIcon,
         items: [],
       },
