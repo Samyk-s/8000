@@ -1,6 +1,6 @@
 "use client";
 import Breadcrumbs from "@/components/adminComponents/beadcrumb/bedcrumb";
-import SummiterStoryForm from "@/components/adminComponents/pages-components/forms/summiter-story-form/summitter-story-form";
+import SummiterForm from "@/components/adminComponents/pages-components/forms/summitter-form/summitter-form";
 import { Card } from "antd";
 import { useParams } from "next/navigation";
 
@@ -14,17 +14,13 @@ const SummitterStoryCreatePage = () => {
         items={[
           { label: "Dashboard", href: "/admin/dashboard" },
           { label: "Summitter", href: "/admin/summitters" },
-          { label: "Stories", href: "/admin/summitters/stories" },
-          {
-            label: "Create Story",
-            href: `/admin/summitters/stories/${id}/crate`,
-          },
+          { label: "Create Summitter", href: "/admin/summitters/create" },
         ]}
         separator="/"
       />
 
       <Card>
-        <SummiterStoryForm />
+        <SummiterForm />
       </Card>
     </div>
   );

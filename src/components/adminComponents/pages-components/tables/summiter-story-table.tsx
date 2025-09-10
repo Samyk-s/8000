@@ -107,6 +107,7 @@ const SummitterStoryTable = () => {
                               width={1080}
                               height={720}
                               className="aspect-video"
+                              loading="lazy"
                             />
                           </div>
                         </Link>
@@ -125,6 +126,7 @@ const SummitterStoryTable = () => {
                               alt={item?.title}
                               width={1080}
                               height={720}
+                              loading="lazy"
                               className="aspect-video"
                             />
                           </div>
