@@ -4,6 +4,12 @@ import { Meta, Params } from "@/types/utils-type";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { message } from "antd";
 
+
+interface updateSummiterPayload {
+  id: number,
+  payload: SummitterItem
+}
+
 // Async thunk to create a summiter
 export const createSummiter = createAsyncThunk<
   SummitterItem,
@@ -68,12 +74,50 @@ export const deleteSummiter = createAsyncThunk<
     return rejectWithValue(err.message || "Failed to delete summiter");
   }
 });
+// fetch summiter by id
+export const fetchSummiterById = createAsyncThunk<
+  SummitterItem,
+  number,
+  { rejectValue: string }
+>(
+  "summiter/fetchSummiterById",
+  async (id, { rejectWithValue }) => {
+    try {
+      const res = await summitterApi.getSummterById(id);
+      // console.log("res", res)
+      return res;
+    } catch (err: any) {
+      message.error(err?.message)
+      return rejectWithValue(err.message || "Failed to fetch summiter");
+    }
+  }
+);
+
+// update 
+export const updateSummiter = createAsyncThunk<
+  SummitterItem,
+  updateSummiterPayload,
+  { rejectValue: string }
+>(
+  "summiter/createSummiter",
+  async ({ id, payload }, { rejectWithValue }) => {
+    try {
+      const res = await summitterApi.updateSummter(id, payload as any);
+      // console.log(res, "res")
+      message.success(res?.message || "Summiter created successfully");
+      return res.data;
+    } catch (err: any) {
+      return rejectWithValue(err.message || "Failed to create summiter");
+    }
+  }
+);
 
 interface SummiterState {
   items: SummitterItem[];
   meta: Meta;
   loading: boolean;
   error: string | null;
+  summitter: SummitterItem | null
 }
 
 const initialState: SummiterState = {
@@ -87,6 +131,7 @@ const initialState: SummiterState = {
   },
   loading: false,
   error: null,
+  summitter: null
 };
 
 const summiterSlice = createSlice({
@@ -160,6 +205,21 @@ const summiterSlice = createSlice({
         state.loading = false;
       })
       .addCase(deleteSummiter.rejected, (state, action) => {
+        state.error = action.payload || "Failed to delete summiter";
+        state.loading = false;
+      });
+    // get summiter by id
+    builder
+      .addCase(fetchSummiterById.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchSummiterById.fulfilled, (state, action: PayloadAction<SummitterItem>) => {
+        // console.log("payload", action.payload)
+        state.summitter = action.payload
+        state.loading = false;
+      })
+      .addCase(fetchSummiterById.rejected, (state, action) => {
         state.error = action.payload || "Failed to delete summiter";
         state.loading = false;
       });

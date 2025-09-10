@@ -40,6 +40,24 @@ class SummitterApi {
       throw error
     }
   }
+  // get summitter by id
+  async getSummterById(id: number) {
+    try {
+      const res = await api.get(`/summitter/${id}?id=${id}`);
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
+  // update summitter by id
+  async updateSummter(id: number, payload: SummiterPayload) {
+    try {
+      const res = await api.patch(`/summitter/${id}`, payload);
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
 }
 
 export default new SummitterApi()

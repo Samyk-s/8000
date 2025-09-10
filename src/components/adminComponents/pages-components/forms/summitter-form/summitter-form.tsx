@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useEffect, useState } from "react";
 import { Form, Input, Button, Row, Col, Upload, Select, message } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
@@ -7,33 +6,69 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux-store/store/store";
 import Loader from "../../loader/loader";
 import { fetchTeams } from "@/redux-store/slices/teamSlice";
-import { MediaFile } from "@/types/utils-type";
 import resourceApi from "@/lib/api/resourceApi";
-import { createSummiter } from "@/redux-store/slices/summiterSlice";
+import { MediaFile } from "@/types/utils-type";
+import {
+  createSummiter,
+  updateSummiter,
+} from "@/redux-store/slices/summiterSlice";
+import { SummitterItem } from "@/types/summitter";
+import { useRouter } from "next/navigation";
 
 const { Option } = Select;
 
-const SummiterForm: React.FC = () => {
+interface SummiterFormProps {
+  summitter?: SummitterItem;
+}
+
+const SummiterForm: React.FC<SummiterFormProps> = ({ summitter }) => {
   const { items, loading } = useSelector((state: RootState) => state.teams);
   const dispatch = useDispatch<AppDispatch>();
-
   const [form] = Form.useForm();
   const [uploadedFile, setUploadedFile] = useState<MediaFile | null>(null);
   const [fileList, setFileList] = useState<any[]>([]);
   const [uploading, setUploading] = useState(false);
+  const router = useRouter();
+  useEffect(() => {
+    dispatch(fetchTeams({ params: {} }));
 
-  // ✅ Handle File Upload
+    // If updating, populate the form
+    if (summitter) {
+      form.setFieldsValue({
+        name: summitter.name,
+        nationality: summitter.nationality,
+        summittedDate: summitter.summittedDate,
+        peak: summitter.peak,
+        summitterEmail: summitter.summitterEmail,
+        order: summitter.order,
+        led_by_id: summitter.ledBy?.id,
+      });
+
+      if (summitter.image) {
+        setUploadedFile(summitter.image);
+        setFileList([
+          {
+            uid: summitter.image.uid,
+            name: summitter.image.name,
+            status: "done",
+            url: summitter.image.url,
+          },
+        ]);
+      }
+    }
+  }, [dispatch, summitter, form]);
+
   const handleFileUpload = async (rawFile: File) => {
     const formData = new FormData();
     formData.append("file", rawFile);
 
     try {
       setUploading(true);
-      const res = await resourceApi.createResource(formData); // backend upload
+      const res = await resourceApi.createResource(formData);
       setUploading(false);
 
       if (res) {
-        setUploadedFile(res); // store the uploaded file response
+        setUploadedFile(res);
         setFileList([
           {
             uid: res.uid,
@@ -54,19 +89,20 @@ const SummiterForm: React.FC = () => {
   };
 
   const beforeUpload = async (file: File) => {
-    const isValidType =
-      file.type === "image/jpeg" ||
-      file.type === "image/png" ||
-      file.type === "image/jpg" ||
-      file.type === "image/webp";
+    const isValidType = [
+      "image/jpeg",
+      "image/png",
+      "image/jpg",
+      "image/webp",
+    ].includes(file.type);
 
     if (!isValidType) {
       message.error("You can only upload JPG, JPEG, PNG, or WEBP files!");
       return Upload.LIST_IGNORE;
     }
 
-    await handleFileUpload(file); // ✅ upload file
-    return Upload.LIST_IGNORE; // prevent antd auto upload
+    await handleFileUpload(file);
+    return Upload.LIST_IGNORE;
   };
 
   const onFinish = (values: any) => {
@@ -77,10 +113,19 @@ const SummiterForm: React.FC = () => {
 
     const payload = {
       ...values,
+      order: Number(values.order),
       image: uploadedFile,
     };
 
-    dispatch(createSummiter({ ...payload, order: Number(payload?.order) }));
+    if (summitter) {
+      // Update existing summiter
+      dispatch(updateSummiter({ id: summitter.id, payload }));
+      router.push("/admin/summitters");
+    } else {
+      // Create new summiter
+      dispatch(createSummiter(payload));
+      router.push("/admin/summitters");
+    }
   };
 
   const onFinishFailed = (errorInfo: any) => {
@@ -88,149 +133,140 @@ const SummiterForm: React.FC = () => {
     message.error("Please fill all required fields.");
   };
 
-  useEffect(() => {
-    dispatch(fetchTeams({ params: {} }));
-  }, [dispatch]);
-
   if (loading) return <Loader />;
 
   return (
-    <div>
-      <Form
-        form={form}
-        name="summiter-form"
-        autoComplete="off"
-        layout="vertical"
-        onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
-      >
-        <Row gutter={[16, 10]}>
-          {/* Name */}
-          <Col xs={24} md={12}>
-            <Form.Item
-              label="Name"
-              name="name"
-              rules={[{ required: true, message: "Name is required" }]}
-            >
-              <Input />
-            </Form.Item>
-          </Col>
-
-          {/* Nationality */}
-          <Col xs={24} md={12}>
-            <Form.Item
-              label="Nationality"
-              name="nationality"
-              rules={[{ required: true, message: "Nationality is required" }]}
-            >
-              <Input />
-            </Form.Item>
-          </Col>
-
-          {/* Summitted Date */}
-          <Col xs={24} md={12}>
-            <Form.Item
-              label="Summitted Date"
-              name="summittedDate"
-              rules={[
-                { required: true, message: "Summitted date is required" },
-              ]}
-            >
-              <Input type="date" />
-            </Form.Item>
-          </Col>
-
-          {/* Peak */}
-          <Col xs={24} md={12}>
-            <Form.Item
-              label="Peak"
-              name="peak"
-              rules={[{ required: true, message: "Peak is required" }]}
-            >
-              <Input />
-            </Form.Item>
-          </Col>
-
-          {/* Email */}
-          <Col xs={24} md={12}>
-            <Form.Item
-              label="Summitter Email"
-              name="summitterEmail"
-              rules={[
-                { required: true, message: "Email is required" },
-                { type: "email", message: "Please enter a valid email" },
-              ]}
-            >
-              <Input type="email" />
-            </Form.Item>
-          </Col>
-
-          {/* Order */}
-          <Col xs={24} md={12}>
-            <Form.Item
-              label="Order"
-              name="order"
-              rules={[{ required: true, message: "Order is required" }]}
-            >
-              <Input type="number" />
-            </Form.Item>
-          </Col>
-
-          {/* Lead by */}
-          <Col xs={24} md={12} lg={8}>
-            <Form.Item
-              label="Lead"
-              name="led_by_id"
-              rules={[{ required: true, message: "Leader is required" }]}
-            >
-              <Select placeholder="Select Lead">
-                {items?.map((item) => (
-                  <Option key={item?.id} value={item?.id}>
-                    {item?.name}
-                  </Option>
-                ))}
-              </Select>
-            </Form.Item>
-          </Col>
-
-          {/* Image */}
-          <Col xs={24} md={12} lg={8}>
-            <Form.Item label="Image" required>
-              <Upload
-                beforeUpload={beforeUpload}
-                listType="picture"
-                maxCount={1}
-                fileList={fileList}
-                onRemove={() => {
-                  setUploadedFile(null);
-                  setFileList([]);
-                }}
-              >
-                <Button
-                  icon={<UploadOutlined />}
-                  loading={uploading}
-                  disabled={uploading}
-                >
-                  {uploading ? "Uploading..." : "Click to Upload"}
-                </Button>
-              </Upload>
-            </Form.Item>
-          </Col>
-        </Row>
-
-        {/* Submit Button */}
-        <Form.Item>
-          <Button
-            type="primary"
-            htmlType="submit"
-            loading={loading}
-            className="w-fit bg-black text-white hover:!bg-black hover:!text-white"
+    <Form
+      form={form}
+      name="summiter-form"
+      autoComplete="off"
+      layout="vertical"
+      onFinish={onFinish}
+      onFinishFailed={onFinishFailed}
+    >
+      <Row gutter={[16, 10]}>
+        {/* Name */}
+        <Col xs={24} md={12}>
+          <Form.Item
+            label="Name"
+            name="name"
+            rules={[{ required: true, message: "Name is required" }]}
           >
-            Submit
-          </Button>
-        </Form.Item>
-      </Form>
-    </div>
+            <Input />
+          </Form.Item>
+        </Col>
+
+        {/* Nationality */}
+        <Col xs={24} md={12}>
+          <Form.Item
+            label="Nationality"
+            name="nationality"
+            rules={[{ required: true, message: "Nationality is required" }]}
+          >
+            <Input />
+          </Form.Item>
+        </Col>
+
+        {/* Summitted Date */}
+        <Col xs={24} md={12}>
+          <Form.Item
+            label="Summitted Date"
+            name="summittedDate"
+            rules={[{ required: true, message: "Summitted date is required" }]}
+          >
+            <Input type="date" />
+          </Form.Item>
+        </Col>
+
+        {/* Peak */}
+        <Col xs={24} md={12}>
+          <Form.Item
+            label="Peak"
+            name="peak"
+            rules={[{ required: true, message: "Peak is required" }]}
+          >
+            <Input />
+          </Form.Item>
+        </Col>
+
+        {/* Email */}
+        <Col xs={24} md={12}>
+          <Form.Item
+            label="Summitter Email"
+            name="summitterEmail"
+            rules={[
+              { required: true, message: "Email is required" },
+              { type: "email", message: "Please enter a valid email" },
+            ]}
+          >
+            <Input type="email" />
+          </Form.Item>
+        </Col>
+
+        {/* Order */}
+        <Col xs={24} md={12}>
+          <Form.Item
+            label="Order"
+            name="order"
+            rules={[{ required: true, message: "Order is required" }]}
+          >
+            <Input type="number" />
+          </Form.Item>
+        </Col>
+
+        {/* Lead by */}
+        <Col xs={24} md={12} lg={8}>
+          <Form.Item
+            label="Lead"
+            name="led_by_id"
+            rules={[{ required: true, message: "Leader is required" }]}
+          >
+            <Select placeholder="Select Lead">
+              {items?.map((item) => (
+                <Option key={item?.id} value={item?.id}>
+                  {item?.name}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Col>
+
+        {/* Image */}
+        <Col xs={24} md={12} lg={8}>
+          <Form.Item label="Image" required>
+            <Upload
+              beforeUpload={beforeUpload}
+              listType="picture"
+              maxCount={1}
+              fileList={fileList}
+              onRemove={() => {
+                setUploadedFile(null);
+                setFileList([]);
+              }}
+            >
+              <Button
+                icon={<UploadOutlined />}
+                loading={uploading}
+                disabled={uploading}
+              >
+                {uploading ? "Uploading..." : "Click to Upload"}
+              </Button>
+            </Upload>
+          </Form.Item>
+        </Col>
+      </Row>
+
+      <Form.Item>
+        <Button
+          type="primary"
+          htmlType="submit"
+          loading={loading}
+          className="w-fit bg-black text-white hover:!bg-black hover:!text-white"
+        >
+          {summitter ? "Update" : "Submit"}
+        </Button>
+      </Form.Item>
+    </Form>
   );
 };
 

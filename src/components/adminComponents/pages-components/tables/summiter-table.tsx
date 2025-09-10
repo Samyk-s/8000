@@ -18,6 +18,7 @@ import {
   toggleSummiter,
 } from "@/redux-store/slices/summiterSlice";
 import { SummitterItem } from "@/types/summitter";
+import SummitterTabs from "../../tabs/summitter-tabs";
 
 const SummitterTable = () => {
   const [limit, setLimit] = useState(10);
@@ -46,6 +47,9 @@ const SummitterTable = () => {
     <div className="min-h-screen p-1">
       <div className="rounded-lg bg-white shadow-sm">
         <div className="flex flex-col gap-3 border-b border-gray-200 p-6">
+          <div>
+            <SummitterTabs />
+          </div>
           <div className="flex justify-end">
             <Link
               href={"/admin/summitters/create"}
