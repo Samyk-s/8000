@@ -1,4 +1,4 @@
-import { SummiterPayload } from "@/types/summitter";
+import { StoryPayload, SummiterPayload } from "@/types/summitter";
 import { api } from "../axios-config/api";
 import { Params } from "@/types/utils-type";
 
@@ -53,6 +53,56 @@ class SummitterApi {
   async updateSummter(id: number, payload: SummiterPayload) {
     try {
       const res = await api.patch(`/summitter/${id}`, payload);
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
+
+
+
+
+  //story
+  //create summiter story
+  async createSummitterStory(summiter_id: number, data: StoryPayload) {
+    try {
+      const res = await api.post(`/stories/${summiter_id}`, data)
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
+  //get summiter story
+  async getSummitterStories(params: Params) {
+    try {
+      const res = await api.get(`/stories?page=${params?.page}&limit=${params?.limit}`)
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
+  //get summiter story
+  async updateSummitterStory(id: number, data: StoryPayload) {
+    try {
+      const res = await api.patch(`/stories/${id}`, data)
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
+  //get summiter story
+  async deleteSummitterStory(id: number) {
+    try {
+      const res = await api.delete(`/stories/${id}`)
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
+  //get summiter story
+  async toggleSummitterStory(id: number) {
+    try {
+      const res = await api.patch(`/stories/${id}/toggle-status`)
       return res.data
     } catch (error) {
       throw error

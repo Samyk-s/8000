@@ -13,6 +13,7 @@ import teamReducer from "../slices/teamSlice";
 import testimonialReducer from "../slices/testimonialSlice"
 import bookinReducer from "../slices/bookinSlice";
 import summiterReducer from "../slices/summiterSlice"
+import summiterStoryReducer from "../slices/storySlice"
 
 const rootReducer = combineReducers({
   packges: packageReducer,
@@ -27,7 +28,8 @@ const rootReducer = combineReducers({
   teams: teamReducer,
   testimonials: testimonialReducer,
   bookings: bookinReducer,
-  summiter: summiterReducer
+  summiter: summiterReducer,
+  stories: summiterStoryReducer
 });
 
 export const store = configureStore({

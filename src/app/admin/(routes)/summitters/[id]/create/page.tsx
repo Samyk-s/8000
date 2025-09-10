@@ -1,23 +1,28 @@
 "use client";
 import Breadcrumbs from "@/components/adminComponents/beadcrumb/bedcrumb";
-import SummiterForm from "@/components/adminComponents/pages-components/forms/summitter-form/summitter-form";
+import SummiterStoryForm from "@/components/adminComponents/pages-components/forms/summiter-story-form/summitter-story-form";
+
 import { Card } from "antd";
+import { useParams } from "next/navigation";
 
 import React from "react";
 
 const SummitterCreatePage = () => {
+  const { id } = useParams();
   return (
     <div className="flex flex-col gap-3">
       <Breadcrumbs
         items={[
           { label: "Dashboard", href: "/admin/dashboard" },
-          { label: "Create Summitter", href: "/admin/summitters/create" },
+          { label: "Summitter", href: "/admin/summitters/summitters" },
+          { label: "Stories", href: "/admin/summitters/stories" },
+          { label: "Create Story", href: `/admin/summitters/${id}/create` },
         ]}
         separator="/"
       />
 
       <Card>
-        <SummiterForm />
+        <SummiterStoryForm />
       </Card>
     </div>
   );

@@ -27,3 +27,24 @@ export interface SummitterItem {
   created_at: string;
   updated_at: string;
 }
+
+
+export interface StoryPayload {
+  title: string;
+  image: MediaFile;
+  coverImage: MediaFile;
+  description: string;
+}
+
+export interface StoryItem {
+  id: number;
+  title: string;
+  slug: string;
+  summitter: SummitterItem;
+  image: MediaFile;
+  coverImage: MediaFile;
+  description: string;
+  status: number;
+  createdAt: string;
+  updatedAt: string;
+}

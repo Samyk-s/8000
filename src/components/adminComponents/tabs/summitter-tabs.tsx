@@ -1,38 +1,56 @@
 "use client";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import React from "react";
 
 const SummitterTabs = () => {
   const pathname = usePathname();
+  const { id } = useParams();
 
-  const tabs = [
-    { label: "Summiter", path: "" }, // base path
-    { label: "Story", path: "story" },
-  ];
+  const isSummitterActive =
+    pathname === "/admin/summitters" ||
+    pathname === "/admin/summitters/create" ||
+    (pathname.startsWith("/admin/summitters/") && id);
+
+  const isStoriesActive = pathname.startsWith("/admin/summitters/stories");
 
   return (
-    <div className="flex flex-wrap justify-center md:justify-start">
-      {tabs.map((tab) => {
-        const tabPath = tab.path ? `/story` : "";
-        const isActive =
-          (tab.path === "" && !pathname?.includes("/story")) ||
-          (tab.path !== "" && pathname?.endsWith(tab.path));
+    <div className="flex items-center border-b pb-2">
+      {/* Summitter tab */}
+      <Link
+        href="/admin/summitters"
+        className={`px-4 py-1 text-sm font-semibold transition-colors md:text-base ${
+          isSummitterActive
+            ? "bg-blue-600 text-white"
+            : "bg-gray-300 text-gray-600 hover:bg-gray-400 hover:text-gray-600"
+        }`}
+      >
+        Summitter
+      </Link>
 
-        return (
+      {/* Stories tab */}
+      <Link
+        href="/admin/summitters/stories"
+        className={`px-4 py-1 text-sm font-semibold transition-colors md:text-base ${
+          isStoriesActive
+            ? "bg-blue-600 text-white"
+            : "bg-gray-300 text-gray-600 hover:bg-gray-400 hover:text-gray-600"
+        }`}
+      >
+        Stories
+      </Link>
+
+      {/* Show Create Story button only when /summitters/[id] */}
+      {pathname.startsWith("/admin/summitters/") &&
+        id &&
+        !pathname.endsWith("stories") && (
           <Link
-            key={tab.label}
-            href={tabPath}
-            className={`px-4 py-1 !text-[14px] !font-semibold md:!text-[16px] ${
-              isActive
-                ? "bg-blue-600 text-white"
-                : "bg-gray-300 text-gray-600 hover:text-gray-600"
-            }`}
+            href={`/admin/summitters/${id}/create`}
+            className="ml-auto bg-black px-4 py-1 text-white hover:text-white"
           >
-            {tab.label}
+            Create Story
           </Link>
-        );
-      })}
+        )}
     </div>
   );
 };
