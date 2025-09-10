@@ -4,7 +4,6 @@ import { EditIcon } from "@/components/icons/icnos";
 import Image from "next/image";
 import Link from "next/link";
 import Entry from "../../entry/entry";
-import Search from "../../search/search";
 import Pagination from "../../pagination/pagination";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux-store/store/store";
@@ -14,8 +13,9 @@ import { PlusIcon, TrashIcon } from "@/assets/icons";
 import Loader from "../loader/loader";
 import { message, Popconfirm } from "antd";
 import {
+  deleteSummiter,
   fetchSummitters,
-  searchSummitters,
+  toggleSummiter,
 } from "@/redux-store/slices/summiterSlice";
 import { SummitterItem } from "@/types/summitter";
 
@@ -29,34 +29,10 @@ const SummitterTable = () => {
   const [search, setSearch] = useState("");
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
-  // call api for getting packages
+  // call api for getting summiters
   useEffect(() => {
     dispatch(fetchSummitters({ page, limit }));
   }, [dispatch]);
-
-  // search itinerary
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearch(value);
-
-    // Clear previous timeout
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
-    }
-
-    // Set new timeout
-    debounceRef.current = setTimeout(() => {
-      dispatch(
-        searchSummitters({
-          params: {
-            limit,
-            page,
-            search,
-          },
-        }),
-      );
-    }, 300);
-  };
 
   if (loading) {
     return <Loader />;
@@ -84,11 +60,6 @@ const SummitterTable = () => {
               onChange={(value) => setLimit(Number(value))}
               value={limit}
               total={meta?.totalItems}
-            />
-            <Search
-              placeholder="Search package..."
-              search={search}
-              onChange={handleSearch}
             />
           </div>
 
@@ -169,18 +140,16 @@ const SummitterTable = () => {
                       <td className="whitespace-nowrap px-6 py-4 text-base font-medium">
                         <div className="flex items-center space-x-2">
                           <Link
-                            href={`/admin/packages/${item?.id}`}
-                            title="Edit Summiter"
+                            href={`/admin/summitters/${item?.id}`}
+                            title="Edit Summitter"
                           >
                             <EditIcon />
                           </Link>
                           <Popconfirm
-                            title="Delete the Category"
-                            description="Are you sure to delete this category?"
+                            title="Delete the Summitter"
+                            description="Are you sure to delete this summitter?"
                             onCancel={() => message.error("Cancelled")}
-                            // onConfirm={() =>
-                            //   dispatch(deleteTeamCategory(Number(item?.id)))
-                            // }
+                            onConfirm={() => dispatch(deleteSummiter(item?.id))}
                             okText="Yes"
                             cancelText="No"
                           >
@@ -193,7 +162,7 @@ const SummitterTable = () => {
                           </Popconfirm>
                           <ToggleButton
                             onChange={() => {
-                              dispatch(togglePackageStatus(item?.id));
+                              dispatch(toggleSummiter(item?.id));
                             }}
                             checked={item?.status === 1 ? true : false}
                             title={item?.status === 1 ? "Deactive" : "Active "}

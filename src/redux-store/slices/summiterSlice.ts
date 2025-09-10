@@ -4,10 +4,9 @@ import { Meta, Params } from "@/types/utils-type";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { message } from "antd";
 
-
 // Async thunk to create a summiter
 export const createSummiter = createAsyncThunk<
-  { item: SummitterItem },
+  SummitterItem,
   SummiterPayload,
   { rejectValue: string }
 >(
@@ -15,7 +14,7 @@ export const createSummiter = createAsyncThunk<
   async (payload: SummiterPayload, { rejectWithValue }) => {
     try {
       const res = await summitterApi.createSummiter(payload);
-      message.success(res?.message)
+      message.success(res?.message || "Summiter created successfully");
       return res.data;
     } catch (err: any) {
       return rejectWithValue(err.message || "Failed to create summiter");
@@ -23,9 +22,11 @@ export const createSummiter = createAsyncThunk<
   }
 );
 
+// Fetch summiter list
 export const fetchSummitters = createAsyncThunk<
-  { items: SummitterItem[]; meta: Meta },  // return type
-  Params | undefined                     // argument type (optional)
+  { items: SummitterItem[]; meta: Meta },
+  Params | undefined,
+  { rejectValue: string }
 >(
   "summiter/fetchSummiter",
   async (params, { rejectWithValue }) => {
@@ -37,31 +38,45 @@ export const fetchSummitters = createAsyncThunk<
     }
   }
 );
-//search
-export const searchSummitters = createAsyncThunk<
-  { items: SummitterItem[]; meta: Meta },  // return type
-  { params: Params | undefined }                     // argument type (optional)
->(
-  "summiter/searchSummiter",
-  async (params, { rejectWithValue }) => {
-    try {
-      const res = await summitterApi.searchSummiters(params as Params);
-      return res;
-    } catch (err: any) {
-      return rejectWithValue(err.message);
-    }
+
+// Toggle summiter status
+export const toggleSummiter = createAsyncThunk<
+  SummitterItem,
+  number,
+  { rejectValue: string }
+>("summiter/toggleSummiter", async (id, { rejectWithValue }) => {
+  try {
+    const res = await summitterApi.toggleSummiter(id);
+    message.success(res?.message || "Summiter toggled successfully");
+    return res.data;
+  } catch (err: any) {
+    return rejectWithValue(err.message || "Failed to toggle summiter");
   }
-);
+});
 
+// Delete summiter
+export const deleteSummiter = createAsyncThunk<
+  number,
+  number,
+  { rejectValue: string }
+>("summiter/deleteSummiter", async (id, { rejectWithValue }) => {
+  try {
+    const res = await summitterApi.deleteSummiter(id);
+    message.success(res?.message);
+    return id;
+  } catch (err: any) {
+    return rejectWithValue(err.message || "Failed to delete summiter");
+  }
+});
 
-interface SummitterState {
+interface SummiterState {
   items: SummitterItem[];
-  meta: Meta,
+  meta: Meta;
   loading: boolean;
-  error: string | null
+  error: string | null;
 }
 
-const initialState: SummitterState = {
+const initialState: SummiterState = {
   items: [],
   meta: {
     currentPage: 1,
@@ -72,58 +87,83 @@ const initialState: SummitterState = {
   },
   loading: false,
   error: null,
-}
+};
 
 const summiterSlice = createSlice({
-  name: "summitter",
+  name: "summiter",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
+    // CREATE summiter
     builder
       .addCase(createSummiter.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(createSummiter.fulfilled, (state, action: PayloadAction<any>) => {
-        state.loading = true;
-        state.error = null;
-        state.items = state.items.push(action.payload) as any;
-      })
-      .addCase(createSummiter.rejected, (state, action: PayloadAction<any>) => {
-        state.error = action.payload || "Failed to fetch pages";
+      .addCase(
+        createSummiter.fulfilled,
+        (state, action: PayloadAction<SummitterItem>) => {
+          state.items.push(action.payload);
+          state.loading = false;
+        }
+      )
+      .addCase(createSummiter.rejected, (state, action) => {
+        state.error = action.payload || "Failed to create summiter";
         state.loading = false;
       });
-    //get summitters
+
+    // FETCH summiter list
     builder
       .addCase(fetchSummitters.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchSummitters.fulfilled, (state, action) => {
-        state.items = action.payload.items;
-        state.meta = action.payload.meta;
-        state.loading = false;
-      })
-      .addCase(fetchSummitters.rejected, (state, action: PayloadAction<any>) => {
-        state.error = action.payload || "Failed to fetch pages";
+      .addCase(
+        fetchSummitters.fulfilled,
+        (state, action: PayloadAction<{ items: SummitterItem[]; meta: Meta }>) => {
+          state.items = action.payload.items;
+          state.meta = action.payload.meta;
+          state.loading = false;
+        }
+      )
+      .addCase(fetchSummitters.rejected, (state, action) => {
+        state.error = action.payload || "Failed to fetch summitter list";
         state.loading = false;
       });
-    //search
+
+    // TOGGLE summiter
     builder
-      .addCase(searchSummitters.pending, (state) => {
+      .addCase(toggleSummiter.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(searchSummitters.fulfilled, (state, action) => {
-        state.items = action.payload.items;
-        state.meta = action.payload.meta;
+      .addCase(toggleSummiter.fulfilled, (state, action: PayloadAction<SummitterItem>) => {
+        const index = state.items.findIndex((item: SummitterItem) => item.id === action.payload.id);
+        if (index !== -1) {
+          state.items[index] = action.payload;
+        }
         state.loading = false;
       })
-      .addCase(searchSummitters.rejected, (state, action: PayloadAction<any>) => {
-        state.error = action.payload || "Failed to fetch pages";
+      .addCase(toggleSummiter.rejected, (state, action) => {
+        state.error = action.payload || "Failed to toggle summiter";
         state.loading = false;
       });
-  }
-})
 
-export default summiterSlice.reducer
+    // DELETE summiter
+    builder
+      .addCase(deleteSummiter.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteSummiter.fulfilled, (state, action: PayloadAction<number>) => {
+        state.items = state.items.filter((item: SummitterItem) => item.id !== action.payload);
+        state.loading = false;
+      })
+      .addCase(deleteSummiter.rejected, (state, action) => {
+        state.error = action.payload || "Failed to delete summiter";
+        state.loading = false;
+      });
+  },
+});
+
+export default summiterSlice.reducer;

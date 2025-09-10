@@ -21,10 +21,20 @@ class SummitterApi {
       throw error
     }
   }
-  // search summitters
-  async searchSummiters(params: Params) {
+
+  // toggle summitter
+  async toggleSummiter(id: number) {
     try {
-      const res = await api.get(`/summitter/search?keyword=${params?.search}&page=${params?.page}&limit=${params?.limit}`)
+      const res = await api.patch(`/summitter/${id}/toggle-status`)
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
+  // delete summitter
+  async deleteSummiter(id: number) {
+    try {
+      const res = await api.delete(`/summitter/${id}`)
       return res.data
     } catch (error) {
       throw error
