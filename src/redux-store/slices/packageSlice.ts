@@ -9,16 +9,20 @@ import { message } from "antd";
 
 // Fetch packages with pagination & filters
 export const fetchPackages = createAsyncThunk<
-  { items: PackageItem[]; meta: Meta },
-  Params
->("packages/fetchPackages", async (params, { rejectWithValue }) => {
-  try {
-    const res = await packageApi.getPackages(params);
-    return res;
-  } catch (err: any) {
-    return rejectWithValue(err.message);
+  { items: PackageItem[]; meta: Meta },  // return type
+  Params | undefined                     // argument type (optional)
+>(
+  "packages/fetchPackages",
+  async (params, { rejectWithValue }) => {
+    try {
+      const res = await packageApi.getPackages(params as Params);
+
+      return res;
+    } catch (err: any) {
+      return rejectWithValue(err.message);
+    }
   }
-});
+);
 
 // Search packages
 export const searchPackages = createAsyncThunk<

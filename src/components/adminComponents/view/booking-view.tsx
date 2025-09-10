@@ -126,9 +126,9 @@ const BookingView = ({ id }: { id: number }) => {
                   <td className="bg-gray-50 px-2 py-3 font-medium text-gray-600">
                     Assigned Team Member
                   </td>
-                  {/* <td className="px-2 py-3">
+                  <td className="px-2 py-3">
                     {booking?.assignedTeamMember?.name || "Not assigned"}
-                  </td> */}
+                  </td>
                 </tr>
                 <tr className="border-b">
                   <td className="bg-gray-50 px-2 py-3 font-medium text-gray-600">

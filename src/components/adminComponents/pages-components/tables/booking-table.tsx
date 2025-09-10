@@ -100,6 +100,9 @@ const BookingTable: React.FC = () => {
               >
                 <tr>
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                    S. N.
+                  </th>
+                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
                     Customer Name
                   </th>
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
@@ -124,8 +127,11 @@ const BookingTable: React.FC = () => {
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
                 {items && items.length > 0 ? (
-                  items.map((item: BookingItem) => (
+                  items.map((item: BookingItem, index) => (
                     <tr key={item.id} className="hover:bg-gray-50">
+                      <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
+                        {index + 1}
+                      </td>
                       <td className="whitespace-nowrap px-6 py-4">
                         <div className="text-base font-medium text-gray-900">
                           {item.customerName}
@@ -135,11 +141,8 @@ const BookingTable: React.FC = () => {
                         {item.customerPhone}
                       </td>
                       <td className="whitespace-nowrap px-6 py-4">
-                        <div className="text-base font-medium text-gray-900">
+                        <div className="text-base text-gray-900">
                           {item.package?.title || "N/A"}
-                        </div>
-                        <div className="text-base text-gray-500">
-                          {item.noOfTravellers} travelers
                         </div>
                       </td>
                       <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900">

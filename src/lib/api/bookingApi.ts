@@ -1,5 +1,6 @@
 import { Params } from "@/types/utils-type";
 import { api } from "../axios-config/api";
+import { BookingPayload } from "@/types/booking";
 
 class BookingApi {
   // get all bookins
@@ -42,6 +43,15 @@ class BookingApi {
   async deleteBooking(id: number) {
     try {
       const res = await api.delete(`/bookings/${id}?id=${id}`);
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
+  // update booking
+  async updateeBooking(id: number, data: BookingPayload) {
+    try {
+      const res = await api.patch(`/bookings/${id}`,);
       return res.data
     } catch (error) {
       throw error

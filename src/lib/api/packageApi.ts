@@ -5,9 +5,9 @@ import { PackagePayload } from "@/types/package";
 
 class PackageApi {
 
-  async getPackages(param: Params) {
+  async getPackages(param?: Params) {
     try {
-      const response = await api.get(`/packages?search=${param.search}&page=${param.page}limit=${param.limit}`);
+      const response = await api.get(`/packages?search=${param?.search}&page=${param?.page}limit=${param?.limit}`);
       return response.data
     } catch (error) {
       console.error(error)

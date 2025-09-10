@@ -1,3 +1,4 @@
+import { TeamItem } from "./teams";
 
 
 export interface BookingItem {
@@ -10,6 +11,7 @@ export interface BookingItem {
   arrivalDate: string; // ISO Date string (e.g., "2025-05-05")
   departureDate: string; // ISO Date string
   package: {
+    id: number,
     title: string;
   };
   addons: {
@@ -18,6 +20,7 @@ export interface BookingItem {
   status: "pending" | "confirmed" | "cancelled" | string; // extendable
   totalPrice: string; // keeping as string since it looks like a decimal from DB
   isViewd: number; // 0 or 1
+  assignedTeamMember?: TeamItem | null
   createdAt: string; // ISO Date string
   updatedAt: string; // ISO Date string
 }

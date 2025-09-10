@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { Meta, Params } from "@/types/utils-type";
 import { message } from "antd";
-import { BookingItem } from "@/types/booking";
+import { BookingItem, BookingPayload } from "@/types/booking";
 import bookingApi from "@/lib/api/bookingApi";
 
 // ================= Async Thunks =================
@@ -11,7 +11,7 @@ export const fetchBooking = createAsyncThunk<
   { items: BookingItem[]; meta: Meta },
   { params: Params },
   { rejectValue: string }
->("booking/fetchbookings", async ({ params }, { rejectWithValue }) => {
+>("bookings/fetchbookings", async ({ params }, { rejectWithValue }) => {
   try {
     const res = await bookingApi.getBookings(params);
     return res;
@@ -23,10 +23,9 @@ export const fetchBookingById = createAsyncThunk<
   { items: BookingItem; meta: Meta },
   number,
   { rejectValue: string }
->("booking/fetchbookingsbyid", async (id, { rejectWithValue }) => {
+>("bookings/fetchbookingsbyid", async (id, { rejectWithValue }) => {
   try {
     const res = await bookingApi.getBooking(id);
-    console.log(res, "sdfds")
     return res;
   } catch (err: any) {
     return rejectWithValue(err.message);
@@ -36,7 +35,7 @@ export const viewBookingById = createAsyncThunk<
   { items: BookingItem; meta: Meta },
   { id: number, isViewed: number },
   { rejectValue: string }
->("booking/fetchbookingview", async ({ id, isViewed }, { rejectWithValue }) => {
+>("bookings/fetchbookingview", async ({ id, isViewed }, { rejectWithValue }) => {
   try {
     const res = await bookingApi.viwBooking(id, isViewed);
     console.log(res, "sdfds")
@@ -75,21 +74,21 @@ export const viewBookingById = createAsyncThunk<
 //   }
 // });
 
-// Toggle departure status
-// export const toggleDepartureStatus = createAsyncThunk<
-//   DepartureItem,
-//   DeparturePayload,
-//   { rejectValue: string }
-// >("departures/toggleDepartureStatus", async ({ packageId, departureId }, { rejectWithValue }) => {
-//   try {
-//     const res = await departureApi.toggleDeparture(packageId, departureId);
-//     message.success(res?.message)
-//     return res.data as DepartureItem;
-//   } catch (err: any) {
-//     message.error("Failed to toggle")
-//     return rejectWithValue(err?.message || "Failed to toggle departure status");
-//   }
-// });
+// update booking 
+export const updateBooking = createAsyncThunk<
+  BookingItem,
+  { id: number, data: BookingPayload },
+  { rejectValue: string }
+>("bookings/updateBooking", async ({ id, data }, { rejectWithValue }) => {
+  try {
+    const res = await bookingApi.updateeBooking(id, data);
+    message.success(res?.message)
+    return res.data as BookingItem;
+  } catch (err: any) {
+    message.error("Failed to update")
+    return rejectWithValue(err?.message || "Failed to update");
+  }
+});
 // Delete booking
 export const deleteBooking = createAsyncThunk<
   { id: number },
@@ -218,22 +217,22 @@ const bookingsSlice = createSlice({
     //   });
 
     // Toggle
-    // builder
-    //   .addCase(toggleDepartureStatus.pending, (state) => {
-    //     state.loading = true;
-    //     state.error = null;
-    //   })
-    //   .addCase(toggleDepartureStatus.fulfilled, (state, action: PayloadAction<DepartureItem>) => {
-    //     if (Array.isArray(state.items)) {
-    //       const index = state.items.findIndex((item) => item.id === action.payload.id);
-    //       if (index !== -1) state.items[index] = action.payload;
-    //     }
-    //     state.loading = false;
-    //   })
-    //   .addCase(toggleDepartureStatus.rejected, (state, action) => {
-    //     state.error = action.payload as string || "Failed to toggle departure status";
-    //     state.loading = false;
-    //   });
+    builder
+      .addCase(updateBooking.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateBooking.fulfilled, (state, action: PayloadAction<BookingItem>) => {
+
+        const index = state.items.findIndex((item) => item?.id === action.payload?.id);
+        if (index !== -1) state.items[index] = action?.payload;
+
+        state.loading = false;
+      })
+      .addCase(updateBooking.rejected, (state, action) => {
+        state.error = action.payload as string || "Failed to update";
+        state.loading = false;
+      });
 
     // Delete
     builder
