@@ -1,21 +1,24 @@
 "use client";
 import Breadcrumbs from "@/components/adminComponents/beadcrumb/bedcrumb";
-import PackageTable from "@/components/adminComponents/pages-components/tables/packages-table";
+import AddOnsTable from "@/components/adminComponents/pages-components/tables/add-ons-table";
+import { useParams } from "next/navigation";
 import React from "react";
 
-const Package = () => {
+const AddOnsPage = () => {
+  const { id } = useParams<{ id: string }>();
   return (
     <div className="flex flex-col gap-3">
       <Breadcrumbs
         items={[
           { label: "Dashboard", href: "/admin/dashboard" },
           { label: "Package", href: "/admin/packages" },
+          { label: "Edit Package", href: `/admin/packages/${id}` },
         ]}
         separator="/"
       />
-      <PackageTable />;
+      <AddOnsTable />
     </div>
   );
 };
 
-export default Package;
+export default AddOnsPage;

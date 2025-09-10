@@ -14,8 +14,8 @@ const PackageTabs = () => {
     { label: "Gallery", path: "gallery" },
     { label: "Departure", path: "departure" },
     { label: "Review", path: "review" },
-    { label: "SEO", path: "seo" },
     { label: "AddOns", path: "addons" },
+    { label: "SEO", path: "seo" },
   ];
 
   return (
