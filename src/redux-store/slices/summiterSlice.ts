@@ -37,6 +37,21 @@ export const fetchSummitters = createAsyncThunk<
     }
   }
 );
+//search
+export const searchSummitters = createAsyncThunk<
+  { items: SummitterItem[]; meta: Meta },  // return type
+  { params: Params | undefined }                     // argument type (optional)
+>(
+  "summiter/searchSummiter",
+  async (params, { rejectWithValue }) => {
+    try {
+      const res = await summitterApi.searchSummiters(params as Params);
+      return res;
+    } catch (err: any) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
 
 
 interface SummitterState {
@@ -90,6 +105,21 @@ const summiterSlice = createSlice({
         state.loading = false;
       })
       .addCase(fetchSummitters.rejected, (state, action: PayloadAction<any>) => {
+        state.error = action.payload || "Failed to fetch pages";
+        state.loading = false;
+      });
+    //search
+    builder
+      .addCase(searchSummitters.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(searchSummitters.fulfilled, (state, action) => {
+        state.items = action.payload.items;
+        state.meta = action.payload.meta;
+        state.loading = false;
+      })
+      .addCase(searchSummitters.rejected, (state, action: PayloadAction<any>) => {
         state.error = action.payload || "Failed to fetch pages";
         state.loading = false;
       });

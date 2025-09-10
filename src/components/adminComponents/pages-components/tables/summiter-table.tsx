@@ -1,14 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import {
-  EditIcon,
-  ItinerayIcon,
-  GalleryIcon,
-  DepartureIcon,
-  ReviewIcon,
-  SeoIcon,
-} from "@/components/icons/icnos";
-import { PackageItem } from "@/types/package";
+import { EditIcon } from "@/components/icons/icnos";
 import Image from "next/image";
 import Link from "next/link";
 import Entry from "../../entry/entry";
@@ -16,16 +8,15 @@ import Search from "../../search/search";
 import Pagination from "../../pagination/pagination";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux-store/store/store";
-import {
-  fetchPackages,
-  searchPackages,
-  togglePackageStatus,
-} from "@/redux-store/slices/packageSlice";
+import { togglePackageStatus } from "@/redux-store/slices/packageSlice";
 import ToggleButton from "../../toggle-button/toggle-button";
 import { PlusIcon, TrashIcon } from "@/assets/icons";
 import Loader from "../loader/loader";
 import { message, Popconfirm } from "antd";
-import { fetchSummitters } from "@/redux-store/slices/summiterSlice";
+import {
+  fetchSummitters,
+  searchSummitters,
+} from "@/redux-store/slices/summiterSlice";
 import { SummitterItem } from "@/types/summitter";
 
 const SummitterTable = () => {
@@ -56,7 +47,7 @@ const SummitterTable = () => {
     // Set new timeout
     debounceRef.current = setTimeout(() => {
       dispatch(
-        searchPackages({
+        searchSummitters({
           params: {
             limit,
             page,
