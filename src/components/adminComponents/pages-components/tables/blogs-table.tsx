@@ -1,63 +1,56 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { EditIcon, SeoIcon } from "@/components/icons/icnos";
 import Image from "next/image";
 import Link from "next/link";
 import Entry from "../../entry/entry";
-import Search from "../../search/search";
 import Pagination from "../../pagination/pagination";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux-store/store/store";
 import ToggleButton from "../../toggle-button/toggle-button";
-import { PlusIcon } from "@/assets/icons";
+import { PlusIcon, TrashIcon } from "@/assets/icons";
 import { v4 as uuidv4 } from "uuid";
-
-import { fetchPages, togglePageStatus } from "@/redux-store/slices/pageSlice";
-import { PageItem } from "@/types/page";
 import Loader from "../loader/loader";
-import { message } from "antd";
+import { message, Popconfirm } from "antd";
+import { useRouter, useSearchParams } from "next/navigation";
+import BlogTabs from "../../tabs/blog-tabs";
+import { BlogCategory } from "@/types/enum/enum";
 import {
-  fetchTeamsCategories,
-  searchTeamCategory,
-} from "@/redux-store/slices/teamCategorySlice";
+  deleteBlog,
+  fetchBlogs,
+  toggleBlogStatus,
+} from "@/redux-store/slices/blogSlice";
+import { BlogItem } from "@/types/blog";
 
 const BlogTable: React.FC = () => {
   const { items, loading, error, meta } = useSelector(
-    (state: RootState) => state?.pages,
+    (state: RootState) => state?.blogs,
   );
   const dispatch = useDispatch<AppDispatch>();
-  const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState<number>(10);
-  const debounceRef = useRef<NodeJS.Timeout | null>(null);
+  const [category, setCategory] = useState<string | null>();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  useEffect(() => {
+    const type = searchParams.get("type") || `${BlogCategory.NEWS_AND_EVENTS}`;
+    setCategory(type);
+    if (!searchParams.get("type")) {
+      router.replace(`/admin/blogs?type=${type}`);
+    }
+  }, [router, searchParams]);
+
   // call api for getting packages
   useEffect(() => {
     dispatch(
-      fetchTeamsCategories({
-        params: { page: page, limit: limit },
+      fetchBlogs({
+        params: { page, limit },
+        type: category as string,
       }),
     );
-  }, [dispatch, page, limit]);
+  }, [dispatch, page, limit, category]);
 
-  // search page
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearch(value);
-
-    // Clear previous timeout
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
-    }
-
-    // Set new timeout
-    debounceRef.current = setTimeout(async () => {
-      await dispatch(
-        searchTeamCategory({
-          params: { limit, page, search: value },
-        }),
-      );
-    }, 300); // 300ms debounce
-  };
   if (loading) {
     return <Loader />;
   }
@@ -69,9 +62,10 @@ const BlogTable: React.FC = () => {
       <div className="min-h-screen p-1">
         <div className="rounded-lg bg-white text-gray-700 shadow-sm dark:bg-[#020D1A] dark:text-white">
           <div className="flex flex-col gap-3 border-b border-gray-200 p-6">
-            <div className="flex justify-end">
+            <div className="flex flex-wrap-reverse justify-between gap-3">
+              <BlogTabs />
               <Link
-                href={"/admin/pages/create-page"}
+                href={"/admin/blogs/create"}
                 className="flex w-fit items-center gap-1 rounded-md bg-black px-2 py-1 text-white dark:bg-white dark:text-black"
               >
                 <PlusIcon />
@@ -83,11 +77,6 @@ const BlogTable: React.FC = () => {
                 onChange={(value) => setLimit(Number(value))}
                 value={limit}
                 total={meta?.totalItems}
-              />
-              <Search
-                placeholder="Search pages..."
-                search={search}
-                onChange={handleSearch}
               />
             </div>
           </div>
@@ -109,7 +98,7 @@ const BlogTable: React.FC = () => {
                     Title
                   </th>
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
-                    Template
+                    Published At
                   </th>
 
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
@@ -119,7 +108,7 @@ const BlogTable: React.FC = () => {
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white dark:bg-[#020D1A]">
                 {items && items?.length > 0 ? (
-                  items?.map((item: PageItem, index) => (
+                  items?.map((item: BlogItem, index) => (
                     <tr key={uuidv4()}>
                       <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900 dark:text-white">
                         {index + 1}
@@ -146,35 +135,54 @@ const BlogTable: React.FC = () => {
                       </td>
                       <td className="whitespace-nowrap px-6 py-4">
                         <div className="text-base text-gray-900 dark:text-white">
-                          {item?.parent?.title}
+                          {item?.createdAt
+                            ? new Date(item.createdAt).toLocaleDateString(
+                                "en-US",
+                                {
+                                  year: "numeric",
+                                  month: "long",
+                                  day: "numeric",
+                                },
+                              )
+                            : "-"}
                         </div>
                       </td>
 
                       <td className="whitespace-nowrap px-6 py-4 text-base font-medium dark:text-white">
-                        <div className="flex space-x-2">
+                        <div className="flex items-center space-x-2">
                           <Link
-                            href={`/admin/pages/${item?.id}/seo`}
+                            href={`/admin/blogs/${item?.id}/seo`}
                             title="SEO"
                           >
                             <SeoIcon />
                           </Link>
 
                           <Link
-                            href={`/admin/pages/${item?.id}`}
-                            title="Edit Page"
+                            href={`/admin/blogs/${item?.id}`}
+                            title="Edit Blog"
                           >
                             <EditIcon />
                           </Link>
+                          <Popconfirm
+                            title="Delete Blog"
+                            description="Are you sure you want to delete this blog?"
+                            onConfirm={() => dispatch(deleteBlog(item?.id))}
+                            okText="Yes"
+                            cancelText="No"
+                          >
+                            <button
+                              className="rounded p-1 text-red-600 hover:bg-red-50 hover:text-red-900"
+                              title="Delete Blog"
+                            >
+                              <TrashIcon />
+                            </button>
+                          </Popconfirm>
                           <ToggleButton
                             onChange={() => {
-                              dispatch(togglePageStatus(item?.id));
+                              dispatch(toggleBlogStatus(item?.id));
                             }}
                             checked={item?.status === 1 ? true : false}
-                            title={
-                              item?.status === 1
-                                ? "Deactive Package"
-                                : "Active Package"
-                            }
+                            title={item?.status === 1 ? "Deactive" : "Active"}
                           />
                         </div>
                       </td>

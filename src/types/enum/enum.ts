@@ -29,6 +29,6 @@ export enum BookingStatus {
 }
 
 export enum BlogCategory {
-  NEWS_AND_EVENTS = "new and events",
+  NEWS_AND_EVENTS = "news and events",
   CSR = "csr"
 }

@@ -1,8 +1,9 @@
 import Breadcrumbs from "@/components/adminComponents/beadcrumb/bedcrumb";
-import BlogTable from "@/components/adminComponents/pages-components/tables/blogs-table";
+import BlogForm from "@/components/adminComponents/pages-components/forms/blog-form/blog-form";
+import { Card } from "antd";
 import React from "react";
 
-const BlogsPage = () => {
+const CreateBlogsPage = () => {
   return (
     <div className="flex flex-col gap-3">
       <Breadcrumbs
@@ -12,15 +13,21 @@ const BlogsPage = () => {
             href: "/admin/dashboard",
           },
           {
-            label: "Blogs ",
+            label: "Blogs",
             href: "/admin/blogs",
+          },
+          {
+            label: "Create Blog",
+            href: "/admin/blogs/create",
           },
         ]}
         separator="/"
       />
-      <BlogTable />
+      <Card>
+        <BlogForm />
+      </Card>
     </div>
   );
 };
 
-export default BlogsPage;
+export default CreateBlogsPage;
