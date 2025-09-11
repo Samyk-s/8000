@@ -1,25 +1,15 @@
 "use client";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { BookingItem } from "@/types/booking";
-import { formatDate } from "@/utils/bookingUtils";
 import { StatusBadge, ViewedBadge } from "@/components/ui/StatusBadge";
 import { EyeIcon, EditIcon, TrashIcon } from "@/components/icons/icnos";
 import { AppDispatch, RootState } from "@/redux-store/store/store";
 import { useDispatch, useSelector } from "react-redux";
 import Loader from "../loader/loader";
-import Search from "../../search/search";
-import Entry from "../../entry/entry";
-import { message, Modal, Popconfirm, Typography } from "antd";
-import {
-  deleteBooking,
-  fetchBooking,
-  searchBooking,
-} from "@/redux-store/slices/bookinSlice";
-import Pagination from "../../pagination/pagination";
+import { Modal, Typography } from "antd";
+import { fetchBooking } from "@/redux-store/slices/bookinSlice";
 import Link from "next/link";
 import BookingView from "../../view/booking-view";
-import { AffiliationIcon } from "@/components/Layouts/sidebar/icons";
-
 const RecentBookingTable: React.FC = () => {
   const { items, loading, error, meta } = useSelector(
     (state: RootState) => state?.bookings,
@@ -27,43 +17,52 @@ const RecentBookingTable: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedId, setSelectedId] = useState(0);
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState<number>(10);
-  const [search, setSearch] = useState("");
+
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
-  // search booking
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearch(value);
-
-    // Clear previous timeout
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
-    }
-
-    // Set new timeout
-    debounceRef.current = setTimeout(() => {
-      dispatch(
-        searchBooking({
-          params: { limit, page, search: value },
-        }),
-      );
-    }, 300); // 300ms debounce
-  };
   useEffect(() => {
     dispatch(
       fetchBooking({
-        params: { limit, page },
+        params: { page: 1, limit: 10 },
       }),
     );
-  }, [dispatch, limit, page]);
+  }, [dispatch]);
 
   // Open modal handler
   const handleOpenModal = useCallback((id: number) => {
     setSelectedId(id);
     setIsModalOpen(true);
   }, []);
+
+  const formatTimeAgo = (date: string | Date) => {
+    const now = new Date();
+    const created = new Date(date);
+    const diffMs = now.getTime() - created.getTime();
+
+    const seconds = Math.floor(diffMs / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+    const weeks = Math.floor(days / 7);
+    const months = Math.floor(days / 30);
+    const years = Math.floor(days / 365);
+
+    if (seconds < 60) return `${seconds}s ago`;
+    if (minutes < 60) return `${minutes}m ago`;
+    if (hours < 24) return `${hours}h ago`;
+    if (days < 7) return `${days}d ago`;
+    if (weeks < 5) return `${weeks}w ago`;
+    if (months < 12) {
+      return `${months} month${months > 1 ? "s" : ""} ago`;
+    }
+
+    // years + months detail
+    const remainingMonths = months % 12;
+    if (remainingMonths > 0) {
+      return `${years}y ${remainingMonths}m ago`;
+    }
+    return `${years}y ago`;
+  };
 
   // Close modal handler
   const handleCloseModal = useCallback(() => {
@@ -136,7 +135,7 @@ const RecentBookingTable: React.FC = () => {
                         <StatusBadge status={item.status} />
                       </td>
                       <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
-                        {formatDate(item.createdAt)}
+                        {formatTimeAgo(item?.createdAt)}
                       </td>
 
                       <td className="whitespace-nowrap px-6 py-4 text-base font-medium">
