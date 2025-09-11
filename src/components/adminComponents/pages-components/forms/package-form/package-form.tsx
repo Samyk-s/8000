@@ -9,14 +9,13 @@ import {
   Col,
   Upload,
   Select,
-  Typography,
-  Space,
   Checkbox,
   message,
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import CreatePackageTransfer from "../../drag-drop/drag-drop";
 import TextEditor from "../../text-editor/text-editor";
+import { Grade, Season } from "@/types/enum/enum";
 
 const { Option } = Select;
 
@@ -154,10 +153,11 @@ const PackageForm: React.FC = () => {
               rules={[{ required: true, message: "Grade is required" }]}
             >
               <Select placeholder="Select Grade">
-                <Option value="easy">Easy</Option>
-                <Option value="moderate">Moderate</Option>
-                <Option value="hard">Hard</Option>
-                <Option value="very hard">Very Hard</Option>
+                <Option value={Grade.EASY}>{Grade.EASY}</Option>
+                <Option value={Grade.MODERATE}>{Grade.MODERATE}</Option>
+                <Option value={Grade.EXTREME}>{Grade.EXTREME}</Option>
+                <Option value={Grade.HARD}>{Grade?.HARD}</Option>
+                <Option value={Grade.VERY_HARD}>{Grade.VERY_HARD}</Option>
               </Select>
             </Form.Item>
           </Col>
@@ -185,15 +185,18 @@ const PackageForm: React.FC = () => {
           </Col>
 
           {/* Best Season */}
-          <Col xs={24} md={12} lg={8}>
-            <Form.Item
-              label="Best Season"
-              name="season"
-              rules={[{ required: true, message: "Best season is required" }]}
-            >
-              <Input />
-            </Form.Item>
-          </Col>
+          <Form.Item
+            label="Best Season"
+            name="season"
+            rules={[{ required: true, message: "Season is required" }]}
+          >
+            <Select placeholder="Select status">
+              <Option value={Season.SPRING}>{Season.SPRING}</Option>
+              <Option value={Season.WINTER}>{Season.WINTER}</Option>
+              <Option value={Season.AUTUMN}>{Season.AUTUMN}</Option>
+              <Option value={Season.SUMMER}>{Season.SUMMER}</Option>
+            </Select>
+          </Form.Item>
 
           {/* Price */}
           <Col xs={24} md={12} lg={8}>
