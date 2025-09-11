@@ -1,38 +1,31 @@
 "use client";
 
-import React, { useState } from "react";
-import { Button, Input } from "antd";
+import React, { useEffect, useState } from "react";
+import { Button, Input, message } from "antd";
 import { CSS } from "@dnd-kit/utilities";
-// Correct imports
 import {
   DndContext,
   closestCenter,
   DragEndEvent,
   useDroppable,
 } from "@dnd-kit/core";
-
 import {
   SortableContext,
   useSortable,
   arrayMove,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
+import pageApi from "@/lib/api/pageApi";
+import { PagePath } from "@/types/page";
 
-interface Item {
-  key: string;
-  title: string;
-}
-
-const mockData: Item[] = [
-  { key: "1", title: "Destination/Explore Nepal" },
-  { key: "2", title: "Destination/Explore Nepal/Trekking and Peak Climbing" },
-  {
-    key: "3",
-    title: "Destination/Explore Nepal/Trekking and Peak Climbing/Everest",
-  },
-  { key: "4", title: "Destination/Explore Nepal/Expedition/Above 7000m" },
-  { key: "5", title: "Destination/Explore Nepal/Other Activities/Paragliding" },
-];
+/**
+ * Convert PagePath to draggable item format
+ */
+const mapPagePathToItem = (p: PagePath) => ({
+  key: p.pathIds.join("-"), // unique string
+  title: p.fullPath,
+  raw: p,
+});
 
 // === Sortable Item ===
 const SortableItem: React.FC<{
@@ -81,10 +74,10 @@ const SortableItem: React.FC<{
 // === Droppable List ===
 const DroppableList: React.FC<{
   id: string;
-  items: Item[];
+  items: { key: string; title: string; raw: PagePath }[];
   title: string;
-  onAddItem?: (item: Item) => void;
-  onRemoveItem?: (item: Item) => void;
+  onAddItem?: (item: { key: string; title: string; raw: PagePath }) => void;
+  onRemoveItem?: (item: { key: string; title: string; raw: PagePath }) => void;
   search?: string;
 }> = ({ id, items, title, onAddItem, onRemoveItem, search = "" }) => {
   const { setNodeRef } = useDroppable({ id });
@@ -126,8 +119,12 @@ const DroppableList: React.FC<{
 
 // === Main Component ===
 const CreatePackageTransfer: React.FC = () => {
-  const [available, setAvailable] = useState<Item[]>(mockData);
-  const [selected, setSelected] = useState<Item[]>([]);
+  const [available, setAvailable] = useState<
+    { key: string; title: string; raw: PagePath }[]
+  >([]);
+  const [selected, setSelected] = useState<
+    { key: string; title: string; raw: PagePath }[]
+  >([]);
   const [search, setSearch] = useState("");
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -135,21 +132,23 @@ const CreatePackageTransfer: React.FC = () => {
     if (!over) return;
     const activeId = active.id as string;
 
-    // Move inside Available
+    // Reorder inside available
     if (available.find((i) => i.key === activeId) && over.id === "available") {
       const oldIndex = available.findIndex((i) => i.key === activeId);
       const newIndex = available.findIndex((i) => i.key === over.id);
-      setAvailable(arrayMove(available, oldIndex, newIndex));
+      if (oldIndex !== -1 && newIndex !== -1)
+        setAvailable(arrayMove(available, oldIndex, newIndex));
     }
 
-    // Move inside Selected
+    // Reorder inside selected
     if (selected.find((i) => i.key === activeId) && over.id === "selected") {
       const oldIndex = selected.findIndex((i) => i.key === activeId);
       const newIndex = selected.findIndex((i) => i.key === over.id);
-      setSelected(arrayMove(selected, oldIndex, newIndex));
+      if (oldIndex !== -1 && newIndex !== -1)
+        setSelected(arrayMove(selected, oldIndex, newIndex));
     }
 
-    // Move from Available → Selected
+    // Available → Selected
     if (available.find((i) => i.key === activeId) && over.id === "selected") {
       const item = available.find((i) => i.key === activeId);
       if (!item) return;
@@ -157,7 +156,7 @@ const CreatePackageTransfer: React.FC = () => {
       setAvailable(available.filter((i) => i.key !== activeId));
     }
 
-    // Move from Selected → Available
+    // Selected → Available
     if (selected.find((i) => i.key === activeId) && over.id === "available") {
       const item = selected.find((i) => i.key === activeId);
       if (!item) return;
@@ -166,15 +165,31 @@ const CreatePackageTransfer: React.FC = () => {
     }
   };
 
-  const handleAdd = (item: Item) => {
+  const handleAdd = (item: { key: string; title: string; raw: PagePath }) => {
     setSelected([...selected, item]);
     setAvailable(available.filter((i) => i.key !== item.key));
   };
 
-  const handleRemove = (item: Item) => {
+  const handleRemove = (item: {
+    key: string;
+    title: string;
+    raw: PagePath;
+  }) => {
     setAvailable([...available, item]);
     setSelected(selected.filter((i) => i.key !== item.key));
   };
+
+  useEffect(() => {
+    async function getPath() {
+      try {
+        const res: PagePath[] = await pageApi.getParentPagePath();
+        setAvailable(res.map(mapPagePathToItem));
+      } catch (error: any) {
+        message.error(error?.message);
+      }
+    }
+    getPath();
+  }, []);
 
   return (
     <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>

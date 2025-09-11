@@ -48,3 +48,11 @@ export interface PageResponse {
   items: PageItem[];
   meta: Meta;
 }
+
+
+export interface PagePath {
+  pathIds: number[];
+  path: string;
+  fullPath: string;
+  isIndividual: boolean;
+}

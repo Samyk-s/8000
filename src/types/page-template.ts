@@ -5,7 +5,8 @@ export enum PageTemplate {
   BLOG = "blog",
   TEAM = "team",
   STORY = "story",
-  PAGE = "page"
+  PAGE = "page",
+  OTHER = "other"
 }
 export enum FileType {
   GALLERY = "gallery",

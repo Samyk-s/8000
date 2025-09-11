@@ -42,5 +42,15 @@ class PageApi {
       throw error
     }
   }
+
+  async getParentPagePath() {
+    try {
+      const res = await api.get("/pages/page-path");
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
 }
-export default new PageApi()
+const pageApi = new PageApi()
+export default pageApi
