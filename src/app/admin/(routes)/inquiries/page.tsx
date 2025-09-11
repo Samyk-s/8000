@@ -5,7 +5,7 @@ import React from "react";
 
 const InquiryPage = () => {
   return (
-    <>
+    <div className="flex flex-col gap-3">
       <Breadcrumbs
         items={[
           { label: "Dashboard", href: "/admin/dashboard" },
@@ -14,7 +14,7 @@ const InquiryPage = () => {
         separator="/"
       />
       <IquiryTable />
-    </>
+    </div>
   );
 };
 

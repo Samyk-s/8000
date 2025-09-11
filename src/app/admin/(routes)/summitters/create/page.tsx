@@ -2,12 +2,9 @@
 import Breadcrumbs from "@/components/adminComponents/beadcrumb/bedcrumb";
 import SummiterForm from "@/components/adminComponents/pages-components/forms/summitter-form/summitter-form";
 import { Card } from "antd";
-import { useParams } from "next/navigation";
-
 import React from "react";
 
 const SummitterStoryCreatePage = () => {
-  const { id } = useParams();
   return (
     <div className="flex flex-col gap-3">
       <Breadcrumbs

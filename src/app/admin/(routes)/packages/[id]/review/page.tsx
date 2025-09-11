@@ -7,7 +7,7 @@ import React from "react";
 const ReviewPage = () => {
   const { id } = useParams<{ id: string }>();
   return (
-    <>
+    <div className="flex flex-col gap-3">
       <Breadcrumbs
         items={[
           { label: "Dashboard", href: "/admin/dashboard" },
@@ -17,7 +17,7 @@ const ReviewPage = () => {
         separator="/"
       />
       <ReviewTable />
-    </>
+    </div>
   );
 };
 

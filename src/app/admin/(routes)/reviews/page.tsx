@@ -1,13 +1,11 @@
 "use client";
 import Breadcrumbs from "@/components/adminComponents/beadcrumb/bedcrumb";
 import AllReviewTable from "@/components/adminComponents/pages-components/tables/all-reviews-table";
-import { useParams } from "next/navigation";
 import React from "react";
 
 const AllReviewPage = () => {
-  const { id } = useParams<{ id: string }>();
   return (
-    <>
+    <div className="flex flex-col gap-3">
       <Breadcrumbs
         items={[
           { label: "Dashboard", href: "/admin/dashboard" },
@@ -16,7 +14,7 @@ const AllReviewPage = () => {
         separator="/"
       />
       <AllReviewTable />
-    </>
+    </div>
   );
 };
 

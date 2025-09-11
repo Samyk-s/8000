@@ -4,7 +4,7 @@ import React from "react";
 
 const Page = () => {
   return (
-    <div>
+    <div className="flex flex-col gap-3">
       <Breadcrumbs
         items={[
           {
