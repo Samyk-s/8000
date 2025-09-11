@@ -16,6 +16,7 @@ export interface BookingItem {
   };
   addons: {
     title: string;
+    id: number
   }[];
   status: "pending" | "confirmed" | "cancelled" | string; // extendable
   totalPrice: string; // keeping as string since it looks like a decimal from DB

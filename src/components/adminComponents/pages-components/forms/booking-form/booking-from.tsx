@@ -194,9 +194,9 @@ const BookingForm = ({ id }: { id: number }) => {
                 allowClear
                 className="!bg-transparent"
               >
-                {/* Replace with real addons from API later */}
-                <Option value={1}>Extra Guide</Option>
-                <Option value={2}>Meal Plan</Option>
+                {booking?.addons?.map((addon) => (
+                  <Option value={addon?.id}>{addon?.title}</Option>
+                ))}
               </Select>
             </Form.Item>
           </Col>
