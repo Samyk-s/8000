@@ -5,14 +5,9 @@ import dynamic from "next/dynamic";
 import Loader from "../../loader/loader";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux-store/store/store";
-import {
-  createItinerary,
-  updateItinerary,
-} from "@/redux-store/slices/itinerarySlice";
+import { createAddon, updateAddon } from "@/redux-store/slices/addonSlice";
 import { useParams } from "next/navigation";
-import { ItineraryItem } from "@/types/itinerary";
-import { AddOnPayload } from "@/types/addOns";
-import { createAddon } from "@/redux-store/slices/addonSlice";
+import { AddOnItem, AddOnPayload } from "@/types/addOns";
 
 const TextEditor = dynamic(() => import("../../text-editor/text-editor"), {
   ssr: false,
@@ -20,34 +15,62 @@ const TextEditor = dynamic(() => import("../../text-editor/text-editor"), {
 
 const AddOnForm = ({
   setIsModalOpen,
+  addon,
 }: {
   setIsModalOpen: (val: boolean) => void;
-  itinerary?: ItineraryItem | null;
+  addon?: AddOnItem | null;
 }) => {
   const [form] = Form.useForm();
   const dispatch = useDispatch<AppDispatch>();
   const { id } = useParams<{ id: string }>();
-  const { loading } = useSelector((state: RootState) => state.itineraries);
+  const { loading } = useSelector((state: RootState) => state.addons);
+
+  // Pre-fill form if editing
+  useEffect(() => {
+    if (addon) {
+      form.setFieldsValue({
+        title: addon.title,
+        price: addon.price,
+        order: addon.order,
+        description: addon.description,
+      });
+    }
+  }, [addon, form]);
 
   const onFinish = async (values: AddOnPayload) => {
     try {
       const payload = {
         ...values,
-        order: Number(values?.order),
-        price: Number(values?.price),
+        price: Number(values.price),
+        order: Number(values.order),
       };
 
-      setIsModalOpen(false);
-      dispatch(
-        createAddon({
-          packageId: Number(id),
-          data: payload,
-        }),
-      );
+      if (addon) {
+        // Update existing addon
+        dispatch(
+          updateAddon({
+            packageId: Number(id),
+            addonId: addon.id,
+            data: payload,
+          }),
+        );
+        message.success("Addon updated successfully");
+      } else {
+        // Create new addon
+        dispatch(
+          createAddon({
+            packageId: Number(id),
+            data: payload,
+          }),
+        );
+        message.success("Addon created successfully");
+      }
+
       form.resetFields();
+      setIsModalOpen(false);
     } catch (error) {
-      console.error("Failed to save itinerary:", error);
-      message.error("Failed to save itinerary");
+      console.error("Failed to save addon:", error);
+      message.error("Failed to save addon");
     }
   };
 
@@ -57,7 +80,7 @@ const AddOnForm = ({
     <div className="h-full dark:bg-[#020D1A]">
       <Form
         form={form}
-        name="itinerary-form"
+        name="addon-form"
         autoComplete="off"
         layout="vertical"
         onFinish={onFinish}
@@ -74,7 +97,7 @@ const AddOnForm = ({
             </Form.Item>
           </Col>
 
-          {/* ORDER */}
+          {/* PRICE */}
           <Col xs={24} md={12}>
             <Form.Item
               label={<span className="uppercase dark:text-white">Price</span>}
@@ -84,6 +107,7 @@ const AddOnForm = ({
               <Input className="bg-transparent" type="number" min={1} />
             </Form.Item>
           </Col>
+
           {/* ORDER */}
           <Col xs={24} md={12}>
             <Form.Item
@@ -117,7 +141,7 @@ const AddOnForm = ({
                 type="default"
                 className="!bg-black !text-white hover:!bg-black hover:!text-white dark:!bg-white dark:!text-black"
               >
-                Save
+                {addon ? "Update" : "Save"}
               </Button>
             </Form.Item>
           </Col>

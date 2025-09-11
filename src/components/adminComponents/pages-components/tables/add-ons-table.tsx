@@ -19,19 +19,17 @@ import {
   toggleAddonStatus,
 } from "@/redux-store/slices/addonSlice";
 import { AddOnItem } from "@/types/addOns";
-import AddOnForm from "../forms/add-on-form/add-on-form";
-const DepartureForm = dynamic(
-  () => import("../forms/departure-form/departure-form"),
-  { ssr: false },
-);
+import { EditIcon } from "@/components/icons/icnos";
+const AddOnForm = dynamic(() => import("../forms/add-on-form/add-on-form"));
 
 const AddOnsTable: React.FC = () => {
   const { items, loading, error, meta } = useSelector(
     (state: RootState) => state?.addons,
   );
   const dispatch = useDispatch<AppDispatch>();
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const { id } = useParams<{ id: string }>();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedAddon, setSelectedAddon] = useState<AddOnItem | null>(null);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState<number>(10);
   const [search, setSearch] = useState("");
@@ -41,7 +39,7 @@ const AddOnsTable: React.FC = () => {
     dispatch(
       fetchAddons({
         id: Number(id),
-        params: { limit: limit, page: page },
+        params: { limit, page },
       }),
     );
   }, [dispatch, id, limit, page]);
@@ -49,6 +47,7 @@ const AddOnsTable: React.FC = () => {
   // Close modal
   const handleClose = () => {
     setIsModalOpen(false);
+    setSelectedAddon(null);
   };
 
   // search addons
@@ -56,12 +55,8 @@ const AddOnsTable: React.FC = () => {
     const value = e.target.value;
     setSearch(value);
 
-    // Clear previous timeout
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
-    }
+    if (debounceRef.current) clearTimeout(debounceRef.current);
 
-    // Set new timeout
     debounceRef.current = setTimeout(() => {
       dispatch(
         searchAddons({
@@ -69,7 +64,7 @@ const AddOnsTable: React.FC = () => {
           params: { limit, page, search: value },
         }),
       );
-    }, 300); // 300ms debounce
+    }, 300);
   };
 
   if (loading) return <Loader />;
@@ -86,6 +81,7 @@ const AddOnsTable: React.FC = () => {
               <Button
                 className="flex w-fit items-center gap-1 rounded-md bg-black px-2 py-1 text-white hover:!bg-black hover:!text-white dark:bg-white dark:text-black"
                 onClick={() => {
+                  setSelectedAddon(null);
                   setIsModalOpen(true);
                 }}
               >
@@ -121,22 +117,33 @@ const AddOnsTable: React.FC = () => {
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
                     Price
                   </th>
-
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
-                {items && items?.length > 0 ? (
-                  items?.map((item: AddOnItem, index: number) => (
-                    <tr key={item?.id}>
+                {items && items.length > 0 ? (
+                  items.map((item: AddOnItem, index: number) => (
+                    <tr key={item.id}>
                       <td className="px-6 py-4">{index + 1}</td>
-                      <td className="px-6 py-4">{item?.title}</td>
-                      <td className="px-6 py-4">{item?.price}</td>
-
+                      <td className="px-6 py-4">{item.title}</td>
+                      <td className="px-6 py-4">{item.price}</td>
                       <td className="px-6 py-4">
                         <div className="flex items-center space-x-2">
+                          {/* Edit Button */}
+                          <button
+                            className="rounded p-1 text-blue-600 hover:bg-blue-50 hover:text-blue-900"
+                            title="Edit AddOn"
+                            onClick={() => {
+                              setSelectedAddon(item);
+                              setIsModalOpen(true);
+                            }}
+                          >
+                            <EditIcon />
+                          </button>
+
+                          {/* Delete */}
                           <Popconfirm
                             title="Delete the Addon"
                             description="Are you sure to delete this addon?"
@@ -145,7 +152,7 @@ const AddOnsTable: React.FC = () => {
                               dispatch(
                                 deleteAddon({
                                   packageId: Number(id),
-                                  addonId: Number(item?.id),
+                                  addonId: Number(item.id),
                                 }),
                               )
                             }
@@ -160,18 +167,19 @@ const AddOnsTable: React.FC = () => {
                             </button>
                           </Popconfirm>
 
+                          {/* Toggle Status */}
                           <ToggleButton
                             onChange={() =>
                               dispatch(
                                 toggleAddonStatus({
                                   packageId: Number(id),
-                                  addonId: Number(item?.id),
+                                  addonId: Number(item.id),
                                 }),
                               )
                             }
-                            checked={item?.status === 1}
+                            checked={item.status === 1}
                             title={
-                              item?.status === 1 ? "Deactivate" : "Activate"
+                              item.status === 1 ? "Deactivate" : "Activate"
                             }
                           />
                         </div>
@@ -205,7 +213,7 @@ const AddOnsTable: React.FC = () => {
 
       {/* Create / Edit Modal */}
       <Modal
-        title={"Add Departure"}
+        title={selectedAddon ? "Edit Addon" : "Add Addon"}
         open={isModalOpen}
         onCancel={handleClose}
         footer={null}
@@ -214,7 +222,7 @@ const AddOnsTable: React.FC = () => {
         style={{ maxWidth: "90%", padding: "0" }}
       >
         <Suspense fallback={null}>
-          <AddOnForm setIsModalOpen={setIsModalOpen} />
+          <AddOnForm setIsModalOpen={setIsModalOpen} addon={selectedAddon} />
         </Suspense>
       </Modal>
     </>

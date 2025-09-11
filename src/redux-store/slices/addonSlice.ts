@@ -88,6 +88,50 @@ export const searchAddons = createAsyncThunk<
     return rejectWithValue(err?.message || "Failed to search addons");
   }
 });
+interface GetAddonByIdPayload {
+  packageId: number;
+  addonId: number;
+}
+
+export const getAddonById = createAsyncThunk<
+  AddOnItem,
+  GetAddonByIdPayload,
+  { rejectValue: string }
+>(
+  "addons/getAddonById",
+  async ({ packageId, addonId }, { rejectWithValue }) => {
+    try {
+      const res = await addonsApi.getAddonById(packageId, addonId);
+      return res.data as AddOnItem;
+    } catch (err: any) {
+      return rejectWithValue(err?.message || "Failed to fetch addon");
+    }
+  }
+);
+interface UpdateAddonPayload {
+  packageId: number;
+  addonId: number;
+  data: AddOnPayload;
+}
+
+export const updateAddon = createAsyncThunk<
+  AddOnItem,
+  UpdateAddonPayload,
+  { rejectValue: string }
+>(
+  "addons/updateAddon",
+  async ({ packageId, addonId, data }, { rejectWithValue }) => {
+    try {
+      const res = await addonsApi.upateAddon(packageId, addonId, data);
+      message.success(res?.message || "Addon updated successfully");
+      return res.data as AddOnItem;
+    } catch (err: any) {
+      message.error(err?.message || "Failed to update addon");
+      return rejectWithValue(err?.message || "Failed to update addon");
+    }
+  }
+);
+
 
 // ================= State =================
 interface AddonsState {
@@ -95,6 +139,7 @@ interface AddonsState {
   meta: Meta;
   loading: boolean;
   error: string | null;
+  addon: AddOnItem | null
 }
 
 const initialState: AddonsState = {
@@ -108,6 +153,7 @@ const initialState: AddonsState = {
   },
   loading: false,
   error: null,
+  addon: null
 };
 
 // ================= Slice =================
@@ -203,6 +249,37 @@ const addonsSlice = createSlice({
         state.error = action.payload || "Failed to search addons";
         state.loading = false;
       });
+    // Get AddOn by ID
+    builder
+      .addCase(getAddonById.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAddonById.fulfilled, (state, action: PayloadAction<AddOnItem>) => {
+        state.addon = action.payload; // store single addon
+        state.loading = false;
+      })
+      .addCase(getAddonById.rejected, (state, action) => {
+        state.error = action.payload || "Failed to fetch addon";
+        state.loading = false;
+      });
+    // Update AddOn
+    builder
+      .addCase(updateAddon.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateAddon.fulfilled, (state, action: PayloadAction<AddOnItem>) => {
+        const index = state.items.findIndex((item) => item.id === action.payload.id);
+        if (index !== -1) state.items[index] = action.payload;
+        if (state.addon?.id === action.payload.id) state.addon = action.payload;
+        state.loading = false;
+      })
+      .addCase(updateAddon.rejected, (state, action) => {
+        state.error = action.payload || "Failed to update addon";
+        state.loading = false;
+      });
+
   },
 });
 

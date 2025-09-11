@@ -44,9 +44,17 @@ class AddOnsApi {
       throw error
     }
   }
-  async getAddonById(packageId: number, data: AddOnPayload) {
+  async upateAddon(packageId: number, id: number, data: AddOnPayload) {
     try {
-      const res = await api.post(`/packages/${packageId}/addon`, data);
+      const res = await api.patch(`/packages/${packageId}/addon/${id}`, data);
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
+  async getAddonById(packageId: number, id: number) {
+    try {
+      const res = await api.get(`/packages/${packageId}/addon/${id}`);
       return res.data
     } catch (error) {
       throw error
