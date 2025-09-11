@@ -99,7 +99,7 @@ const DashboardPage = () => {
             <Col xs={24} md={12}>
               <Packages />
             </Col>
-            <Col xs={24}>
+            <Col xs={24} className="mt-5">
               <RecentBookingTable />
             </Col>
           </Row>
