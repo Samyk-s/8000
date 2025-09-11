@@ -29,7 +29,9 @@ const BlogTable: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState<number>(10);
-  const [category, setCategory] = useState<string | null>();
+  const [category, setCategory] = useState<string | null>(
+    BlogCategory.NEWS_AND_EVENTS,
+  );
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -39,7 +41,7 @@ const BlogTable: React.FC = () => {
     if (!searchParams.get("type")) {
       router.replace(`/admin/blogs?type=${type}`);
     }
-  }, [router, searchParams]);
+  }, [router, searchParams, category]);
 
   // call api for getting packages
   useEffect(() => {
@@ -49,7 +51,7 @@ const BlogTable: React.FC = () => {
         type: category as string,
       }),
     );
-  }, [dispatch, page, limit, category]);
+  }, [dispatch, page, limit, category, router]);
 
   if (loading) {
     return <Loader />;
