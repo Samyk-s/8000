@@ -18,6 +18,7 @@ const SeoForm = ({ id, type }: { id: string; type: string }) => {
   const [fileList, setFileList] = useState<any[]>([]);
   const [file, setFile] = useState<MediaFile | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [seoId, setSeoId] = useState<Number | null>();
 
   // ================= Handle file upload =================
   const handleFileUpload = async (rawFile: File) => {
@@ -56,6 +57,8 @@ const SeoForm = ({ id, type }: { id: string; type: string }) => {
       setLoading(true);
       try {
         const res = await seoApi.getSeo(type, Number(id));
+        setSeoId(res?.id);
+        // message.success(res?.id);
 
         form.setFieldsValue({
           title: res.title,
@@ -132,7 +135,7 @@ const SeoForm = ({ id, type }: { id: string; type: string }) => {
       };
 
       console.log("Final SEO Payload:", payload);
-      await seoApi.updateSeo(Number(id), payload);
+      await seoApi.updateSeo(Number(seoId), payload);
       message.success("SEO updated successfully");
     } catch (error) {
       console.error("Failed to update SEO:", error);
