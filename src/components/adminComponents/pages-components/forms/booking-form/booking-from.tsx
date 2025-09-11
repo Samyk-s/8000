@@ -13,6 +13,7 @@ import {
 import { BookingPayload } from "@/types/booking";
 import { useRouter } from "next/navigation";
 import Loader from "../../loader/loader";
+import { BookingStatus } from "@/types/enum/enum";
 
 const { Option } = Select;
 
@@ -209,10 +210,18 @@ const BookingForm = ({ id }: { id: number }) => {
               rules={[{ required: true, message: "Status is required" }]}
             >
               <Select placeholder="Select status">
-                <Option value="pending">Pending</Option>
-                <Option value="confirmed">Confirmed</Option>
-                <Option value="completed">Completed</Option>
-                <Option value="cancelled">Cancelled</Option>
+                <Option value={BookingStatus.PEDNDING}>
+                  {BookingStatus.PEDNDING}
+                </Option>
+                <Option value={BookingStatus.CONFIRMED}>
+                  {BookingStatus.CONFIRMED}
+                </Option>
+                <Option value={BookingStatus.COMPLETED}>
+                  {BookingStatus.COMPLETED}
+                </Option>
+                <Option value={BookingStatus.CANCELLED}>
+                  {BookingStatus.CANCELLED}
+                </Option>
               </Select>
             </Form.Item>
           </Col>
