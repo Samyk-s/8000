@@ -1,6 +1,5 @@
 "use client";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import { BookingItem } from "@/types/booking";
 import { formatDate } from "@/utils/bookingUtils";
 import { StatusBadge, ViewedBadge } from "@/components/ui/StatusBadge";
@@ -10,8 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Loader from "../loader/loader";
 import Search from "../../search/search";
 import Entry from "../../entry/entry";
-import { Button, message, Modal, Popconfirm } from "antd";
-import { PlusIcon } from "@/assets/icons";
+import { message, Modal, Popconfirm } from "antd";
 import {
   deleteBooking,
   fetchBooking,
@@ -22,7 +20,7 @@ import Link from "next/link";
 import BookingView from "../../view/booking-view";
 import { AffiliationIcon } from "@/components/Layouts/sidebar/icons";
 
-const BookingTable: React.FC = () => {
+const RecentBookingTable: React.FC = () => {
   const { items, loading, error, meta } = useSelector(
     (state: RootState) => state?.bookings,
   );
@@ -78,48 +76,33 @@ const BookingTable: React.FC = () => {
     <>
       <div className="min-h-screen p-1">
         <div className="rounded-lg bg-white shadow-sm">
-          <div className="flex flex-col gap-3 border-b border-gray-200 p-6">
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <Entry
-                onChange={(value) => setLimit(Number(value))}
-                value={limit}
-                total={meta?.totalItems}
-              />
-              <Search
-                placeholder="Search package..."
-                search={search}
-                onChange={handleSearch}
-              />
-            </div>
+          <div className="flex items-center justify-between bg-red-800 p-2 text-white">
+            <span className="font-semibold">Recent Bokking</span>
+            <Link
+              href={"/admin/bookings"}
+              className="ho font-semibold text-white"
+            >
+              View All
+            </Link>
           </div>
-
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead
-                style={{ backgroundColor: "oklch(37.9% 0.146 265.522)" }}
-                className="text-white"
-              >
+              <thead className="text-gray-800">
                 <tr>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
-                    S. N.
-                  </th>
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
                     Customer Name
                   </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
-                    Phone
-                  </th>
+
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
                     Package
                   </th>
+
+                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                    Status
+                  </th>
+
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
                     Created Date
-                  </th>
-                  {/* <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
-                    Status
-                  </th> */}
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
-                    Viewed
                   </th>
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
                     Actions
@@ -130,17 +113,12 @@ const BookingTable: React.FC = () => {
                 {items && items.length > 0 ? (
                   items.map((item: BookingItem, index) => (
                     <tr key={item.id} className="hover:bg-gray-50">
-                      <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
-                        {index + 1}
-                      </td>
                       <td className="whitespace-nowrap px-6 py-4">
                         <div className="text-base font-medium text-gray-900">
                           {item.customerName}
                         </div>
                       </td>
-                      <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
-                        {item.customerPhone}
-                      </td>
+
                       <td className="whitespace-nowrap px-6 py-4">
                         <div className="text-base text-gray-900">
                           <Link
@@ -151,15 +129,14 @@ const BookingTable: React.FC = () => {
                           </Link>
                         </div>
                       </td>
+
+                      <td className="whitespace-nowrap px-6 py-4">
+                        <StatusBadge status={item.status} />
+                      </td>
                       <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
                         {formatDate(item.createdAt)}
                       </td>
-                      {/* <td className="whitespace-nowrap px-6 py-4">
-                        <StatusBadge status={item.status} />
-                      </td> */}
-                      <td className="whitespace-nowrap px-6 py-4">
-                        <ViewedBadge isViewed={item.isViewd} />
-                      </td>
+
                       <td className="whitespace-nowrap px-6 py-4 text-base font-medium">
                         <div className="flex space-x-2">
                           <button
@@ -169,13 +146,7 @@ const BookingTable: React.FC = () => {
                           >
                             <EyeIcon />
                           </button>
-                          <Link
-                            href={`/admin/bookings/${item?.id}/assign`}
-                            className="rounded p-1 text-green-600 hover:bg-green-50 hover:text-green-900"
-                            title="Assign Booking"
-                          >
-                            <AffiliationIcon />
-                          </Link>
+
                           <Link
                             href={`/admin/bookings/${item?.id}`}
                             className="rounded p-1 text-green-600 hover:bg-green-50 hover:text-green-900"
@@ -183,21 +154,6 @@ const BookingTable: React.FC = () => {
                           >
                             <EditIcon />
                           </Link>
-                          <Popconfirm
-                            title="Delete the Booking"
-                            description="Are you sure to delete this booking?"
-                            onCancel={() => message.error("Cancelled")}
-                            onConfirm={() => dispatch(deleteBooking(item?.id))}
-                            okText="Yes"
-                            cancelText="No"
-                          >
-                            <button
-                              className="rounded p-1 text-red-600 hover:bg-red-50 hover:text-red-900"
-                              title="Delete the booking"
-                            >
-                              <TrashIcon />
-                            </button>
-                          </Popconfirm>
                         </div>
                       </td>
                     </tr>
@@ -215,15 +171,6 @@ const BookingTable: React.FC = () => {
               </tbody>
             </table>
           </div>
-
-          {/* Pagination */}
-          <Pagination
-            currentPage={meta?.currentPage}
-            totalPages={meta?.totalPages}
-            itemsPerPage={limit}
-            totalItems={meta?.totalItems}
-            onPageChange={(page: number) => setPage(page)}
-          />
         </div>
       </div>
       {/* View Modal */}
@@ -242,4 +189,4 @@ const BookingTable: React.FC = () => {
   );
 };
 
-export default BookingTable;
+export default RecentBookingTable;
