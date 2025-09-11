@@ -1,6 +1,5 @@
 "use client";
 import Breadcrumbs from "@/components/adminComponents/beadcrumb/bedcrumb";
-import PackageTabs from "@/components/adminComponents/tabs/package-tabs";
 const SeoForm = dynamic(
   () =>
     import(
@@ -27,7 +26,6 @@ const BlogSEOPage = () => {
       />
       <Card>
         <div className="flex flex-col gap-3">
-          <PackageTabs />
           <SeoForm id={id} type={PageTemplate.BLOG} />
         </div>
       </Card>

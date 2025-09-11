@@ -12,8 +12,10 @@ class SeoApi {
     }
   }
   async updateSeo(id: number, data: SeoPayload) {
+    console.log(id)
+    console.log(data)
     try {
-      const res = await api.patch(`/seo/${id}}`, data)
+      const res = await api.patch(`/seo/${id}`, data)
       return res.data
     } catch (error) {
       throw error;
