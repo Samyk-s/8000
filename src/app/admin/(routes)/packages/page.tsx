@@ -13,7 +13,7 @@ const Package = () => {
         ]}
         separator="/"
       />
-      <PackageTable />;
+      <PackageTable />
     </div>
   );
 };

@@ -228,7 +228,7 @@ const PackageTable: React.FC = () => {
                       colSpan={7}
                       className="px-6 py-8 text-center text-base text-gray-500"
                     >
-                      No packages found matching your search criteria.
+                      No packages found .
                     </td>
                   </tr>
                 )}
