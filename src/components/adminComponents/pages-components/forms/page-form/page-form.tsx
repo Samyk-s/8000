@@ -206,6 +206,7 @@ const PageForm = ({ page }: { page?: PageItem | null }) => {
               <Input
                 type="number"
                 className="!bg-transparent dark:placeholder:text-white"
+                min={1}
               />
             </Form.Item>
           </Col>
@@ -229,19 +230,11 @@ const PageForm = ({ page }: { page?: PageItem | null }) => {
                 allowClear
                 className="!bg-transparent"
               >
-                <Option value={PageTemplate?.DESTINATION}>
-                  {PageTemplate?.DESTINATION}
-                </Option>
-                <Option value={PageTemplate?.ACTIVITIES}>
-                  {PageTemplate?.ACTIVITIES}
-                </Option>
-                <Option value={PageTemplate?.PACKAGE}>
-                  {PageTemplate?.PACKAGE}
-                </Option>
-                <Option value={PageTemplate?.STORY}>
-                  {PageTemplate?.STORY}
-                </Option>
-                <Option value={PageTemplate?.TEAM}>{PageTemplate?.TEAM}</Option>
+                {Object.values(PageTemplate).map((template) => (
+                  <Select.Option key={template} value={template}>
+                    {template}
+                  </Select.Option>
+                ))}
               </Select>
             </Form.Item>
           </Col>

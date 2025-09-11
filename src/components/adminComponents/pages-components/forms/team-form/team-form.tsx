@@ -317,7 +317,7 @@ const TeamForm: React.FC<TeamFormProps> = ({ team }) => {
             name="order"
             rules={[{ required: true, message: "Order is required" }]}
           >
-            <Input type="number" />
+            <Input type="number" min={1} />
           </Form.Item>
         </Col>
 

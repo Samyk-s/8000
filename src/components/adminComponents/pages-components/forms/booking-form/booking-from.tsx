@@ -137,7 +137,7 @@ const BookingForm = ({ id }: { id: number }) => {
                 { required: true, message: "No. of travellers is required" },
               ]}
             >
-              <Input type="number" />
+              <Input type="number" min={1} />
             </Form.Item>
           </Col>
 
@@ -210,18 +210,11 @@ const BookingForm = ({ id }: { id: number }) => {
               rules={[{ required: true, message: "Status is required" }]}
             >
               <Select placeholder="Select status">
-                <Option value={BookingStatus.PEDNDING}>
-                  {BookingStatus.PEDNDING}
-                </Option>
-                <Option value={BookingStatus.CONFIRMED}>
-                  {BookingStatus.CONFIRMED}
-                </Option>
-                <Option value={BookingStatus.COMPLETED}>
-                  {BookingStatus.COMPLETED}
-                </Option>
-                <Option value={BookingStatus.CANCELLED}>
-                  {BookingStatus.CANCELLED}
-                </Option>
+                {Object.values(BookingStatus).map((status) => (
+                  <Select.Option key={status} value={status}>
+                    {status}
+                  </Select.Option>
+                ))}
               </Select>
             </Form.Item>
           </Col>

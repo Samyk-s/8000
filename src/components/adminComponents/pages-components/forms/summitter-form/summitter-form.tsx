@@ -215,7 +215,7 @@ const SummiterForm: React.FC<SummiterFormProps> = ({ summitter }) => {
               name="order"
               rules={[{ required: true, message: "Order is required" }]}
             >
-              <Input type="number" />
+              <Input type="number" min={1} />
             </Form.Item>
           </Col>
 

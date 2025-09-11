@@ -115,7 +115,7 @@ const ItineraryForm = ({
               name="order"
               rules={[{ required: true, message: "Order is required" }]}
             >
-              <Input className="bg-transparent" type="number" />
+              <Input className="bg-transparent" type="number" min={1} />
             </Form.Item>
           </Col>
 

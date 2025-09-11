@@ -153,11 +153,11 @@ const PackageForm: React.FC = () => {
               rules={[{ required: true, message: "Grade is required" }]}
             >
               <Select placeholder="Select Grade">
-                <Option value={Grade.EASY}>{Grade.EASY}</Option>
-                <Option value={Grade.MODERATE}>{Grade.MODERATE}</Option>
-                <Option value={Grade.EXTREME}>{Grade.EXTREME}</Option>
-                <Option value={Grade.HARD}>{Grade?.HARD}</Option>
-                <Option value={Grade.VERY_HARD}>{Grade.VERY_HARD}</Option>
+                {Object.values(Grade).map((grade) => (
+                  <Select.Option key={grade} value={grade}>
+                    {grade}
+                  </Select.Option>
+                ))}
               </Select>
             </Form.Item>
           </Col>
@@ -191,11 +191,12 @@ const PackageForm: React.FC = () => {
               name="season"
               rules={[{ required: true, message: "Season is required" }]}
             >
-              <Select placeholder="Select status">
-                <Option value={Season.SPRING}>{Season.SPRING}</Option>
-                <Option value={Season.WINTER}>{Season.WINTER}</Option>
-                <Option value={Season.AUTUMN}>{Season.AUTUMN}</Option>
-                <Option value={Season.SUMMER}>{Season.SUMMER}</Option>
+              <Select placeholder="Select Season">
+                {Object.values(Season).map((season) => (
+                  <Select.Option key={season} value={season}>
+                    {season}
+                  </Select.Option>
+                ))}
               </Select>
             </Form.Item>
           </Col>
@@ -272,7 +273,7 @@ const PackageForm: React.FC = () => {
               name="order"
               rules={[{ required: true, message: "Order number is required" }]}
             >
-              <Input type="number" />
+              <Input type="number" min={1} />
             </Form.Item>
           </Col>
 
