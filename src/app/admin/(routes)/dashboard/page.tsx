@@ -15,6 +15,8 @@ import { AppDispatch, RootState } from "@/redux-store/store/store";
 import { fetchPackages } from "@/redux-store/slices/packageSlice";
 import { fetchTeams } from "@/redux-store/slices/teamSlice";
 import RecentBookingTable from "@/components/adminComponents/pages-components/tables/recent-booking-table";
+import { fetchBlogs } from "@/redux-store/slices/blogSlice";
+import { BlogCategory } from "@/types/enum/enum";
 
 const DashboardPage = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -24,9 +26,18 @@ const DashboardPage = () => {
   const {
     meta: { totalItems: totalTeams },
   } = useSelector((state: RootState) => state.teams);
+  const {
+    meta: { totalItems: totalBlogs },
+  } = useSelector((state: RootState) => state.blogs);
   useEffect(() => {
     dispatch(fetchPackages());
     dispatch(fetchTeams({}));
+    dispatch(
+      fetchBlogs({
+        params: {},
+        type: BlogCategory.NEWS_AND_EVENTS,
+      }),
+    );
   }, [dispatch]);
   return (
     <div>
@@ -84,7 +95,9 @@ const DashboardPage = () => {
                     </span>
                   </div>
                   <div>
-                    <span className="font-semibold text-gray-600">20</span>
+                    <span className="font-semibold text-gray-600">
+                      {totalBlogs || 0}
+                    </span>
                   </div>
                 </div>
               </Link>
