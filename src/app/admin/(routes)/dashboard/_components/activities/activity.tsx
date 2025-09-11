@@ -51,6 +51,7 @@ const Activity = () => {
         {/* Collapse for categories */}
         <div className="flex flex-col gap-2 p-2">
           <Collapse
+            bordered={false}
             items={activities.map((activity) => ({
               key: activity.key,
               label: activity.label,

@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Loader from "../loader/loader";
 import Search from "../../search/search";
 import Entry from "../../entry/entry";
-import { message, Modal, Popconfirm } from "antd";
+import { message, Modal, Popconfirm, Typography } from "antd";
 import {
   deleteBooking,
   fetchBooking,
@@ -77,7 +77,9 @@ const RecentBookingTable: React.FC = () => {
       <div className="min-h-screen p-1">
         <div className="rounded-lg bg-white shadow-sm">
           <div className="flex items-center justify-between bg-red-800 p-2 text-white">
-            <span className="font-semibold">Recent Bokking</span>
+            <Typography.Title level={4} className="!text-md !text-white">
+              Activities
+            </Typography.Title>
             <Link
               href={"/admin/bookings"}
               className="ho font-semibold text-white"
