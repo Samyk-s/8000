@@ -10,25 +10,17 @@ import {
   Upload,
   Select,
   Checkbox,
-  Card,
   message,
-  Space,
-  Tabs,
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import dynamic from "next/dynamic";
 import { generateSlug } from "@/lib/utils";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/redux-store/store/store";
-import { fetchPages } from "@/redux-store/slices/pageSlice";
 import { PageItem } from "@/types/page";
 import { PageTemplate } from "@/types/page-template";
 
 const TextEditor = dynamic(() => import("../../text-editor/text-editor"), {
   ssr: false,
 });
-
-const { Option } = Select;
 
 const PageForm = ({ page }: { page?: PageItem | null }) => {
   const [form] = Form.useForm();
@@ -101,7 +93,7 @@ const PageForm = ({ page }: { page?: PageItem | null }) => {
       >
         <Row gutter={16}>
           {/* TITLE */}
-          <Col xs={24} md={12}>
+          <Col xs={24}>
             <Form.Item
               label={<span className="uppercase dark:text-white">title</span>}
               name="title"
@@ -117,17 +109,6 @@ const PageForm = ({ page }: { page?: PageItem | null }) => {
                 }}
                 className="bg-transparent"
               />
-            </Form.Item>
-          </Col>
-
-          {/* SLUG */}
-          <Col xs={24} md={12}>
-            <Form.Item
-              label={<span className="uppercase dark:text-white">slug</span>}
-              name="slug"
-              rules={[{ required: true, message: "Slug is required" }]}
-            >
-              <Input className="!bg-transparent" />
             </Form.Item>
           </Col>
 
