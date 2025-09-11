@@ -15,66 +15,16 @@ import {
 import { UploadOutlined } from "@ant-design/icons";
 import dynamic from "next/dynamic";
 import { generateSlug } from "@/lib/utils";
-import { PageItem } from "@/types/page";
+import { PageItem, PagePayload } from "@/types/page";
 import { PageTemplate } from "@/types/page-template";
 
 const TextEditor = dynamic(() => import("../../text-editor/text-editor"), {
   ssr: false,
 });
 
-const PageForm = ({ page }: { page?: PageItem | null }) => {
+const PageForm = () => {
   const [form] = Form.useForm();
-
-  useEffect(() => {
-    if (page) {
-      form.setFieldsValue({
-        ...page,
-        image: page.image
-          ? [
-              {
-                uid: page.image.uid || "1",
-                name: page.image.name,
-                url: page.image.url,
-                alt: page.image.alt,
-                type: page.image.type,
-                size: page.image.size,
-              },
-            ]
-          : [],
-        cover_image: page.cover_image
-          ? [
-              {
-                uid: page.cover_image.uid || "2",
-                name: page.cover_image.name,
-                url: page.cover_image.url,
-                alt: page.cover_image.alt,
-                type: page.cover_image.type,
-                size: page.cover_image.size,
-              },
-            ]
-          : [],
-      });
-    }
-  }, [page, form]);
-
-  // ✅ Fetch pages for template select (client-side)
-
-  const onFinish = async (values: any) => {
-    try {
-      let res;
-      if (page?.id) {
-        // res = await pageApi.updatePage(page.id, values);
-        message.success("Page updated successfully!");
-      } else {
-        // res = await pageApi.createPage(values);
-        message.success("Page created successfully!");
-        form.resetFields();
-      }
-      console.log("Saved:", res);
-    } catch (error: any) {
-      message.error(error?.message || "Something went wrong");
-    }
-  };
+  const onFinish = async (values: PagePayload) => {};
 
   return (
     <div className="h-full dark:bg-[#020D1A]">
@@ -307,7 +257,7 @@ const PageForm = ({ page }: { page?: PageItem | null }) => {
                 type="default"
                 className="!bg-black !text-white hover:!bg-black hover:!text-white dark:!bg-white dark:!text-black"
               >
-                {page ? "Update Page" : "Create Page"}
+                Save
               </Button>
             </Form.Item>
           </Col>
