@@ -56,3 +56,17 @@ export interface PagePath {
   fullPath: string;
   isIndividual: boolean;
 }
+
+export interface PagePayload {
+  title: string;
+  shortTitle: string;
+  description: string;
+  parentId: number;
+  image: MediaFile;
+  cover_image: MediaFile;
+  order: number;
+  isMenu: number;
+  isMainMenu: number;
+  isFooterMenu: number;
+  page_template: string;
+}

@@ -1,5 +1,7 @@
 import { Params } from "@/types/utils-type";
 import { api } from "../axios-config/api";
+import { PageTemplate } from "@/types/page-template";
+import { PagePayload } from "@/types/page";
 
 class PageApi {
 
@@ -46,6 +48,33 @@ class PageApi {
   async getParentPagePath() {
     try {
       const res = await api.get("/pages/page-path");
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
+  // create page
+  async createPage(type: PageTemplate, data: PagePayload) {
+    try {
+      const res = await api.post(`/pages/${type}`, data)
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
+  // update page
+  async updatePage(id: number, data: PagePayload) {
+    try {
+      const res = await api.patch(`/pages/${id}`, data)
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
+  // delete page
+  async deletePage(id: number) {
+    try {
+      const res = await api.delete(`/pages/${id}`)
       return res.data
     } catch (error) {
       throw error
