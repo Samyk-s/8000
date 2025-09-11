@@ -185,18 +185,20 @@ const PackageForm: React.FC = () => {
           </Col>
 
           {/* Best Season */}
-          <Form.Item
-            label="Best Season"
-            name="season"
-            rules={[{ required: true, message: "Season is required" }]}
-          >
-            <Select placeholder="Select status">
-              <Option value={Season.SPRING}>{Season.SPRING}</Option>
-              <Option value={Season.WINTER}>{Season.WINTER}</Option>
-              <Option value={Season.AUTUMN}>{Season.AUTUMN}</Option>
-              <Option value={Season.SUMMER}>{Season.SUMMER}</Option>
-            </Select>
-          </Form.Item>
+          <Col xs={24} md={12} lg={8}>
+            <Form.Item
+              label="Best Season"
+              name="season"
+              rules={[{ required: true, message: "Season is required" }]}
+            >
+              <Select placeholder="Select status">
+                <Option value={Season.SPRING}>{Season.SPRING}</Option>
+                <Option value={Season.WINTER}>{Season.WINTER}</Option>
+                <Option value={Season.AUTUMN}>{Season.AUTUMN}</Option>
+                <Option value={Season.SUMMER}>{Season.SUMMER}</Option>
+              </Select>
+            </Form.Item>
+          </Col>
 
           {/* Price */}
           <Col xs={24} md={12} lg={8}>
