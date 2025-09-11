@@ -44,6 +44,14 @@ class AddOnsApi {
       throw error
     }
   }
+  async getAddonById(packageId: number, data: AddOnPayload) {
+    try {
+      const res = await api.post(`/packages/${packageId}/addon`, data);
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
 }
 
 export default new AddOnsApi()

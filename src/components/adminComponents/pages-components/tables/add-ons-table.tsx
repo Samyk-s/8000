@@ -19,6 +19,7 @@ import {
   toggleAddonStatus,
 } from "@/redux-store/slices/addonSlice";
 import { AddOnItem } from "@/types/addOns";
+import AddOnForm from "../forms/add-on-form/add-on-form";
 const DepartureForm = dynamic(
   () => import("../forms/departure-form/departure-form"),
   { ssr: false },
@@ -213,7 +214,7 @@ const AddOnsTable: React.FC = () => {
         style={{ maxWidth: "90%", padding: "0" }}
       >
         <Suspense fallback={null}>
-          <DepartureForm setIsModalOpen={setIsModalOpen} />
+          <AddOnForm setIsModalOpen={setIsModalOpen} />
         </Suspense>
       </Modal>
     </>
