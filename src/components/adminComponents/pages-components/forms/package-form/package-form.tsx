@@ -16,21 +16,15 @@ import { UploadOutlined } from "@ant-design/icons";
 import CreatePackageTransfer from "../../drag-drop/drag-drop";
 import TextEditor from "../../text-editor/text-editor";
 import { Grade, Season } from "@/types/enum/enum";
+import resourceApi from "@/lib/api/resourceApi";
 
 const { Option } = Select;
 
 const PackageForm: React.FC = () => {
   const [loading, setLoading] = useState(false);
-
-  const onFinish = (values: any) => {
-    console.log("Form Values:", values);
-    message.success("Form submitted successfully!");
-  };
-
-  const onFinishFailed = (errorInfo: any) => {
-    console.log("Failed:", errorInfo);
-    message.error("Please fill all required fields.");
-  };
+  const [imageFile, setImageFile] = useState<any>(null);
+  const [coverFile, setCoverFile] = useState<any>(null);
+  const [routeFile, setRouteFile] = useState<any>(null);
 
   const beforeUpload = (file: any) => {
     const isValidType =
@@ -40,10 +34,55 @@ const PackageForm: React.FC = () => {
       file.type === "image/webp";
 
     if (!isValidType) {
-      message.error("You can only upload JPG, JPEG, PNG, or WEBP files!");
+      message.error("Only JPG, JPEG, PNG, WEBP files are allowed!");
     }
 
     return isValidType ? true : Upload.LIST_IGNORE;
+  };
+
+  const handleFileUpload = async (file: any, setFile: any) => {
+    try {
+      const formData = new FormData();
+      formData.append("file", file.originFileObj);
+      const res = await resourceApi.createResource(formData);
+      setFile(res);
+      message.success("File uploaded successfully!");
+    } catch (err) {
+      console.error(err);
+      message.error("File upload failed!");
+    }
+  };
+
+  const onFinish = (values: any) => {
+    if (!imageFile || !coverFile || !routeFile) {
+      message.error("All three images must be uploaded!");
+      return;
+    }
+
+    const payload = {
+      title: values.title,
+      image: imageFile,
+      cover_image: coverFile,
+      route_map: routeFile,
+      altitude: Number(values.altitude),
+      grade: values.grade,
+      season: values.season,
+      groupSize: values.groupSize,
+      packageDays: Number(values.packageDays),
+      price: Number(values.price),
+      country: values.country,
+      order: Number(values.order),
+      description: values.description,
+      includes: values.includes,
+      excludes: values.excludes,
+      tripNotes: values.tripNotes,
+      parentPageIds: values.parentPageIds || [],
+      status: values.status ? 1 : 0,
+      isUpcoming: values.isUpcoming ? 1 : 0,
+      isBooking: values.isBooking ? 1 : 0,
+    };
+
+    console.log("Payload:", payload);
   };
 
   return (
@@ -53,7 +92,6 @@ const PackageForm: React.FC = () => {
         autoComplete="off"
         layout="vertical"
         onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
       >
         <Row gutter={[16, 10]}>
           {/* Title */}
@@ -66,6 +104,7 @@ const PackageForm: React.FC = () => {
               <Input />
             </Form.Item>
           </Col>
+
           {/* Country */}
           <Col xs={24} md={12}>
             <Form.Item
@@ -77,8 +116,8 @@ const PackageForm: React.FC = () => {
             </Form.Item>
           </Col>
 
-          {/* Image */}
-          <Col xs={24} md={12} lg={8}>
+          {/* Image Upload */}
+          <Col xs={24} md={8}>
             <Form.Item
               label="Image"
               name="image"
@@ -87,17 +126,21 @@ const PackageForm: React.FC = () => {
               rules={[{ required: true, message: "Image is required" }]}
             >
               <Upload
-                beforeUpload={beforeUpload}
                 listType="picture"
                 maxCount={1}
+                beforeUpload={beforeUpload}
+                onChange={(info) => {
+                  if (info.file.originFileObj)
+                    handleFileUpload(info.file, setImageFile);
+                }}
               >
-                <Button icon={<UploadOutlined />}>Click to Upload</Button>
+                <Button icon={<UploadOutlined />}>Upload Image</Button>
               </Upload>
             </Form.Item>
           </Col>
 
-          {/* Cover Image */}
-          <Col xs={24} md={12} lg={8}>
+          {/* Cover Image Upload */}
+          <Col xs={24} md={8}>
             <Form.Item
               label="Cover Image"
               name="cover_image"
@@ -106,17 +149,21 @@ const PackageForm: React.FC = () => {
               rules={[{ required: true, message: "Cover image is required" }]}
             >
               <Upload
-                beforeUpload={beforeUpload}
                 listType="picture"
                 maxCount={1}
+                beforeUpload={beforeUpload}
+                onChange={(info) => {
+                  if (info.file.originFileObj)
+                    handleFileUpload(info.file, setCoverFile);
+                }}
               >
-                <Button icon={<UploadOutlined />}>Click to Upload</Button>
+                <Button icon={<UploadOutlined />}>Upload Cover Image</Button>
               </Upload>
             </Form.Item>
           </Col>
 
-          {/* Route Map */}
-          <Col xs={24} md={12} lg={8}>
+          {/* Route Map Upload */}
+          <Col xs={24} md={8}>
             <Form.Item
               label="Route Map"
               name="route_map"
@@ -125,17 +172,21 @@ const PackageForm: React.FC = () => {
               rules={[{ required: true, message: "Route map is required" }]}
             >
               <Upload
-                beforeUpload={beforeUpload}
                 listType="picture"
                 maxCount={1}
+                beforeUpload={beforeUpload}
+                onChange={(info) => {
+                  if (info.file.originFileObj)
+                    handleFileUpload(info.file, setRouteFile);
+                }}
               >
-                <Button icon={<UploadOutlined />}>Click to Upload</Button>
+                <Button icon={<UploadOutlined />}>Upload Route Map</Button>
               </Upload>
             </Form.Item>
           </Col>
 
           {/* Altitude */}
-          <Col xs={24} md={12} lg={8}>
+          <Col xs={24} md={8}>
             <Form.Item
               label="Altitude"
               name="altitude"
@@ -146,7 +197,7 @@ const PackageForm: React.FC = () => {
           </Col>
 
           {/* Grade */}
-          <Col xs={24} md={12} lg={8}>
+          <Col xs={24} md={8}>
             <Form.Item
               label="Grade"
               name="grade"
@@ -154,16 +205,16 @@ const PackageForm: React.FC = () => {
             >
               <Select placeholder="Select Grade">
                 {Object.values(Grade).map((grade) => (
-                  <Select.Option key={grade} value={grade}>
+                  <Option key={grade} value={grade}>
                     {grade}
-                  </Select.Option>
+                  </Option>
                 ))}
               </Select>
             </Form.Item>
           </Col>
 
           {/* Group Size */}
-          <Col xs={24} md={12} lg={8}>
+          <Col xs={24} md={8}>
             <Form.Item
               label="Group Size"
               name="groupSize"
@@ -174,7 +225,7 @@ const PackageForm: React.FC = () => {
           </Col>
 
           {/* Package Days */}
-          <Col xs={24} md={12} lg={8}>
+          <Col xs={24} md={8}>
             <Form.Item
               label="Package Days"
               name="packageDays"
@@ -184,8 +235,8 @@ const PackageForm: React.FC = () => {
             </Form.Item>
           </Col>
 
-          {/* Best Season */}
-          <Col xs={24} md={12} lg={8}>
+          {/* Season */}
+          <Col xs={24} md={8}>
             <Form.Item
               label="Best Season"
               name="season"
@@ -193,16 +244,16 @@ const PackageForm: React.FC = () => {
             >
               <Select placeholder="Select Season">
                 {Object.values(Season).map((season) => (
-                  <Select.Option key={season} value={season}>
+                  <Option key={season} value={season}>
                     {season}
-                  </Select.Option>
+                  </Option>
                 ))}
               </Select>
             </Form.Item>
           </Col>
 
           {/* Price */}
-          <Col xs={24} md={12} lg={8}>
+          <Col xs={24} md={8}>
             <Form.Item
               label="Price"
               name="price"
@@ -212,7 +263,7 @@ const PackageForm: React.FC = () => {
             </Form.Item>
           </Col>
 
-          {/* Parent Pages / Activities */}
+          {/* Parent Pages */}
           <Col span={24}>
             <Form.Item
               label="Activity/Destination/Pages"
@@ -223,7 +274,7 @@ const PackageForm: React.FC = () => {
             </Form.Item>
           </Col>
 
-          {/* Description */}
+          {/* Description, Includes, Excludes, Trip Notes */}
           <Col span={24}>
             <Form.Item
               label="Description"
@@ -234,7 +285,6 @@ const PackageForm: React.FC = () => {
             </Form.Item>
           </Col>
 
-          {/* Includes */}
           <Col xs={24} lg={12}>
             <Form.Item
               label="Includes"
@@ -244,7 +294,7 @@ const PackageForm: React.FC = () => {
               <TextEditor />
             </Form.Item>
           </Col>
-          {/* Excludes */}
+
           <Col xs={24} lg={12}>
             <Form.Item
               label="Excludes"
@@ -255,7 +305,6 @@ const PackageForm: React.FC = () => {
             </Form.Item>
           </Col>
 
-          {/* Trip Notes */}
           <Col span={24}>
             <Form.Item
               label="Trip Notes"
@@ -277,19 +326,13 @@ const PackageForm: React.FC = () => {
             </Form.Item>
           </Col>
 
-          {/* Status */}
+          {/* Status, Booking, Upcoming */}
           <Col xs={12} lg={8}>
-            <Form.Item
-              label="Status"
-              name="status"
-              valuePropName="checked"
-              rules={[{ required: true }]}
-            >
+            <Form.Item label="Status" name="status" valuePropName="checked">
               <Checkbox />
             </Form.Item>
           </Col>
 
-          {/* Is Upcoming / Booking */}
           <Col xs={12} lg={8}>
             <Form.Item
               label="Booking Open"
@@ -310,8 +353,8 @@ const PackageForm: React.FC = () => {
             </Form.Item>
           </Col>
         </Row>
-        {/* Submit Button */}
 
+        {/* Submit Button */}
         <Form.Item>
           <Button
             type="primary"
