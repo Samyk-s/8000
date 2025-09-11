@@ -1,12 +1,25 @@
 "use client";
 import Breadcrumbs from "@/components/adminComponents/beadcrumb/bedcrumb";
 import SummiterStoryForm from "@/components/adminComponents/pages-components/forms/summiter-story-form/summitter-story-form";
+import Loader from "@/components/adminComponents/pages-components/loader/loader";
+import { fetchSummitterStoryById } from "@/redux-store/slices/storySlice";
+import { AppDispatch, RootState } from "@/redux-store/store/store";
 import { Card } from "antd";
 import { useParams } from "next/navigation";
-import React from "react";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 const EditSummiterStory = () => {
   const { id, slug } = useParams();
+  const dispatch = useDispatch<AppDispatch>();
+  const { loading, currentStory } = useSelector(
+    (state: RootState) => state.stories,
+  );
+  useEffect(() => {
+    dispatch(fetchSummitterStoryById(Number(slug)));
+  }, [id, slug, dispatch]);
+
+  if (loading) return <Loader />;
   return (
     <div className="flex flex-col gap-3">
       <Breadcrumbs
@@ -26,7 +39,7 @@ const EditSummiterStory = () => {
         separator="/"
       />
       <Card>
-        <SummiterStoryForm />
+        <SummiterStoryForm story={currentStory} />
       </Card>
     </div>
   );

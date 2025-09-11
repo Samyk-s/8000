@@ -81,7 +81,7 @@ class SummitterApi {
       throw error
     }
   }
-  //get summiter story
+  //update summiter story
   async updateSummitterStory(id: number, data: StoryPayload) {
     try {
       const res = await api.patch(`/stories/${id}`, data)
@@ -90,7 +90,7 @@ class SummitterApi {
       throw error
     }
   }
-  //get summiter story
+  //delete summiter story
   async deleteSummitterStory(id: number) {
     try {
       const res = await api.delete(`/stories/${id}`)
@@ -99,10 +99,19 @@ class SummitterApi {
       throw error
     }
   }
-  //get summiter story
+  //toggle summiter story
   async toggleSummitterStory(id: number) {
     try {
       const res = await api.patch(`/stories/${id}/toggle-status`)
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
+  //get summiter story by id
+  async getSummitterStoryById(id: number) {
+    try {
+      const res = await api.get(`/stories/${id}`)
       return res.data
     } catch (error) {
       throw error

@@ -123,6 +123,22 @@ export const toggleSummitterStory = createAsyncThunk<
     return rejectWithValue(err.message || "Failed to toggle story");
   }
 });
+// ==================
+// Get Story By ID
+// ==================
+export const fetchSummitterStoryById = createAsyncThunk<
+  StoryItem,
+  number,
+  { rejectValue: string }
+>("summiterStory/fetchById", async (id, { rejectWithValue }) => {
+  try {
+    const res = await summitterApi.getSummitterStoryById(id);
+    return res as StoryItem;
+  } catch (err: any) {
+    return rejectWithValue(err.message || "Failed to fetch story by id");
+  }
+});
+
 
 /**
  * ================
@@ -219,6 +235,21 @@ const summiterStorySlice = createSlice({
         state.error = action.payload || "Failed to toggle story";
         state.loading = false;
       });
+    // GET BY ID
+    builder
+      .addCase(fetchSummitterStoryById.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchSummitterStoryById.fulfilled, (state, action: PayloadAction<StoryItem>) => {
+        state.currentStory = action.payload;
+        state.loading = false;
+      })
+      .addCase(fetchSummitterStoryById.rejected, (state, action) => {
+        state.error = action.payload || "Failed to fetch story by id";
+        state.loading = false;
+      });
+
   },
 });
 

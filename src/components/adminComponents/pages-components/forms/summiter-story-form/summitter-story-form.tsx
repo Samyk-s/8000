@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Form, Input, Button, Row, Col, Upload, message } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,26 +9,67 @@ import resourceApi from "@/lib/api/resourceApi";
 import { MediaFile } from "@/types/utils-type";
 import TextEditor from "../../text-editor/text-editor";
 import { useParams } from "next/navigation";
-import { createSummitterStory } from "@/redux-store/slices/storySlice";
-import { StoryPayload } from "@/types/summitter";
-const SummiterStoryForm = () => {
-  const { loading } = useSelector((state: RootState) => state.teams);
+import {
+  createSummitterStory,
+  updateSummitterStory,
+} from "@/redux-store/slices/storySlice";
+import { StoryItem, StoryPayload } from "@/types/summitter";
+
+interface SummiterStoryFormProps {
+  story?: StoryItem | null;
+}
+
+const SummiterStoryForm: React.FC<SummiterStoryFormProps> = ({ story }) => {
+  const { loading } = useSelector((state: RootState) => state.stories);
   const dispatch = useDispatch<AppDispatch>();
   const [form] = Form.useForm();
   const { id } = useParams();
 
-  // separate states for image and coverImage
+  // states for image and cover image
   const [imageFile, setImageFile] = useState<MediaFile | null>(null);
   const [coverImageFile, setCoverImageFile] = useState<MediaFile | null>(null);
 
   const [imageList, setImageList] = useState<any[]>([]);
   const [coverImageList, setCoverImageList] = useState<any[]>([]);
 
-  // separate uploading states
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
 
-  /** handle upload separately for image and cover */
+  // Prefill form when editing
+  useEffect(() => {
+    if (story) {
+      form.setFieldsValue({
+        title: story.title,
+        description: story.description,
+      });
+
+      if (story.image) {
+        setImageFile(story.image);
+        setImageList([
+          {
+            uid: story.image.uid,
+            name: story.image.name,
+            status: "done",
+            url: story.image.url,
+          },
+        ]);
+      }
+
+      if (story.coverImage) {
+        setCoverImageFile(story.coverImage);
+        setCoverImageList([
+          {
+            uid: story.coverImage.uid,
+            name: story.coverImage.name,
+            status: "done",
+            url: story.coverImage.url,
+          },
+        ]);
+      }
+    }
+  }, [story, form]);
+
+  /** handle file upload */
   const handleFileUpload = async (
     rawFile: File,
     type: "image" | "cover",
@@ -97,18 +138,25 @@ const SummiterStoryForm = () => {
       return;
     }
 
-    const payload = {
+    const payload: StoryPayload = {
       title: values.title,
       description: values.description,
       image: imageFile,
       coverImage: coverImageFile,
     };
-    dispatch(
-      createSummitterStory({
-        id: Number(id),
-        payload: payload,
-      }),
-    );
+
+    if (story) {
+      // Update mode
+      dispatch(updateSummitterStory({ id: story.id, payload }));
+    } else {
+      // Create mode
+      dispatch(
+        createSummitterStory({
+          id: Number(id),
+          payload,
+        }),
+      );
+    }
   };
 
   if (loading) return <Loader />;
@@ -201,7 +249,7 @@ const SummiterStoryForm = () => {
             loading={loading}
             className="w-fit bg-black text-white hover:!bg-black hover:!text-white"
           >
-            Save
+            {story ? "Update" : "Save"}
           </Button>
         </Form.Item>
       </Form>
