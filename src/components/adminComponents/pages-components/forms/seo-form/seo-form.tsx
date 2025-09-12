@@ -7,6 +7,7 @@ import seoApi from "@/lib/api/seoApi";
 import { MediaFile } from "@/types/utils-type";
 import Loader from "../../loader/loader";
 import resourceApi from "@/lib/api/resourceApi";
+import { useRouter } from "next/navigation";
 
 const TextEditor = dynamic(() => import("../../text-editor/text-editor"), {
   ssr: false,
@@ -19,6 +20,7 @@ const SeoForm = ({ id, type }: { id: string; type: string }) => {
   const [file, setFile] = useState<MediaFile | null>(null);
   const [uploading, setUploading] = useState(false);
   const [seoId, setSeoId] = useState<Number | null>();
+  const router = useRouter();
 
   // ================= Handle file upload =================
   const handleFileUpload = async (rawFile: File) => {
@@ -41,6 +43,7 @@ const SeoForm = ({ id, type }: { id: string; type: string }) => {
           },
         ]);
         message.success("File uploaded successfully!");
+        router.back();
       } else {
         message.error("File upload failed");
       }
