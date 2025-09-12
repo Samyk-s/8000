@@ -50,8 +50,8 @@ export interface PagePayload {
   shortTitle: string;
   description: string;
   parentId: number;
-  image: MediaFile;
-  cover_image: MediaFile;
+  image?: MediaFile;
+  cover_image?: MediaFile;
   order: number;
   isMenu: number;
   isMainMenu: number;

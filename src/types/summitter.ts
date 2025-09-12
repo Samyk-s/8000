@@ -31,8 +31,8 @@ export interface SummitterItem {
 
 export interface StoryPayload {
   title: string;
-  image: MediaFile;
-  coverImage: MediaFile;
+  image?: MediaFile;
+  coverImage?: MediaFile;
   description: string;
 }
 

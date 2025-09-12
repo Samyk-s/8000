@@ -100,39 +100,24 @@ const SeoForm = ({ id, type }: { id: string; type: string }) => {
   // ================= Submit =================
   const onFinish = async (values: any) => {
     try {
-      // Decide which image to use: new upload or old one
-      const selectedImage = file
-        ? {
-            uid: file?.uid,
-            name: file?.name,
-            url: file?.url,
-            alt: values?.alt || file?.name,
-            type: "image",
-            size: file?.size,
-          }
-        : values?.image && values?.image?.length > 0
-          ? {
-              uid: values.image[0]?.uid,
-              name: values.image[0]?.name,
-              url: values.image[0]?.url,
-              alt: values.alt || values?.image[0]?.name,
-              type: "image",
-              size: "0",
-            }
-          : null;
-
-      if (!selectedImage) {
-        message.error("Image is required");
-        return;
-      }
-
-      // ✅ Final payload
-      const payload = {
+      // Determine if image changed
+      let payload: any = {
         title: values.title,
         keywords: values.keywords,
         description: values.description,
-        image: selectedImage,
       };
+
+      // Only include image if a new file is uploaded
+      if (file) {
+        payload.image = {
+          uid: file.uid,
+          name: file.name,
+          url: file.url,
+          alt: values.alt || file.name,
+          type: "image",
+          size: file.size,
+        };
+      }
 
       console.log("Final SEO Payload:", payload);
       await seoApi.updateSeo(Number(seoId), payload);

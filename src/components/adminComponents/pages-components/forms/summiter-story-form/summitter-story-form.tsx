@@ -129,9 +129,9 @@ const SummiterStoryForm: React.FC<SummiterStoryFormProps> = ({ story }) => {
       await handleFileUpload(file, type);
       return Upload.LIST_IGNORE;
     };
-
   const onFinish = (values: StoryPayload) => {
-    if (!imageFile || !coverImageFile) {
+    // CREATE: require both images
+    if (!story && (!imageFile || !coverImageFile)) {
       message.error(
         "Please upload both Image and Cover Image before submitting",
       );
@@ -141,21 +141,26 @@ const SummiterStoryForm: React.FC<SummiterStoryFormProps> = ({ story }) => {
     const payload: StoryPayload = {
       title: values.title,
       description: values.description,
-      image: imageFile,
-      coverImage: coverImageFile,
     };
 
+    // Only include image if it's new or created
+    if (imageFile && (!story || story.image?.uid !== imageFile.uid)) {
+      payload.image = imageFile;
+    }
+
+    if (
+      coverImageFile &&
+      (!story || story.coverImage?.uid !== coverImageFile.uid)
+    ) {
+      payload.coverImage = coverImageFile;
+    }
+
     if (story) {
-      // Update mode
+      // Update mode: only send updated files
       dispatch(updateSummitterStory({ id: story.id, payload }));
     } else {
       // Create mode
-      dispatch(
-        createSummitterStory({
-          id: Number(id),
-          payload,
-        }),
-      );
+      dispatch(createSummitterStory({ id: Number(id), payload }));
     }
   };
 

@@ -74,26 +74,31 @@ const TestimonialForm: React.FC<TestimonialFormProps> = ({ testimonial }) => {
 
   // Submit handler
   const onFinish = (values: TestimonialPayload) => {
-    if (!image) {
-      message.error("Please upload an image");
+    // CREATE: require image
+    if (!testimonial && !image) {
+      message.error("Please upload an image before submitting");
       return;
     }
 
     const payload: TestimonialPayload = {
       ...values,
-      order: Number(values.order),
-      image,
+      order: Number(values.order) || 0,
     };
 
+    // Only include image if it's new or updated
+    if (image && (!testimonial || testimonial.image?.uid !== image.uid)) {
+      payload.image = image;
+    }
+
     if (testimonial?.id) {
-      // Update
+      // Update mode
       dispatch(updateTestimonial({ id: testimonial.id, values: payload })).then(
         () => {
           router.push("/admin/testimonials");
         },
       );
     } else {
-      // Create
+      // Create mode
       dispatch(createTestimonial({ values: payload })).then(() => {
         router.push("/admin/testimonials");
       });

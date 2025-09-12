@@ -61,9 +61,9 @@ const FileForm = ({
 
   // Handle form submission
   const onFinish = async (values: any) => {
-    // console.log("file", file);
+    // Require file
     if (!file) {
-      message.error("Please upload an image first");
+      message.error("Please upload a file before submitting");
       return;
     }
 
@@ -76,7 +76,7 @@ const FileForm = ({
         type: file.type,
         size: file.size,
       },
-      order: Number(values.order),
+      order: Number(values.order) || 0,
       status: 1,
       alt: values.alt,
     };

@@ -100,32 +100,31 @@ const BlogForm: React.FC<BlogFormProps> = ({ blog }) => {
   };
 
   const onFinish = (values: any) => {
-    if (!uploadedFile) {
+    // CREATE: require image
+    if (!blog && !uploadedFile) {
       message.error("Please upload an image before submitting");
       return;
     }
 
-    const payload = {
+    const payload: any = {
       ...values,
-      order: Number(values.order),
-      image: uploadedFile,
+      order: Number(values.order) || 0,
       description,
     };
 
-    if (blog) {
-      // Update existing blog - include category
+    // Only include image if new or changed
+    if (uploadedFile && (!blog || blog.image?.uid !== uploadedFile.uid)) {
+      payload.image = uploadedFile;
+    }
+
+    if (blog?.id) {
+      // UPDATE: include category in update payload
       dispatch(updateBlog({ blogId: blog.id, data: payload }));
       // router.push("/admin/blogs");
     } else {
-      const { category, ...rest } = values;
-      const payload = {
-        ...rest,
-        order: Number(values.order),
-        image: uploadedFile,
-        description,
-      };
-      // Create new blog
-      dispatch(createBlog({ type: category, data: payload }));
+      // CREATE: extract category for creation
+      const { category, ...rest } = payload;
+      dispatch(createBlog({ type: category, data: rest }));
       // router.push("/admin/blogs");
     }
   };

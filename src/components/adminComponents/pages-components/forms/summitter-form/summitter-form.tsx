@@ -107,23 +107,31 @@ const SummiterForm: React.FC<SummiterFormProps> = ({ summitter }) => {
   };
 
   const onFinish = (values: any) => {
-    if (!uploadedFile) {
+    // CREATE: require image
+    if (!summitter && !uploadedFile) {
       message.error("Please upload an image before submitting");
       return;
     }
 
-    const payload = {
+    const payload: any = {
       ...values,
       order: Number(values.order),
-      image: uploadedFile,
     };
 
+    // Only include image if it's new or created
+    if (
+      uploadedFile &&
+      (!summitter || summitter.image?.uid !== uploadedFile.uid)
+    ) {
+      payload.image = uploadedFile;
+    }
+
     if (summitter) {
-      // Update existing summiter
+      // Update mode: only send updated file
       dispatch(updateSummiter({ id: summitter.id, payload }));
       router.push("/admin/summitters");
     } else {
-      // Create new summiter
+      // Create mode
       dispatch(createSummiter(payload));
       router.push("/admin/summitters");
     }

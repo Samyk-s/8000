@@ -172,7 +172,7 @@ const PageForm: React.FC<PageFormProps> = ({ page }) => {
       return;
     }
 
-    const payload: any = {
+    const payload: PagePayload = {
       title: values.title,
       shortTitle: values.shortTitle || "",
       description: values.description || "",

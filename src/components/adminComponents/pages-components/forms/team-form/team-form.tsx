@@ -102,32 +102,42 @@ const TeamForm: React.FC<TeamFormProps> = ({ team }) => {
   };
 
   const onFinish = (values: any) => {
-    const payload: TeamPayload = {
-      name: values?.name,
-      categoryId: values?.page_id,
-      post: values?.post,
-      image: image || (team?.image as MediaFile),
-      coverImage: coverImage || (team?.cover_image as MediaFile),
-      bioData: bioData || (team?.bio_data as MediaFile),
-      description: values?.description,
-      email: values?.email,
-      phoneNo: values?.phoneNo,
-      fbLink: values?.fbLink,
-      instagramLink: values?.instagramLink,
-      twitter: values?.twitter,
-      linkedIn: values?.linkedIn,
-      youtube: values?.youtube,
-      order: Number(values?.order) || 0,
-      status: values?.status ? 1 : 0,
+    // CREATE: require main image
+    if (!team && !image) {
+      message.error("Please upload an image before submitting");
+      return;
+    }
+
+    const payload: any = {
+      ...values,
+      order: Number(values.order) || 0,
+      status: values.status ? 1 : 0,
     };
 
+    // Include image if it's new or changed
+    if (image && (!team || team.image?.uid !== image.uid)) {
+      payload.image = image;
+    }
+
+    if (coverImage && (!team || team.cover_image?.uid !== coverImage.uid)) {
+      payload.coverImage = coverImage;
+    }
+
+    if (bioData && (!team || team.bio_data?.uid !== bioData.uid)) {
+      payload.bioData = bioData;
+    }
+
     if (team?.id) {
-      dispatch(updateTeam({ id: team?.id, values: payload }));
+      // Update mode
+      dispatch(updateTeam({ id: team.id, values: payload }));
       router.back();
     } else {
+      // Create mode
       dispatch(createTeam({ values: payload }));
       router.back();
     }
+
+    router.push("/admin/teams");
   };
 
   if (!isClient) return null;
