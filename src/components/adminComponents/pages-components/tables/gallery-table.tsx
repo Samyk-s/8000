@@ -19,7 +19,7 @@ import {
   fetchFiles,
   toggleFileStatus,
 } from "@/redux-store/slices/fileSlice";
-import { FileType, PageTemplate } from "@/types/page-template";
+import { FileType, PageTemplate } from "@/types/enum/enum";
 import { FileItem } from "@/types/file";
 import Link from "next/link";
 import Image from "next/image";

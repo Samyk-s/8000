@@ -6,7 +6,7 @@ const SeoForm = dynamic(
       "@/components/adminComponents/pages-components/forms/seo-form/seo-form"
     ),
 );
-import { PageTemplate } from "@/types/page-template";
+import { SeoEntity } from "@/types/enum/enum";
 import { Card } from "antd";
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
@@ -26,7 +26,7 @@ const BlogSEOPage = () => {
       />
       <Card>
         <div className="flex flex-col gap-3">
-          <SeoForm id={id} type={PageTemplate.BLOG} />
+          <SeoForm id={id} type={SeoEntity.BLOG} />
         </div>
       </Card>
     </div>

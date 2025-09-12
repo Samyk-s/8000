@@ -1,6 +1,6 @@
 import { Params } from "@/types/utils-type";
 import { api } from "../axios-config/api";
-import { PageTemplate } from "@/types/page-template";
+import { PageTemplate } from "@/types/enum/enum";
 import { PagePayload } from "@/types/page";
 
 class PageApi {

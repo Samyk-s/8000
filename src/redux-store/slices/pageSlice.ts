@@ -3,7 +3,7 @@ import { PageItem, PagePayload } from "@/types/page";
 import { Meta, Params } from "@/types/utils-type";
 import pageApi from "@/lib/api/pageApi";
 import { message } from "antd";
-import { PageTemplate } from "@/types/page-template";
+import { PageTemplate } from "@/types/enum/enum";
 
 // --- Async Thunks ---
 

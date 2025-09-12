@@ -9,7 +9,7 @@ import { useParams } from "next/navigation";
 import Loader from "../../loader/loader";
 import { createFile } from "@/redux-store/slices/fileSlice";
 import resourceApi from "@/lib/api/resourceApi";
-import { FileType, PageTemplate } from "@/types/page-template";
+import { FileType, PageTemplate } from "@/types/enum/enum";
 import { FilePayload } from "@/types/file";
 import { FileParams, MediaFile } from "@/types/utils-type";
 

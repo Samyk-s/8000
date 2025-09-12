@@ -7,7 +7,7 @@ const SeoForm = dynamic(
     ),
 );
 import PageTabs from "@/components/adminComponents/tabs/page-tabs";
-import { PageTemplate } from "@/types/page-template";
+import { SeoEntity } from "@/types/enum/enum";
 import { Card } from "antd";
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
@@ -28,7 +28,7 @@ const SEOPage = () => {
       <Card>
         <div className="flex flex-col gap-3">
           <PageTabs id={id as string} />
-          <SeoForm id={id} type={PageTemplate.PAGE} />
+          <SeoForm id={id} type={SeoEntity.PAGE} />
         </div>
       </Card>
     </div>
