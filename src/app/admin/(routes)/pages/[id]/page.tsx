@@ -1,42 +1,31 @@
 "use client";
+import dynamic from "next/dynamic";
+import { PageItem } from "@/types/page";
+import React, { Suspense, useEffect } from "react";
+import { useParams } from "next/navigation";
+import { Card } from "antd";
+import PageTabs from "@/components/adminComponents/tabs/page-tabs";
+import Loader from "@/components/adminComponents/pages-components/loader/loader";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/redux-store/store/store";
+import { getPageById } from "@/redux-store/slices/pageSlice";
 import Breadcrumbs from "@/components/adminComponents/beadcrumb/bedcrumb";
 const PageForm = dynamic(
   () =>
     import(
       "@/components/adminComponents/pages-components/forms/page-form/page-form"
     ),
+  { ssr: false },
 );
-import pageApi from "@/lib/api/pageApi";
-import { PageItem } from "@/types/page";
-import React, { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import dynamic from "next/dynamic";
-import { Card } from "antd";
-import PageTabs from "@/components/adminComponents/tabs/page-tabs";
-import Loader from "@/components/adminComponents/pages-components/loader/loader";
 
 const EditPage = () => {
   const { id } = useParams<{ id: string }>();
-  const [page, setPage] = useState<PageItem | null>(null);
-  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch<AppDispatch>();
+  const { loading, page } = useSelector((state: RootState) => state.pages);
 
   useEffect(() => {
-    async function fetchPageById() {
-      setLoading(true);
-      try {
-        if (!id) return;
-        const res = await pageApi.getPageById(Number(id));
-        console.log(res);
-        setPage(res);
-      } catch (error: any) {
-        setLoading(false);
-        console.error("error:: ", error?.message);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchPageById();
-  }, [id]);
+    dispatch(getPageById(Number(id)));
+  }, [id, dispatch]);
 
   if (loading) return <Loader />;
   return (
@@ -52,7 +41,9 @@ const EditPage = () => {
       <Card>
         <div className="flex flex-col gap-3">
           <PageTabs id={id as string} />
-          <PageForm page={page as PageItem} />
+          <Suspense fallback={"loading..."}>
+            <PageForm page={page as PageItem} />
+          </Suspense>
         </div>
       </Card>
     </div>

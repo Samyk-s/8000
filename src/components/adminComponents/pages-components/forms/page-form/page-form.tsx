@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Form,
   Input,
@@ -11,65 +11,115 @@ import {
   Select,
   Checkbox,
   message,
+  UploadFile,
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import dynamic from "next/dynamic";
-import { generateSlug } from "@/lib/utils";
-import { PagePayload } from "@/types/page";
-import { PageTemplate } from "@/types/enum/enum";
+import { PageItem, PagePayload } from "@/types/page";
+import { PageTemplate, PageType } from "@/types/enum/enum";
 import { MediaFile } from "@/types/utils-type";
 import resourceApi from "@/lib/api/resourceApi";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux-store/store/store";
-import { createPage } from "@/redux-store/slices/pageSlice";
-import { PageType } from "@/types/enum/enum";
+import { createPage, updatePage } from "@/redux-store/slices/pageSlice";
+import { useRouter } from "next/navigation";
 
 const TextEditor = dynamic(() => import("../../text-editor/text-editor"), {
   ssr: false,
 });
 
-const PageForm = () => {
-  const [form] = Form.useForm();
+interface PageFormProps {
+  page?: PageItem | null;
+}
+
+const PageForm: React.FC<PageFormProps> = ({ page }) => {
+  const [form] = Form.useForm<PagePayload>();
+  const dispatch = useDispatch<AppDispatch>();
+  const router = useRouter();
+
+  const [isClient, setIsClient] = useState(false);
+  useEffect(() => setIsClient(true), []);
+
+  // IMAGE STATES
   const [imageFile, setImageFile] = useState<MediaFile | null>(null);
   const [coverImageFile, setCoverImageFile] = useState<MediaFile | null>(null);
-  const [imageList, setImageList] = useState<any[]>([]);
-  const [coverImageList, setCoverImageList] = useState<any[]>([]);
+  const [imageList, setImageList] = useState<UploadFile[]>([]);
+  const [coverImageList, setCoverImageList] = useState<UploadFile[]>([]);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
-  const dispatch = useDispatch<AppDispatch>();
 
-  /** handle file upload */
-  const handleFileUpload = async (
-    rawFile: File,
-    type: "image" | "cover",
-  ): Promise<void> => {
+  // Prefill form when editing
+  useEffect(() => {
+    if (page) {
+      form.setFieldsValue({
+        title: page.title,
+        shortTitle: page.shortTitle || "",
+        description: page.description || "",
+        parentId: page.parent?.id ?? 0,
+        order: page.order ?? 0,
+        page_template: page.page_template,
+        isMenu: page.isMenu ? 1 : 0,
+        isMainMenu: page.isMainMenu ? 1 : 0,
+        isFooterMenu: page.isFooterMenu ? 1 : 0,
+      });
+
+      if (page?.image) {
+        setImageFile(page?.image);
+        setImageList([
+          {
+            uid: page?.image.uid,
+            name: page?.image.name,
+            status: "done",
+            url: page?.image.url,
+          },
+        ]);
+      }
+
+      if (page.cover_image) {
+        setCoverImageFile(page?.cover_image);
+        setCoverImageList([
+          {
+            uid: page?.cover_image.uid,
+            name: page?.cover_image.name,
+            status: "done",
+            url: page?.cover_image.url,
+          },
+        ]);
+      }
+    }
+  }, [page, form]);
+
+  /** Handle file upload */
+  const handleFileUpload = async (file: File, type: "image" | "cover") => {
     const formData = new FormData();
-    formData.append("file", rawFile);
+    formData.append("file", file);
 
     try {
       if (type === "image") setUploadingImage(true);
       if (type === "cover") setUploadingCover(true);
 
-      const res = await resourceApi.createResource(formData);
+      const res: MediaFile = await resourceApi.createResource(formData);
 
-      if (res) {
-        if (type === "image") {
-          setImageFile(res);
-          setImageList([
-            { uid: res.uid, name: res.name, status: "done", url: res.url },
-          ]);
-        } else {
-          setCoverImageFile(res);
-          setCoverImageList([
-            { uid: res.uid, name: res.name, status: "done", url: res.url },
-          ]);
-        }
-        message.success(
-          `${type === "image" ? "Image" : "Cover image"} uploaded successfully!`,
-        );
+      const uploadFile: UploadFile = {
+        uid: res.uid,
+        name: res.name,
+        status: "done",
+        url: res.url,
+      };
+
+      if (type === "image") {
+        setImageFile(res);
+        setImageList([uploadFile]);
+        form.setFieldsValue({ image: [uploadFile] as any });
       } else {
-        message.error(`${type} upload failed`);
+        setCoverImageFile(res);
+        setCoverImageList([uploadFile]);
+        form.setFieldsValue({ cover_image: [uploadFile] as any });
       }
+
+      message.success(
+        `${type === "image" ? "Image" : "Cover Image"} uploaded successfully!`,
+      );
     } catch (error) {
       console.error(error);
       message.error("File upload failed");
@@ -83,53 +133,72 @@ const PageForm = () => {
   const makeBeforeUpload =
     (type: "image" | "cover") =>
     async (file: File): Promise<string | void> => {
-      const isValidType = [
+      const isValid = [
         "image/jpeg",
         "image/png",
         "image/jpg",
         "image/webp",
       ].includes(file.type);
-
-      if (!isValidType) {
+      if (!isValid) {
         message.error("You can only upload JPG, JPEG, PNG, or WEBP files!");
         return Upload.LIST_IGNORE;
       }
-
       await handleFileUpload(file, type);
       return Upload.LIST_IGNORE;
     };
 
-  /** form submit */
+  /** Form submit */
   const onFinish = (values: any) => {
     if (!imageFile || !coverImageFile) {
-      message.error(
-        "Please upload both Image and Cover Image before submitting",
-      );
+      message.error("Please upload both Image and Cover Image");
       return;
     }
 
     const payload: PagePayload = {
       title: values.title,
-      shortTitle: values?.shortTitle || "",
+      shortTitle: values.shortTitle || "",
       description: values.description || "",
-      parentId: values?.parentId ? Number(values.parentId) : 0,
-      image: imageFile,
-      cover_image: coverImageFile,
-      order: values?.order ? Number(values.order) : 0,
-      isMenu: values?.isMenu ? 1 : 0,
-      isMainMenu: values?.isMainMenu ? 1 : 0,
-      isFooterMenu: values?.isFooterMenu ? 1 : 0,
-      page_template: values?.page_template,
+      parentId: Number(values.parentId) || 0,
+      order: Number(values.order) || 0,
+      isMenu: values.isMenu ? 1 : 0,
+      isMainMenu: values.isMainMenu ? 1 : 0,
+      isFooterMenu: values.isFooterMenu ? 1 : 0,
+      page_template: values.page_template,
+      image: {
+        uid: imageFile.uid,
+        name: imageFile.name,
+        url: imageFile.url,
+        alt: imageFile.alt || "",
+        type: imageFile.type || "",
+        size: imageFile.size || "",
+      },
+      cover_image: {
+        uid: coverImageFile.uid,
+        name: coverImageFile.name,
+        url: coverImageFile.url,
+        alt: coverImageFile.alt || "",
+        type: coverImageFile.type || "",
+        size: coverImageFile.size || "",
+      },
     };
-    console.log("payload", payload);
 
-    dispatch(
-      createPage({
-        type: values?.type,
-        data: payload,
-      }),
-    );
+    if (page) {
+      // Update mode
+      dispatch(updatePage({ id: page.id, data: payload }));
+      router.push("/admin/pages");
+    } else {
+      // Create mode
+      dispatch(
+        createPage({
+          type: values.type, // page type required for create
+          data: payload,
+        }),
+      );
+      router.push("/admin/pages");
+    }
   };
+
+  if (!isClient) return null;
 
   return (
     <div className="h-full dark:bg-[#020D1A]">
@@ -139,37 +208,25 @@ const PageForm = () => {
         autoComplete="off"
         layout="vertical"
         onFinish={onFinish}
-        initialValues={{
-          status: true,
-          isMenu: false,
-          isMainMenu: false,
-          isFooterMenu: false,
-          parentId: 0,
-        }}
       >
         <Row gutter={16}>
           {/* TITLE */}
           <Col xs={24}>
-            <Form.Item
-              label={<span className="uppercase dark:text-white">title</span>}
-              name="title"
-              rules={[{ required: true, message: "Title is required" }]}
-            >
-              <Input
-                onChange={(e) => {
-                  const value = e.target.value;
-                  form.setFieldsValue({
-                    slug: generateSlug(value),
-                  });
-                }}
-                className="bg-transparent"
-              />
+            <Form.Item label="Title" name="title" rules={[{ required: true }]}>
+              <Input />
+            </Form.Item>
+          </Col>
+
+          {/* SHORT TITLE */}
+          <Col xs={24}>
+            <Form.Item label="Short Title" name="shortTitle">
+              <Input />
             </Form.Item>
           </Col>
 
           {/* IMAGE */}
-          <Col xs={24} md={12} lg={8}>
-            <Form.Item label="IMAGE" required>
+          <Col xs={24} md={8}>
+            <Form.Item label="Image" required>
               <Upload
                 beforeUpload={makeBeforeUpload("image")}
                 listType="picture"
@@ -192,8 +249,8 @@ const PageForm = () => {
           </Col>
 
           {/* COVER IMAGE */}
-          <Col xs={24} md={12} lg={8}>
-            <Form.Item label="COVER IMAGE" required>
+          <Col xs={24} md={8}>
+            <Form.Item label="Cover Image" required>
               <Upload
                 beforeUpload={makeBeforeUpload("cover")}
                 listType="picture"
@@ -214,142 +271,89 @@ const PageForm = () => {
               </Upload>
             </Form.Item>
           </Col>
+
           {/* ORDER */}
           <Col xs={24} md={8}>
-            <Form.Item
-              label={
-                <span className="uppercase dark:text-white">order no.</span>
-              }
-              name="order"
-            >
-              <Input type="number" min={1} className="!bg-transparent" />
+            <Form.Item label="Order" name="order">
+              <Input type="number" min={0} />
+            </Form.Item>
+          </Col>
+
+          {/* PARENT PAGE */}
+          <Col xs={24} md={12}>
+            <Form.Item label="Parent Page" name="parentId">
+              <Select allowClear placeholder="Select parent page">
+                <Select.Option value={0}>No Parent</Select.Option>
+                {/* TODO: map pages */}
+              </Select>
             </Form.Item>
           </Col>
 
           {/* TEMPLATE */}
           <Col xs={24} md={12}>
             <Form.Item
-              label={
-                <span className="uppercase dark:text-white">template</span>
-              }
+              label="Template"
               name="page_template"
-              rules={[{ required: true, message: "Template is required" }]}
+              rules={[{ required: true }]}
             >
-              <Select placeholder="Select a template" allowClear>
-                {Object.values(PageTemplate).map((template) => (
-                  <Select.Option key={template} value={template}>
-                    {template}
+              <Select allowClear placeholder="Select template">
+                {Object.values(PageTemplate).map((t) => (
+                  <Select.Option key={t} value={t}>
+                    {t}
                   </Select.Option>
                 ))}
               </Select>
             </Form.Item>
           </Col>
 
-          {/* SHORT TITLE */}
-          <Col xs={24} md={12}>
-            <Form.Item
-              label={
-                <span className="uppercase dark:text-white">short title</span>
-              }
-              name="shortTitle"
-            >
-              <Input className="!bg-transparent" />
-            </Form.Item>
-          </Col>
-
-          {/* PARENT PAGE */}
-          <Col xs={24} md={12}>
-            <Form.Item
-              label={
-                <span className="uppercase dark:text-white">parent page</span>
-              }
-              name="parentId"
-            >
-              <Select placeholder="Select parent page" allowClear>
-                <Select.Option value={0}>No Parent</Select.Option>
-                {/* You can fetch pages dynamically and map them here */}
-              </Select>
-            </Form.Item>
-          </Col>
-          {/*  PAGE TYPE*/}
-          <Col xs={24} md={12}>
-            <Form.Item
-              label={
-                <span className="uppercase dark:text-white">Page Type</span>
-              }
-              name="type"
-            >
-              <Select placeholder="Select page" allowClear>
-                {Object.values(PageType).map((type) => (
-                  <Select.Option key={type} value={type}>
-                    {type}
-                  </Select.Option>
-                ))}
-              </Select>
-            </Form.Item>
-          </Col>
-
-          {/* SHORT DESCRIPTION */}
-          <Col span={24}>
-            <Form.Item
-              label={
-                <span className="uppercase dark:text-white">
-                  short description
-                </span>
-              }
-              name="shortDescription"
-            >
-              <Input className="!bg-transparent" />
-            </Form.Item>
-          </Col>
+          {/* PAGE TYPE (create only) */}
+          {!page && (
+            <Col xs={24} md={12}>
+              <Form.Item
+                label="Page Type"
+                name="type"
+                rules={[{ required: true }]}
+              >
+                <Select allowClear placeholder="Select page type">
+                  {Object.values(PageType).map((t) => (
+                    <Select.Option key={t} value={t}>
+                      {t}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+          )}
 
           {/* DESCRIPTION */}
-          <Col span={24}>
-            <Form.Item
-              label={
-                <span className="uppercase dark:text-white">description</span>
-              }
-              name="description"
-            >
-              <TextEditor />
+          <Col xs={24}>
+            <Form.Item label="Description" name="description">
+              <TextEditor
+                value={form.getFieldValue("description") || ""}
+                onChange={(val) => form.setFieldsValue({ description: val })}
+              />
             </Form.Item>
           </Col>
 
           {/* CHECKBOXES */}
           <Col xs={12} md={6} lg={4}>
-            <Form.Item
-              label={<span className="dark:text-white">Status</span>}
-              name="status"
-              valuePropName="checked"
-            >
+            <Form.Item name="isMenu" label="Is Menu" valuePropName="checked">
               <Checkbox />
             </Form.Item>
           </Col>
-
           <Col xs={12} md={6} lg={4}>
             <Form.Item
-              label={<span className="dark:text-white">Is Menu</span>}
-              name="isMenu"
-              valuePropName="checked"
-            >
-              <Checkbox />
-            </Form.Item>
-          </Col>
-
-          <Col xs={12} md={6} lg={4}>
-            <Form.Item
-              label={<span className="dark:text-white">Is Main Menu</span>}
               name="isMainMenu"
+              label="Is Main Menu"
               valuePropName="checked"
             >
               <Checkbox />
             </Form.Item>
           </Col>
-
           <Col xs={12} md={6} lg={4}>
             <Form.Item
-              label={<span className="dark:text-white">Is Footer Menu</span>}
               name="isFooterMenu"
+              label="Is Footer Menu"
               valuePropName="checked"
             >
               <Checkbox />
@@ -359,12 +363,8 @@ const PageForm = () => {
           {/* SUBMIT */}
           <Col span={24}>
             <Form.Item>
-              <Button
-                htmlType="submit"
-                type="default"
-                className="!bg-black !text-white hover:!bg-black hover:!text-white dark:!bg-white dark:!text-black"
-              >
-                Save
+              <Button type="primary" htmlType="submit">
+                {page ? "Update Page" : "Create Page"}
               </Button>
             </Form.Item>
           </Col>

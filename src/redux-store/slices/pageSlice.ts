@@ -84,6 +84,7 @@ export const getPageById = createAsyncThunk<PageItem, number>(
   async (id: number, { rejectWithValue }) => {
     try {
       const res = await pageApi.getPageById(id);
+      console.log("res", res)
       return res;
     } catch (err: any) {
       message.error(err?.message || "Failed to fetch page");
@@ -111,18 +112,18 @@ export const togglePageStatus = createAsyncThunk<PageItem, number>(
 
 interface PageState {
   items: PageItem[];
-  currentPageItem?: PageItem;
   meta: Meta;
   loading: boolean;
   error: string | null;
+  page: PageItem | null;
 }
 
 const initialState: PageState = {
   items: [],
-  currentPageItem: undefined,
   meta: { currentPage: 1, itemCount: 0, totalItems: 0, totalPages: 0, itemsPerPage: 0 },
   loading: false,
   error: null,
+  page: null
 };
 
 const pageSlice = createSlice({
@@ -215,7 +216,7 @@ const pageSlice = createSlice({
         state.error = null;
       })
       .addCase(getPageById.fulfilled, (state, action) => {
-        state.currentPageItem = action.payload;
+        state.page = action.payload;
         state.loading = false;
       })
       .addCase(getPageById.rejected, (state, action: PayloadAction<any>) => {
