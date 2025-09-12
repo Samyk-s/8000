@@ -166,12 +166,13 @@ const PageForm: React.FC<PageFormProps> = ({ page }) => {
 
   /** Form submit */
   const onFinish = (values: any) => {
-    if (!imageFile || !coverImageFile) {
+    // CREATE: require both images
+    if (!page && (!imageFile || !coverImageFile)) {
       message.error("Please upload both Image and Cover Image");
       return;
     }
 
-    const payload: PagePayload = {
+    const payload: any = {
       title: values.title,
       shortTitle: values.shortTitle || "",
       description: values.description || "",
@@ -181,33 +182,29 @@ const PageForm: React.FC<PageFormProps> = ({ page }) => {
       isMainMenu: values.isMainMenu ? 1 : 0,
       isFooterMenu: values.isFooterMenu ? 1 : 0,
       page_template: values.page_template,
-      image: {
-        uid: imageFile.uid,
-        name: imageFile.name,
-        url: imageFile.url,
-        alt: imageFile.alt || "",
-        type: imageFile.type || "",
-        size: imageFile.size || "",
-      },
-      cover_image: {
-        uid: coverImageFile.uid,
-        name: coverImageFile.name,
-        url: coverImageFile.url,
-        alt: coverImageFile.alt || "",
-        type: coverImageFile.type || "",
-        size: coverImageFile.size || "",
-      },
     };
 
+    // Only include image if it's new or created
+    if (imageFile && (!page || page.image?.uid !== imageFile.uid)) {
+      payload.image = { ...imageFile };
+    }
+
+    if (
+      coverImageFile &&
+      (!page || page.cover_image?.uid !== coverImageFile.uid)
+    ) {
+      payload.cover_image = { ...coverImageFile };
+    }
+
     if (page) {
-      // Update mode
+      // Update page: only send updated files
       dispatch(updatePage({ id: page.id, data: payload }));
       router.back();
     } else {
-      // Create mode
+      // Create page: require page type
       dispatch(
         createPage({
-          type: values.type, // page type required for create
+          type: values.type,
           data: payload,
         }),
       );
