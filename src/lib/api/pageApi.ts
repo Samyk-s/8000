@@ -23,6 +23,15 @@ class PageApi {
       throw error
     }
   }
+  async getPageByType(params: Params) {
+    try {
+      const response = await api.get(`/pages/by-type/${params?.search}?page=${params?.page}&limit=${params?.limit}`);
+      return response.data
+    } catch (error) {
+      console.error(error)
+      throw error
+    }
+  }
   async togglePage(id: number) {
     try {
       const response = await api.patch(`/pages/${id}/toggle-status`)

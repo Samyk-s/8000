@@ -93,6 +93,21 @@ export const getPageById = createAsyncThunk<PageItem, number>(
   }
 );
 
+// Get Page by type
+export const getPageByType = createAsyncThunk<{ items: PageItem[], meta: Meta }, Params>(
+  "pages/getPageByType",
+  async (param, { rejectWithValue }) => {
+    try {
+      const res = await pageApi.getPageByType(param);
+      console.log("res", res)
+      return res;
+    } catch (err: any) {
+      message.error(err?.message || "Failed to fetch page");
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
 // Toggle Page Status
 export const togglePageStatus = createAsyncThunk<PageItem, number>(
   "pages/togglePageStatus",
@@ -143,6 +158,21 @@ const pageSlice = createSlice({
         state.loading = false;
       })
       .addCase(fetchPages.rejected, (state, action: PayloadAction<any>) => {
+        state.loading = false;
+        state.error = action.payload || "Failed to fetch pages";
+      });
+    // Fetch Pages by type
+    builder
+      .addCase(getPageByType.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getPageByType.fulfilled, (state, action) => {
+        state.items = action.payload.items;
+        state.meta = action.payload.meta;
+        state.loading = false;
+      })
+      .addCase(getPageByType.rejected, (state, action: PayloadAction<any>) => {
         state.loading = false;
         state.error = action.payload || "Failed to fetch pages";
       });
