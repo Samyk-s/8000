@@ -17,6 +17,9 @@ import CreatePackageTransfer from "../../drag-drop/drag-drop";
 import TextEditor from "../../text-editor/text-editor";
 import { Grade, Season } from "@/types/enum/enum";
 import resourceApi from "@/lib/api/resourceApi";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/redux-store/store/store";
+import { createPackage } from "@/redux-store/slices/packageSlice";
 
 const { Option } = Select;
 
@@ -25,6 +28,7 @@ const PackageForm: React.FC = () => {
   const [imageFile, setImageFile] = useState<any>(null);
   const [coverFile, setCoverFile] = useState<any>(null);
   const [routeFile, setRouteFile] = useState<any>(null);
+  const dispatch = useDispatch<AppDispatch>();
 
   const beforeUpload = (file: any) => {
     const isValidType =
@@ -82,7 +86,7 @@ const PackageForm: React.FC = () => {
       isBooking: values.isBooking ? 1 : 0,
     };
 
-    console.log("Payload:", payload);
+    dispatch(createPackage(payload));
   };
 
   return (
@@ -268,7 +272,7 @@ const PackageForm: React.FC = () => {
             <Form.Item
               label="Activity/Destination/Pages"
               name="parentPageIds"
-              rules={[{ required: true, message: "Select at least one page" }]}
+              required
             >
               <CreatePackageTransfer />
             </Form.Item>
