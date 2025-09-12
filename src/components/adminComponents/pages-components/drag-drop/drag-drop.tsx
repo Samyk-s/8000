@@ -19,12 +19,13 @@ import pageApi from "@/lib/api/pageApi";
 import { PagePath } from "@/types/page";
 
 interface CreatePackageTransferProps {
+  value?: number[]; // controlled (from AntD Form)
   onChange?: (ids: number[]) => void;
 }
 
 // Convert PagePath to draggable item format
 const mapPagePathToItem = (p: PagePath) => ({
-  key: p.pathIds.join("-"), // unique string
+  key: p.pathIds.join("-"),
   title: p.fullPath,
   raw: p,
 });
@@ -121,6 +122,7 @@ const DroppableList: React.FC<{
 
 // === Main Component ===
 const CreatePackageTransfer: React.FC<CreatePackageTransferProps> = ({
+  value = [],
   onChange,
 }) => {
   const [available, setAvailable] = useState<
@@ -131,13 +133,15 @@ const CreatePackageTransfer: React.FC<CreatePackageTransferProps> = ({
   >([]);
   const [search, setSearch] = useState("");
 
+  // Add item
   const handleAdd = (item: { key: string; title: string; raw: PagePath }) => {
     const newSelected = [...selected, item];
     setSelected(newSelected);
     setAvailable(available.filter((i) => i.key !== item.key));
-    onChange?.(newSelected.map((s) => s.raw.pathIds[s.raw.pathIds.length - 1]));
+    onChange?.(newSelected.map((s) => s.raw.pathIds.at(-1)!));
   };
 
+  // Remove item
   const handleRemove = (item: {
     key: string;
     title: string;
@@ -146,46 +150,40 @@ const CreatePackageTransfer: React.FC<CreatePackageTransferProps> = ({
     const newSelected = selected.filter((i) => i.key !== item.key);
     setSelected(newSelected);
     setAvailable([...available, item]);
-    onChange?.(newSelected.map((s) => s.raw.pathIds[s.raw.pathIds.length - 1]));
+    onChange?.(newSelected.map((s) => s.raw.pathIds.at(-1)!));
   };
 
+  // Drag reorder
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
-    if (!over) return;
-    const activeId = active.id as string;
+    if (!over || active.id === over.id) return;
 
-    if (available.find((i) => i.key === activeId) && over.id === "available") {
-      const oldIndex = available.findIndex((i) => i.key === activeId);
-      const newIndex = available.findIndex((i) => i.key === over.id);
-      if (oldIndex !== -1 && newIndex !== -1)
-        setAvailable(arrayMove(available, oldIndex, newIndex));
-    }
+    const oldIndex = selected.findIndex((i) => i.key === active.id);
+    const newIndex = selected.findIndex((i) => i.key === over.id);
 
-    if (selected.find((i) => i.key === activeId) && over.id === "selected") {
-      const oldIndex = selected.findIndex((i) => i.key === activeId);
-      const newIndex = selected.findIndex((i) => i.key === over.id);
-      if (oldIndex !== -1 && newIndex !== -1)
-        setSelected(arrayMove(selected, oldIndex, newIndex));
-    }
-
-    if (available.find((i) => i.key === activeId) && over.id === "selected") {
-      const item = available.find((i) => i.key === activeId);
-      if (!item) return;
-      handleAdd(item);
-    }
-
-    if (selected.find((i) => i.key === activeId) && over.id === "available") {
-      const item = selected.find((i) => i.key === activeId);
-      if (!item) return;
-      handleRemove(item);
+    if (oldIndex !== -1 && newIndex !== -1) {
+      const newSelected = arrayMove(selected, oldIndex, newIndex);
+      setSelected(newSelected);
+      onChange?.(newSelected.map((s) => s.raw.pathIds.at(-1)!));
     }
   };
 
+  // Fetch available pages
   useEffect(() => {
     async function getPath() {
       try {
         const res: PagePath[] = await pageApi.getParentPagePath();
-        setAvailable(res.map(mapPagePathToItem));
+        const items = res.map(mapPagePathToItem);
+
+        const preSelected = items.filter((i) =>
+          value.includes(i.raw.pathIds.at(-1)!),
+        );
+        const remaining = items.filter(
+          (i) => !value.includes(i.raw.pathIds.at(-1)!),
+        );
+
+        setSelected(preSelected);
+        setAvailable(remaining);
       } catch (error: any) {
         message.error(error?.message);
       }

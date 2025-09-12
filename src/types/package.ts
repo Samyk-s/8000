@@ -1,10 +1,27 @@
 import { MediaFile } from "./utils-type";
-
-
-export interface PackageItem {
-  slug: string;
+export interface ParentPage {
   id: number;
   title: string;
+  slug: string;
+  shortTitle: string;
+  description: string;
+  image: MediaFile;
+  cover_image: MediaFile;
+  status: number;
+  order: number;
+  isMenu: number;
+  isMainMenu: number;
+  isFooterMenu: number;
+  page_template: string;
+  type: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PackageItem {
+  id: number;
+  title: string;
+  slug: string;
   image: MediaFile;
   cover_image: MediaFile;
   route_map: MediaFile;
@@ -13,17 +30,19 @@ export interface PackageItem {
   season: string;
   groupSize: string;
   packageDays: number;
-  price: number;
+  price: string;
   country: string;
   order: number;
   description: string;
   includes: string;
   excludes: string;
   tripNotes: string;
-  page_id: number;
+  parentPages: ParentPage[];
   status: number;
   isUpcoming: number;
   isBooking: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 
