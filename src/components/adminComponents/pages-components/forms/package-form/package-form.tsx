@@ -212,7 +212,11 @@ const PackageForm: React.FC<PackageFormProps> = ({ currentPackage }) => {
       <Row gutter={[16, 10]}>
         {/* Title & Country */}
         <Col xs={24} md={12}>
-          <Form.Item label="Title" name="title" rules={[{ required: true }]}>
+          <Form.Item
+            label="Title"
+            name="title"
+            rules={[{ required: true, message: "Title is required" }]}
+          >
             <Input />
           </Form.Item>
         </Col>
@@ -220,7 +224,7 @@ const PackageForm: React.FC<PackageFormProps> = ({ currentPackage }) => {
           <Form.Item
             label="Country"
             name="country"
-            rules={[{ required: true }]}
+            rules={[{ required: true, message: "Country is required" }]}
           >
             <Input />
           </Form.Item>
@@ -286,16 +290,16 @@ const PackageForm: React.FC<PackageFormProps> = ({ currentPackage }) => {
 
         {/* Numeric and Select Fields */}
         <Col xs={24} md={8}>
-          <Form.Item
-            label="Altitude"
-            name="altitude"
-            rules={[{ required: true }]}
-          >
+          <Form.Item label="Altitude" name="altitude">
             <Input type="number" min={1} />
           </Form.Item>
         </Col>
         <Col xs={24} md={8}>
-          <Form.Item label="Grade" name="grade" rules={[{ required: true }]}>
+          <Form.Item
+            label="Grade"
+            name="grade"
+            rules={[{ required: true, message: "Grade is required" }]}
+          >
             <Select placeholder="Select Grade">
               {Object.values(Grade).map((grade) => (
                 <Option key={grade} value={grade}>
@@ -309,7 +313,7 @@ const PackageForm: React.FC<PackageFormProps> = ({ currentPackage }) => {
           <Form.Item
             label="Group Size"
             name="groupSize"
-            rules={[{ required: true }]}
+            rules={[{ required: true, message: "Group is required" }]}
           >
             <Input />
           </Form.Item>
@@ -318,7 +322,7 @@ const PackageForm: React.FC<PackageFormProps> = ({ currentPackage }) => {
           <Form.Item
             label="Package Days"
             name="packageDays"
-            rules={[{ required: true }]}
+            rules={[{ required: true, message: "Package day is required" }]}
           >
             <Input type="number" min={1} />
           </Form.Item>
@@ -327,7 +331,7 @@ const PackageForm: React.FC<PackageFormProps> = ({ currentPackage }) => {
           <Form.Item
             label="Best Season"
             name="season"
-            rules={[{ required: true }]}
+            rules={[{ required: true, message: "Season is required" }]}
           >
             <Select placeholder="Select Season">
               {Object.values(Season).map((season) => (
@@ -339,7 +343,11 @@ const PackageForm: React.FC<PackageFormProps> = ({ currentPackage }) => {
           </Form.Item>
         </Col>
         <Col xs={24} md={8}>
-          <Form.Item label="Price" name="price" rules={[{ required: true }]}>
+          <Form.Item
+            label="Price"
+            name="price"
+            rules={[{ required: true, message: "Price is required" }]}
+          >
             <Input type="number" min={0} />
           </Form.Item>
         </Col>
@@ -378,7 +386,7 @@ const PackageForm: React.FC<PackageFormProps> = ({ currentPackage }) => {
           <Form.Item
             label="Order No."
             name="order"
-            rules={[{ required: true }]}
+            rules={[{ required: true, message: "Order is required" }]}
           >
             <Input type="number" min={1} />
           </Form.Item>
