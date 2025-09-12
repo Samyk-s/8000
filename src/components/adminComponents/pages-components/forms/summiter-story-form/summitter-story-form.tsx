@@ -8,7 +8,7 @@ import Loader from "../../loader/loader";
 import resourceApi from "@/lib/api/resourceApi";
 import { MediaFile } from "@/types/utils-type";
 import TextEditor from "../../text-editor/text-editor";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import {
   createSummitterStory,
   updateSummitterStory,
@@ -34,6 +34,7 @@ const SummiterStoryForm: React.FC<SummiterStoryFormProps> = ({ story }) => {
 
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
+  const router = useRouter();
 
   // Prefill form when editing
   useEffect(() => {
@@ -158,9 +159,11 @@ const SummiterStoryForm: React.FC<SummiterStoryFormProps> = ({ story }) => {
     if (story) {
       // Update mode: only send updated files
       dispatch(updateSummitterStory({ id: story.id, payload }));
+      router.back();
     } else {
       // Create mode
       dispatch(createSummitterStory({ id: Number(id), payload }));
+      router.back();
     }
   };
 
