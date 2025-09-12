@@ -34,8 +34,6 @@ interface PackageFormProps {
 }
 
 const PackageForm: React.FC<PackageFormProps> = ({ currentPackage }) => {
-  const [loading, setLoading] = useState(false);
-
   const [parentPageIds, setParentPageIds] = useState<number[]>(
     currentPackage ? [currentPackage.page_id] : [],
   );
@@ -71,6 +69,7 @@ const PackageForm: React.FC<PackageFormProps> = ({ currentPackage }) => {
         includes: currentPackage.includes,
         excludes: currentPackage.excludes,
         tripNotes: currentPackage.tripNotes,
+        parentPageIds: currentPackage?.page_id,
       });
       if (currentPackage?.image) {
         setImageFile(currentPackage?.image);
@@ -96,8 +95,8 @@ const PackageForm: React.FC<PackageFormProps> = ({ currentPackage }) => {
         ]);
       }
       if (currentPackage?.route_map) {
-        setCoverImageFile(currentPackage?.route_map);
-        setCoverImageList([
+        setRouteFile(currentPackage?.route_map);
+        setRouteList([
           {
             uid: currentPackage?.route_map?.uid,
             name: currentPackage?.route_map?.name,
@@ -171,7 +170,7 @@ const PackageForm: React.FC<PackageFormProps> = ({ currentPackage }) => {
       return Upload.LIST_IGNORE;
     };
 
-  const onFinish = (values: any) => {
+  const onFinish = (values: PackagePayload) => {
     if (!imageFile || !coverImageFile || !routeFile) {
       message.error("All three images must be uploaded!");
       return;
@@ -440,7 +439,6 @@ const PackageForm: React.FC<PackageFormProps> = ({ currentPackage }) => {
         <Button
           type="primary"
           htmlType="submit"
-          loading={loading}
           className="bg-black text-white hover:!bg-black hover:!text-white"
         >
           {currentPackage ? "Update Package" : "Create Package"}
