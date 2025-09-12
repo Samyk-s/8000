@@ -23,30 +23,18 @@ export interface PageItem {
   shortTitle: string;
   description: string;
   parent: PageParent | null;
-  children: PageItem[];
-  image: MediaFile | null;
-  cover_image: MediaFile | null;
+  children: PageParent[];
+  image: MediaFile;
+  cover_image: MediaFile;
   status: number;
   order: number;
   isMenu: number;
   isMainMenu: number;
   isFooterMenu: number;
+  page_template: string;
   type: string;
   createdAt: string;
   updatedAt: string;
-}
-
-export interface Meta {
-  totalItems: number;
-  itemCount: number;
-  itemsPerPage: number;
-  totalPages: number;
-  currentPage: number;
-}
-
-export interface PageResponse {
-  items: PageItem[];
-  meta: Meta;
 }
 
 

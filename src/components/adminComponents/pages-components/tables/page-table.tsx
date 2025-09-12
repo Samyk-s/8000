@@ -9,17 +9,18 @@ import Pagination from "../../pagination/pagination";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux-store/store/store";
 import ToggleButton from "../../toggle-button/toggle-button";
-import { PlusIcon } from "@/assets/icons";
+import { PlusIcon, TrashIcon } from "@/assets/icons";
 import { v4 as uuidv4 } from "uuid";
 
 import {
+  deletePage,
   fetchPages,
   searchPages,
   togglePageStatus,
 } from "@/redux-store/slices/pageSlice";
 import { PageItem } from "@/types/page";
 import Loader from "../loader/loader";
-import { message } from "antd";
+import { message, Popconfirm } from "antd";
 
 const PageTable: React.FC = () => {
   const { items, loading, error, meta } = useSelector(
@@ -142,12 +143,12 @@ const PageTable: React.FC = () => {
                       </td>
                       <td className="whitespace-nowrap px-6 py-4">
                         <div className="text-base text-gray-900 dark:text-white">
-                          {item?.parent?.title}
+                          {item?.page_template}
                         </div>
                       </td>
 
                       <td className="whitespace-nowrap px-6 py-4 text-base font-medium dark:text-white">
-                        <div className="flex space-x-2">
+                        <div className="flex items-center space-x-2">
                           <Link
                             href={`/admin/pages/${item?.id}/seo`}
                             title="SEO"
@@ -161,6 +162,20 @@ const PageTable: React.FC = () => {
                           >
                             <EditIcon />
                           </Link>
+                          <Popconfirm
+                            title="Delete Page"
+                            description="Are you sure you want to delete this page?"
+                            onConfirm={() => dispatch(deletePage(item?.id))}
+                            okText="Yes"
+                            cancelText="No"
+                          >
+                            <button
+                              className="rounded p-1 text-red-600 hover:bg-red-50 hover:text-red-900"
+                              title="Delete inquiry"
+                            >
+                              <TrashIcon />
+                            </button>
+                          </Popconfirm>
                           <ToggleButton
                             onChange={() => {
                               dispatch(togglePageStatus(item?.id));
@@ -182,7 +197,7 @@ const PageTable: React.FC = () => {
                       colSpan={7}
                       className="px-6 py-8 text-center text-base text-gray-500"
                     >
-                      No Pages found matching your search criteria.
+                      No Pages found .
                     </td>
                   </tr>
                 )}
