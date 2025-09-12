@@ -229,14 +229,18 @@ const PageForm: React.FC<PageFormProps> = ({ page }) => {
         <Row gutter={16}>
           {/* TITLE */}
           <Col xs={24}>
-            <Form.Item label="Title" name="title" rules={[{ required: true }]}>
+            <Form.Item
+              label="Title"
+              name="title"
+              rules={[{ required: true, message: "Title is required" }]}
+            >
               <Input />
             </Form.Item>
           </Col>
 
           {/* SHORT TITLE */}
           <Col xs={24}>
-            <Form.Item label="Short Title" name="shortTitle">
+            <Form.Item label="Short Title">
               <Input />
             </Form.Item>
           </Col>
@@ -291,7 +295,11 @@ const PageForm: React.FC<PageFormProps> = ({ page }) => {
 
           {/* ORDER */}
           <Col xs={24} md={8}>
-            <Form.Item label="Order" name="order">
+            <Form.Item
+              label="Order"
+              name="order"
+              rules={[{ required: true, message: "Order is required" }]}
+            >
               <Input type="number" min={0} />
             </Form.Item>
           </Col>
@@ -333,7 +341,7 @@ const PageForm: React.FC<PageFormProps> = ({ page }) => {
             <Form.Item
               label="Template"
               name="page_template"
-              rules={[{ required: true }]}
+              rules={[{ required: true, message: "Template is required" }]}
             >
               <Select allowClear placeholder="Select template">
                 {Object.values(PageTemplate).map((t) => (
@@ -383,7 +391,11 @@ const PageForm: React.FC<PageFormProps> = ({ page }) => {
           {/* SUBMIT */}
           <Col span={24}>
             <Form.Item>
-              <Button type="primary" htmlType="submit">
+              <Button
+                type="primary"
+                htmlType="submit"
+                className="bg-black text-white hover:!bg-black hover:!text-white"
+              >
                 {page ? "Update Page" : "Create Page"}
               </Button>
             </Form.Item>
