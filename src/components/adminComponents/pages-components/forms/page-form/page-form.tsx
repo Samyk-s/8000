@@ -279,6 +279,25 @@ const PageForm: React.FC<PageFormProps> = ({ page }) => {
             </Form.Item>
           </Col>
 
+          {/* PAGE TYPE (create only) */}
+          {!page && (
+            <Col xs={24} md={12}>
+              <Form.Item
+                label="Page Type"
+                name="type"
+                rules={[{ required: true }]}
+              >
+                <Select allowClear placeholder="Select page type">
+                  {Object.values(PageType).map((t) => (
+                    <Select.Option key={t} value={t}>
+                      {t}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+          )}
+
           {/* PARENT PAGE */}
           <Col xs={24} md={12}>
             <Form.Item label="Parent Page" name="parentId">
@@ -305,25 +324,6 @@ const PageForm: React.FC<PageFormProps> = ({ page }) => {
               </Select>
             </Form.Item>
           </Col>
-
-          {/* PAGE TYPE (create only) */}
-          {!page && (
-            <Col xs={24} md={12}>
-              <Form.Item
-                label="Page Type"
-                name="type"
-                rules={[{ required: true }]}
-              >
-                <Select allowClear placeholder="Select page type">
-                  {Object.values(PageType).map((t) => (
-                    <Select.Option key={t} value={t}>
-                      {t}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Col>
-          )}
 
           {/* DESCRIPTION */}
           <Col xs={24}>
