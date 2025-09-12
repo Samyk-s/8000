@@ -179,16 +179,14 @@ const PackageForm: React.FC<PackageFormProps> = ({ currentPackage }) => {
     };
 
   const onFinish = (values: PackagePayload) => {
-    if (!imageFile || !coverImageFile || !routeFile) {
-      message.error("All three files must be uploaded!");
+    // For Create: all files are required
+    if (!currentPackage && (!imageFile || !coverImageFile || !routeFile)) {
+      message.error("Image, Cover Image, and Route Map are required!");
       return;
     }
 
     const payload: PackagePayload = {
       ...values,
-      image: imageFile,
-      cover_image: coverImageFile,
-      route_map: routeFile,
       parentPageIds: values?.parentPageIds,
       altitude: Number(values.altitude),
       packageDays: Number(values.packageDays),
@@ -198,6 +196,28 @@ const PackageForm: React.FC<PackageFormProps> = ({ currentPackage }) => {
       isUpcoming: values.isUpcoming ? 1 : 0,
       isBooking: values.isBooking ? 1 : 0,
     };
+
+    // Only send files if they exist (newly uploaded)
+    if (
+      imageFile &&
+      (!currentPackage || currentPackage.image?.uid !== imageFile.uid)
+    ) {
+      payload.image = imageFile;
+    }
+    if (
+      coverImageFile &&
+      (!currentPackage ||
+        currentPackage.cover_image?.uid !== coverImageFile.uid)
+    ) {
+      payload.cover_image = coverImageFile;
+    }
+    if (
+      routeFile &&
+      (!currentPackage || currentPackage.route_map?.uid !== routeFile.uid)
+    ) {
+      payload.route_map = routeFile;
+    }
+
     console.log("payload", payload);
 
     if (currentPackage) {
