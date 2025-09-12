@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Form,
   Input,
@@ -19,45 +19,160 @@ import { Grade, Season } from "@/types/enum/enum";
 import resourceApi from "@/lib/api/resourceApi";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux-store/store/store";
-import { createPackage } from "@/redux-store/slices/packageSlice";
+import {
+  createPackage,
+  updatePackage,
+} from "@/redux-store/slices/packageSlice";
+import { PackageItem, PackagePayload } from "@/types/package";
+import { useRouter } from "next/navigation";
+import { MediaFile } from "@/types/utils-type";
 
 const { Option } = Select;
 
-const PackageForm: React.FC = () => {
+interface PackageFormProps {
+  currentPackage?: PackageItem;
+}
+
+const PackageForm: React.FC<PackageFormProps> = ({ currentPackage }) => {
   const [loading, setLoading] = useState(false);
-  const [imageFile, setImageFile] = useState<any>(null);
-  const [coverFile, setCoverFile] = useState<any>(null);
-  const [routeFile, setRouteFile] = useState<any>(null);
-  const [parentPageIds, setParentPageIds] = useState<number[]>([]);
+
+  const [parentPageIds, setParentPageIds] = useState<number[]>(
+    currentPackage ? [currentPackage.page_id] : [],
+  );
+  const [form] = Form.useForm();
   const dispatch = useDispatch<AppDispatch>();
+  const router = useRouter();
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadingCover, setUploadingCover] = useState(false);
+  const [uploadingRoute, setUploadingRoute] = useState(false);
+  const [imageList, setImageList] = useState<any[]>([]);
+  const [coverImageList, setCoverImageList] = useState<any[]>([]);
+  const [coverRouteList, setRouteList] = useState<any[]>([]);
+  const [imageFile, setImageFile] = useState<MediaFile | null>(null);
+  const [coverImageFile, setCoverImageFile] = useState<MediaFile | null>(null);
+  const [routeFile, setRouteFile] = useState<MediaFile | null>(null);
 
-  const beforeUpload = (file: any) => {
-    const isValidType = [
-      "image/jpeg",
-      "image/png",
-      "image/jpg",
-      "image/webp",
-    ].includes(file.type);
-    if (!isValidType)
-      message.error("Only JPG, JPEG, PNG, WEBP files are allowed!");
-    return isValidType ? true : Upload.LIST_IGNORE;
-  };
+  useEffect(() => {
+    if (currentPackage) {
+      form.setFieldsValue({
+        title: currentPackage.title,
+        country: currentPackage.country,
+        altitude: currentPackage.altitude,
+        grade: currentPackage.grade,
+        season: currentPackage.season,
+        groupSize: currentPackage.groupSize,
+        packageDays: currentPackage.packageDays,
+        price: currentPackage.price,
+        order: currentPackage.order,
+        status: !!currentPackage.status,
+        isUpcoming: !!currentPackage.isUpcoming,
+        isBooking: !!currentPackage.isBooking,
+        description: currentPackage.description,
+        includes: currentPackage.includes,
+        excludes: currentPackage.excludes,
+        tripNotes: currentPackage.tripNotes,
+      });
+      if (currentPackage?.image) {
+        setImageFile(currentPackage?.image);
+        setImageList([
+          {
+            uid: currentPackage?.image.uid,
+            name: currentPackage?.image.name,
+            status: "done",
+            url: currentPackage?.image.url,
+          },
+        ]);
+      }
 
-  const handleFileUpload = async (file: any, setFile: any) => {
+      if (currentPackage?.cover_image) {
+        setCoverImageFile(currentPackage?.cover_image);
+        setCoverImageList([
+          {
+            uid: currentPackage?.cover_image?.uid,
+            name: currentPackage?.cover_image?.name,
+            status: "done",
+            url: currentPackage?.cover_image?.url,
+          },
+        ]);
+      }
+      if (currentPackage?.route_map) {
+        setCoverImageFile(currentPackage?.route_map);
+        setCoverImageList([
+          {
+            uid: currentPackage?.route_map?.uid,
+            name: currentPackage?.route_map?.name,
+            status: "done",
+            url: currentPackage?.route_map?.url,
+          },
+        ]);
+      }
+    }
+  }, [currentPackage, form]);
+
+  /** handle file upload */
+  const handleFileUpload = async (
+    rawFile: File,
+    type: "image" | "cover" | "route",
+  ): Promise<void> => {
+    const formData = new FormData();
+    formData.append("file", rawFile);
+
     try {
-      const formData = new FormData();
-      formData.append("file", file.originFileObj);
+      if (type === "image") setUploadingImage(true);
+      if (type === "cover") setUploadingCover(true);
+      if (type === "route") setUploadingRoute(true);
+
       const res = await resourceApi.createResource(formData);
-      setFile(res);
-      message.success("File uploaded successfully!");
-    } catch (err) {
-      console.error(err);
-      message.error("File upload failed!");
+
+      if (res) {
+        if (type === "image") {
+          setImageFile(res);
+          setImageList([
+            { uid: res.uid, name: res.name, status: "done", url: res.url },
+          ]);
+        } else {
+          setCoverImageFile(res);
+          setCoverImageList([
+            { uid: res.uid, name: res.name, status: "done", url: res.url },
+          ]);
+        }
+        message.success(
+          `${type === "image" ? "Image" : "Cover image"} uploaded successfully!`,
+        );
+      } else {
+        message.error(`${type} upload failed`);
+      }
+    } catch (error) {
+      console.error(error);
+      message.error("File upload failed");
+    } finally {
+      if (type === "image") setUploadingImage(false);
+      if (type === "cover") setUploadingCover(false);
     }
   };
 
+  /** beforeUpload factory */
+  const makeBeforeUpload =
+    (type: "image" | "cover" | "route") =>
+    async (file: File): Promise<string | void> => {
+      const isValidType = [
+        "image/jpeg",
+        "image/png",
+        "image/jpg",
+        "image/webp",
+      ].includes(file.type);
+
+      if (!isValidType) {
+        message.error("You can only upload JPG, JPEG, PNG, or WEBP files!");
+        return Upload.LIST_IGNORE;
+      }
+
+      await handleFileUpload(file, type);
+      return Upload.LIST_IGNORE;
+    };
+
   const onFinish = (values: any) => {
-    if (!imageFile || !coverFile || !routeFile) {
+    if (!imageFile || !coverImageFile || !routeFile) {
       message.error("All three images must be uploaded!");
       return;
     }
@@ -67,10 +182,10 @@ const PackageForm: React.FC = () => {
       return;
     }
 
-    const payload = {
+    const payload: PackagePayload = {
       title: values.title,
       image: imageFile,
-      cover_image: coverFile,
+      cover_image: coverImageFile,
       route_map: routeFile,
       altitude: Number(values.altitude),
       grade: values.grade,
@@ -84,17 +199,23 @@ const PackageForm: React.FC = () => {
       includes: values.includes,
       excludes: values.excludes,
       tripNotes: values.tripNotes,
-      parentPageIds, // selected page ids from drag-drop
+      parentPageIds,
       status: values.status ? 1 : 0,
       isUpcoming: values.isUpcoming ? 1 : 0,
       isBooking: values.isBooking ? 1 : 0,
     };
 
-    dispatch(createPackage(payload));
+    if (currentPackage) {
+      dispatch(updatePackage({ id: currentPackage.id, data: payload }));
+      router.push("/admin/packages");
+    } else {
+      dispatch(createPackage(payload));
+      router.push("/admin/packages");
+    }
   };
 
   return (
-    <Form name="create-package" layout="vertical" onFinish={onFinish}>
+    <Form form={form} name="package-form" layout="vertical" onFinish={onFinish}>
       <Row gutter={[16, 10]}>
         <Col xs={24} md={12}>
           <Form.Item
@@ -115,58 +236,75 @@ const PackageForm: React.FC = () => {
           </Form.Item>
         </Col>
 
-        {/* Image Upload */}
+        {/* File Uploads */}
         <Col xs={24} md={8}>
-          <Form.Item label="Image" rules={[{ required: true }]}>
+          <Form.Item label="Image" required>
             <Upload
+              beforeUpload={makeBeforeUpload("image")}
               listType="picture"
               maxCount={1}
-              beforeUpload={beforeUpload}
-              onChange={(info) =>
-                info.file.originFileObj &&
-                handleFileUpload(info.file, setImageFile)
-              }
+              fileList={imageList}
+              onRemove={() => {
+                setImageFile(null);
+                setImageList([]);
+              }}
             >
-              <Button icon={<UploadOutlined />}>Upload Image</Button>
+              <Button
+                icon={<UploadOutlined />}
+                loading={uploadingImage}
+                disabled={uploadingImage}
+              >
+                {uploadingImage ? "Uploading..." : "Click to Upload"}
+              </Button>
+            </Upload>
+          </Form.Item>
+        </Col>
+        <Col xs={24} md={8}>
+          <Form.Item label="Cover Image" required>
+            <Upload
+              beforeUpload={makeBeforeUpload("cover")}
+              listType="picture"
+              maxCount={1}
+              fileList={coverImageList}
+              onRemove={() => {
+                setCoverImageFile(null);
+                setCoverImageList([]);
+              }}
+            >
+              <Button
+                icon={<UploadOutlined />}
+                loading={uploadingCover}
+                disabled={uploadingCover}
+              >
+                {uploadingCover ? "Uploading..." : "Click to Upload"}
+              </Button>
+            </Upload>
+          </Form.Item>
+        </Col>
+        <Col xs={24} md={8}>
+          <Form.Item label="Route Map" required>
+            <Upload
+              beforeUpload={makeBeforeUpload("route")}
+              listType="picture"
+              maxCount={1}
+              fileList={coverImageList}
+              onRemove={() => {
+                setCoverImageFile(null);
+                setCoverImageList([]);
+              }}
+            >
+              <Button
+                icon={<UploadOutlined />}
+                loading={uploadingCover}
+                disabled={uploadingCover}
+              >
+                {uploadingCover ? "Uploading..." : "Click to Upload"}
+              </Button>
             </Upload>
           </Form.Item>
         </Col>
 
-        {/* Cover Image Upload */}
-        <Col xs={24} md={8}>
-          <Form.Item label="Cover Image" rules={[{ required: true }]}>
-            <Upload
-              listType="picture"
-              maxCount={1}
-              beforeUpload={beforeUpload}
-              onChange={(info) =>
-                info.file.originFileObj &&
-                handleFileUpload(info.file, setCoverFile)
-              }
-            >
-              <Button icon={<UploadOutlined />}>Upload Cover Image</Button>
-            </Upload>
-          </Form.Item>
-        </Col>
-
-        {/* Route Map Upload */}
-        <Col xs={24} md={8}>
-          <Form.Item label="Route Map" rules={[{ required: true }]}>
-            <Upload
-              listType="picture"
-              maxCount={1}
-              beforeUpload={beforeUpload}
-              onChange={(info) =>
-                info.file.originFileObj &&
-                handleFileUpload(info.file, setRouteFile)
-              }
-            >
-              <Button icon={<UploadOutlined />}>Upload Route Map</Button>
-            </Upload>
-          </Form.Item>
-        </Col>
-
-        {/* Altitude */}
+        {/* Other Fields */}
         <Col xs={24} md={8}>
           <Form.Item
             label="Altitude"
@@ -176,8 +314,6 @@ const PackageForm: React.FC = () => {
             <Input type="number" min={1} />
           </Form.Item>
         </Col>
-
-        {/* Grade */}
         <Col xs={24} md={8}>
           <Form.Item
             label="Grade"
@@ -193,8 +329,6 @@ const PackageForm: React.FC = () => {
             </Select>
           </Form.Item>
         </Col>
-
-        {/* Group Size */}
         <Col xs={24} md={8}>
           <Form.Item
             label="Group Size"
@@ -204,19 +338,15 @@ const PackageForm: React.FC = () => {
             <Input />
           </Form.Item>
         </Col>
-
-        {/* Package Days */}
         <Col xs={24} md={8}>
           <Form.Item
             label="Package Days"
             name="packageDays"
-            rules={[{ required: true, message: "Pacage day is required" }]}
+            rules={[{ required: true, message: "Package day is required" }]}
           >
             <Input type="number" min={1} />
           </Form.Item>
         </Col>
-
-        {/* Season */}
         <Col xs={24} md={8}>
           <Form.Item
             label="Best Season"
@@ -232,8 +362,6 @@ const PackageForm: React.FC = () => {
             </Select>
           </Form.Item>
         </Col>
-
-        {/* Price */}
         <Col xs={24} md={8}>
           <Form.Item
             label="Price"
@@ -244,14 +372,14 @@ const PackageForm: React.FC = () => {
           </Form.Item>
         </Col>
 
-        {/* Parent Pages Drag-Drop */}
+        {/* Parent Pages */}
         <Col span={24}>
-          <Form.Item label="Activity/Destination/Pages" required>
+          <Form.Item label="Activity/Destination/Pages">
             <CreatePackageTransfer onChange={setParentPageIds} />
           </Form.Item>
         </Col>
 
-        {/* Description, Includes, Excludes, Trip Notes */}
+        {/* TextEditors */}
         <Col span={24}>
           <Form.Item label="Description" name="description">
             <TextEditor />
@@ -273,7 +401,7 @@ const PackageForm: React.FC = () => {
           </Form.Item>
         </Col>
 
-        {/* Order */}
+        {/* Order and Flags */}
         <Col xs={12} lg={8}>
           <Form.Item
             label="Order No."
@@ -283,8 +411,6 @@ const PackageForm: React.FC = () => {
             <Input type="number" min={1} />
           </Form.Item>
         </Col>
-
-        {/* Status, Booking, Upcoming */}
         <Col xs={12} md={6} lg={4}>
           <Form.Item label="Status" name="status" valuePropName="checked">
             <Checkbox />
@@ -317,7 +443,7 @@ const PackageForm: React.FC = () => {
           loading={loading}
           className="bg-black text-white hover:!bg-black hover:!text-white"
         >
-          Submit
+          {currentPackage ? "Update Package" : "Create Package"}
         </Button>
       </Form.Item>
     </Form>

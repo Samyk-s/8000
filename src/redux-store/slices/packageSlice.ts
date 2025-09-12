@@ -64,14 +64,13 @@ export const updatePackage = createAsyncThunk<
   }
 });
 
-// Delete a package
-export const deletePackage = createAsyncThunk<number, number>(
-  "packages/deletePackage",
+// get package by id a package
+export const getPacakgeById = createAsyncThunk<PackageItem, number>(
+  "packages/getPackage",
   async (id, { rejectWithValue }) => {
     try {
-      // await packageApi.deletePackage(id);
-      message.success("Package deleted successfully!");
-      return id;
+      const res = await packageApi.getPacakgeById(id);
+      return res;
     } catch (err: any) {
       message.error("Failed to delete package");
       return rejectWithValue(err.message);
@@ -100,6 +99,7 @@ interface PackageState {
   meta: Meta;
   loading: boolean;
   error: string | null;
+  currentPackage: PackageItem | null
 }
 
 const initialState: PackageState = {
@@ -113,6 +113,7 @@ const initialState: PackageState = {
   },
   loading: false,
   error: null,
+  currentPackage: null
 };
 
 // ================= Slice =================
@@ -193,16 +194,15 @@ const packagesSlice = createSlice({
 
     // ===== Delete Package =====
     builder
-      .addCase(deletePackage.pending, (state) => {
+      .addCase(getPacakgeById.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(deletePackage.fulfilled, (state, action: PayloadAction<number>) => {
-        state.items = state.items.filter(pkg => pkg.id !== action.payload);
-        state.meta.totalItems -= 1;
+      .addCase(getPacakgeById.fulfilled, (state, action: PayloadAction<PackageItem>) => {
+        state.currentPackage = action.payload
         state.loading = false;
       })
-      .addCase(deletePackage.rejected, (state, action: PayloadAction<any>) => {
+      .addCase(getPacakgeById.rejected, (state, action: PayloadAction<any>) => {
         state.loading = false;
         state.error = action.payload || "Failed to delete package";
       });

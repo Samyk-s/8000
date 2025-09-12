@@ -1,6 +1,5 @@
 import { Params } from "@/types/utils-type";
 import { api } from "../axios-config/api";
-import { PageItem } from "@/types/page";
 import { PackagePayload } from "@/types/package";
 
 class PackageApi {
@@ -44,10 +43,18 @@ class PackageApi {
   }
   async updagtePackage(id: number, data: PackagePayload) {
     try {
-      const response = await api.post(`/packages/${id}`, data);
+      const response = await api.patch(`/packages/${id}`, data);
       return response;
     } catch (error) {
       console.error(error)
+      throw error
+    }
+  }
+  async getPacakgeById(id: number) {
+    try {
+      const res = await api.get(`/packages/${id}`);
+      return res.data
+    } catch (error) {
       throw error
     }
   }
