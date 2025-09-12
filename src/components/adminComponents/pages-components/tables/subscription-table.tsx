@@ -94,9 +94,12 @@ const SubscriptionTable: React.FC = () => {
                             okText="Yes"
                             cancelText="No"
                           >
-                            <Button danger>
+                            <button
+                              className="rounded p-1 text-red-600 hover:bg-red-50 hover:text-red-900"
+                              title="Delete Team"
+                            >
                               <TrashIcon />
-                            </Button>
+                            </button>
                           </Popconfirm>
                         </div>
                       </td>
