@@ -15,7 +15,7 @@ import {
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import dynamic from "next/dynamic";
-import { PageItem, PagePayload } from "@/types/page";
+import { PageItem, PageParent, PagePayload } from "@/types/page";
 import { PageTemplate, PageType } from "@/types/enum/enum";
 import { MediaFile } from "@/types/utils-type";
 import resourceApi from "@/lib/api/resourceApi";
@@ -23,6 +23,7 @@ import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux-store/store/store";
 import { createPage, updatePage } from "@/redux-store/slices/pageSlice";
 import { useRouter } from "next/navigation";
+import pageApi from "@/lib/api/pageApi";
 
 const TextEditor = dynamic(() => import("../../text-editor/text-editor"), {
   ssr: false,
@@ -47,6 +48,7 @@ const PageForm: React.FC<PageFormProps> = ({ page }) => {
   const [coverImageList, setCoverImageList] = useState<UploadFile[]>([]);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
+  const [parentPages, setParentPages] = useState<PageParent[] | []>([]);
 
   // Prefill form when editing
   useEffect(() => {
@@ -88,6 +90,17 @@ const PageForm: React.FC<PageFormProps> = ({ page }) => {
       }
     }
   }, [page, form]);
+
+  // function for gettin parent page
+  const handlePageTypeChange = async (type: PageType | string) => {
+    try {
+      const res = await pageApi.getParentPage(type);
+      setParentPages(res?.items);
+      // console.log("res", res.items);
+    } catch (error: any) {
+      message.error(error.message);
+    }
+  };
 
   /** Handle file upload */
   const handleFileUpload = async (file: File, type: "image" | "cover") => {
@@ -287,7 +300,11 @@ const PageForm: React.FC<PageFormProps> = ({ page }) => {
                 name="type"
                 rules={[{ required: true }]}
               >
-                <Select allowClear placeholder="Select page type">
+                <Select
+                  allowClear
+                  placeholder="Select page type"
+                  onChange={(value) => handlePageTypeChange(value)}
+                >
                   {Object.values(PageType).map((t) => (
                     <Select.Option key={t} value={t}>
                       {t}
@@ -302,8 +319,11 @@ const PageForm: React.FC<PageFormProps> = ({ page }) => {
           <Col xs={24} md={12}>
             <Form.Item label="Parent Page" name="parentId">
               <Select allowClear placeholder="Select parent page">
-                <Select.Option value={0}>No Parent</Select.Option>
-                {/* TODO: map pages */}
+                {parentPages?.map((page) => (
+                  <Select.Option value={page?.id} key={page?.id}>
+                    {page.title}
+                  </Select.Option>
+                ))}
               </Select>
             </Form.Item>
           </Col>

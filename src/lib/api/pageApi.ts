@@ -80,6 +80,16 @@ class PageApi {
       throw error
     }
   }
+
+  // get parent page
+  async getParentPage(type: string) {
+    try {
+      const res = await api.get(`/pages/by-type/${type}`);
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
 }
 const pageApi = new PageApi()
 export default pageApi
