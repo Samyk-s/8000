@@ -52,6 +52,15 @@ const PackageForm: React.FC<PackageFormProps> = ({ currentPackage }) => {
   const [uploadingRoute, setUploadingRoute] = useState(false);
 
   useEffect(() => {
+    const normalizeFile = (file: any): MediaFile => ({
+      uid: file.uid || String(file.id), // fallback to id if no uid
+      name: file.name,
+      url: file.url,
+      alt: file.alt,
+      type: file.type,
+      size: file.size,
+    });
+
     if (currentPackage) {
       const ids = currentPackage?.parentPages?.map((p) => p.id) ?? [];
 
@@ -65,48 +74,47 @@ const PackageForm: React.FC<PackageFormProps> = ({ currentPackage }) => {
         packageDays: currentPackage.packageDays,
         price: currentPackage.price,
         order: currentPackage.order,
-        status: !!currentPackage.status,
-        isUpcoming: !!currentPackage.isUpcoming,
-        isBooking: !!currentPackage.isBooking,
-        description: currentPackage.description,
-        includes: currentPackage.includes,
-        excludes: currentPackage.excludes,
-        tripNotes: currentPackage.tripNotes,
+        status: currentPackage.status === 1,
+        isUpcoming: currentPackage.isUpcoming === 1,
+        isBooking: currentPackage.isBooking === 1,
         parentPageIds: ids,
       });
 
       if (currentPackage.image) {
-        setImageFile(currentPackage.image);
+        const normalized = normalizeFile(currentPackage.image);
+        setImageFile(normalized);
         setImageList([
           {
-            uid: currentPackage.image.uid,
-            name: currentPackage.image.name,
+            uid: normalized.uid,
+            name: normalized.name,
             status: "done",
-            url: currentPackage.image.url,
+            url: normalized.url,
           },
         ]);
       }
 
       if (currentPackage.cover_image) {
-        setCoverImageFile(currentPackage.cover_image);
+        const normalized = normalizeFile(currentPackage.cover_image);
+        setCoverImageFile(normalized);
         setCoverImageList([
           {
-            uid: currentPackage.cover_image.uid,
-            name: currentPackage.cover_image.name,
+            uid: normalized.uid,
+            name: normalized.name,
             status: "done",
-            url: currentPackage.cover_image.url,
+            url: normalized.url,
           },
         ]);
       }
 
       if (currentPackage.route_map) {
-        setRouteFile(currentPackage.route_map);
+        const normalized = normalizeFile(currentPackage.route_map);
+        setRouteFile(normalized);
         setRouteList([
           {
-            uid: currentPackage.route_map.uid,
-            name: currentPackage.route_map.name,
+            uid: normalized.uid,
+            name: normalized.name,
             status: "done",
-            url: currentPackage.route_map.url,
+            url: normalized.url,
           },
         ]);
       }
@@ -126,6 +134,7 @@ const PackageForm: React.FC<PackageFormProps> = ({ currentPackage }) => {
       if (type === "route") setUploadingRoute(true);
 
       const res: MediaFile = await resourceApi.createResource(formData);
+      console.log(res);
 
       const uploadObj: UploadFile = {
         uid: res.uid,
@@ -177,34 +186,39 @@ const PackageForm: React.FC<PackageFormProps> = ({ currentPackage }) => {
       return Upload.LIST_IGNORE;
     };
 
-  const onFinish = (values: PackagePayload) => {
-    if (!imageFile || !coverImageFile || !routeFile) {
-      message.error("All three files must be uploaded!");
-      return;
+  const onFinish = async (values: any) => {
+    try {
+      const payload: PackagePayload = {
+        ...values,
+        image: imageFile!,
+        cover_image: coverImageFile!,
+        route_map: routeFile!,
+        parentPageIds: values?.parentPageIds,
+        altitude: Number(values.altitude),
+        packageDays: Number(values.packageDays),
+        price: Number(values.price),
+        order: Number(values.order),
+        status: values.status ? 1 : 0,
+        isUpcoming: values.isUpcoming ? 1 : 0,
+        isBooking: values.isBooking ? 1 : 0,
+      };
+
+      if (currentPackage) {
+        dispatch(
+          updatePackage({
+            id: currentPackage?.id,
+            data: payload,
+          }),
+        );
+        router.push("/admin/packages");
+      } else {
+        dispatch(createPackage(payload));
+        router.push("/admin/packages");
+      }
+    } catch (error) {
+      console.error(error);
+      message.error("Something went wrong. Please try again.");
     }
-
-    const payload: PackagePayload = {
-      ...values,
-      image: imageFile,
-      cover_image: coverImageFile,
-      route_map: routeFile,
-      parentPageIds: values?.parentPageIds,
-      altitude: Number(values.altitude),
-      packageDays: Number(values.packageDays),
-      price: Number(values.price),
-      order: Number(values.order),
-      status: values.status ? 1 : 0,
-      isUpcoming: values.isUpcoming ? 1 : 0,
-      isBooking: values.isBooking ? 1 : 0,
-    };
-
-    if (currentPackage) {
-      dispatch(updatePackage({ id: currentPackage.id, data: payload }));
-    } else {
-      dispatch(createPackage(payload));
-    }
-
-    router.push("/admin/packages");
   };
 
   return (

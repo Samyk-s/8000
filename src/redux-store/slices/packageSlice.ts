@@ -45,8 +45,10 @@ export const createPackage = createAsyncThunk<
 >("packages/createPackage", async (data, { rejectWithValue }) => {
   try {
     const res = await packageApi.createPackage(data);
+    message.success("Package created successfully")
     return res.data;
   } catch (err: any) {
+    message.error(err?.message)
     return rejectWithValue(err.message);
   }
 });
@@ -58,8 +60,10 @@ export const updatePackage = createAsyncThunk<
 >("packages/updatePackage", async ({ id, data }, { rejectWithValue }) => {
   try {
     const res = await packageApi.updagtePackage(id, data);
+    message.success("Package updated successfully")
     return res.data;
   } catch (err: any) {
+    message.error(err?.message)
     return rejectWithValue(err.message);
   }
 });
