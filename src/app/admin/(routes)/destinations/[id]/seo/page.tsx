@@ -20,14 +20,14 @@ const DestinationSEO = () => {
       <Breadcrumbs
         items={[
           { label: "Dashboard", href: "/admin/dashboard" },
-          { label: "Page", href: "/admin/pages" },
-          { label: "Edit Page", href: `/admin/pages/${id}/edit` },
+          { label: "Destination", href: "/admin/destinations" },
+          { label: "Edit Destination", href: `/admin/destinations/${id}/edit` },
         ]}
         separator="/"
       />
       <Card>
         <div className="flex flex-col gap-3">
-          <PageTabs id={id as string} path="destinations" />
+          <PageTabs id={id as string} path="destinations" title="Destination" />
           <SeoForm id={id} type={SeoEntity.PAGE} />
         </div>
       </Card>

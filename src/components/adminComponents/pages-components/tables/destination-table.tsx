@@ -75,7 +75,7 @@ const DestinationTable: React.FC = () => {
           <div className="flex flex-col gap-3 border-b border-gray-200 p-6">
             <div className="flex justify-end">
               <Link
-                href={"/admin/pages/create-page"}
+                href={"/admin/destinations/create-page"}
                 className="flex w-fit items-center gap-1 rounded-md bg-black px-2 py-1 text-white dark:bg-white dark:text-black"
               >
                 <PlusIcon />
