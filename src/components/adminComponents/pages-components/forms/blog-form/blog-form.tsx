@@ -120,12 +120,12 @@ const BlogForm: React.FC<BlogFormProps> = ({ blog }) => {
     if (blog?.id) {
       // UPDATE: include category in update payload
       dispatch(updateBlog({ blogId: blog.id, data: payload }));
-      // router.push("/admin/blogs");
+      router.back();
     } else {
       // CREATE: extract category for creation
       const { category, ...rest } = payload;
       dispatch(createBlog({ type: category, data: rest }));
-      // router.push("/admin/blogs");
+      router.back();
     }
   };
 
