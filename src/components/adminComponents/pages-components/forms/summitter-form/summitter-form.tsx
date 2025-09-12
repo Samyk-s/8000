@@ -226,7 +226,10 @@ const SummiterForm: React.FC<SummiterFormProps> = ({ summitter }) => {
               name="led_by_id"
               rules={[{ required: true, message: "Leader is required" }]}
             >
-              <Select placeholder="Select Lead">
+              <Select
+                placeholder="Select Lead"
+                defaultValue={summitter?.ledBy?.name || ""}
+              >
                 {items?.map((item) => (
                   <Option key={item?.id} value={item?.id}>
                     {item?.name}
