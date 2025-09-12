@@ -20,22 +20,22 @@ export const NAV_DATA = [
     ],
   },
   {
-    label: " ",
+    label: " Inquiry Mangement",
     items: [
       {
-        title: "Bookings",
+        title: "Package Bookings",
         url: "/admin/bookings",
         icon: Icons.BookingIcon,
         items: [],
       },
       {
-        title: "Inquiries",
+        title: "Package Inquiries",
         url: "/admin/inquiries",
         icon: Icons.InquiryIcon,
         items: [],
       },
       {
-        title: "Trip Plan",
+        title: "Trip Plan Request",
         url: "/admin/tri-plans",
         icon: Icons.TripPlanIcon,
         items: [],
@@ -55,9 +55,8 @@ export const NAV_DATA = [
     ],
   },
   {
-    label: " ",
+    label: "Package Management",
     items: [
-
       {
         title: "Destinations",
         url: "/admin/destinations",
@@ -82,10 +81,16 @@ export const NAV_DATA = [
         icon: Icons.GearIcon,
         items: [],
       },
+      {
+        title: "Reviews",
+        url: "/admin/reviews",
+        icon: Icons.ReviewIcon,
+        items: [],
+      },
     ],
   },
   {
-    label: " ",
+    label: " Site Management",
     items: [
 
       {
@@ -100,12 +105,7 @@ export const NAV_DATA = [
         icon: Icons.PageIcon,
         items: [],
       },
-      {
-        title: "Reviews",
-        url: "/admin/reviews",
-        icon: Icons.ReviewIcon,
-        items: [],
-      },
+
       {
         title: "Blogs",
         url: "/admin/blogs",
@@ -157,7 +157,7 @@ export const NAV_DATA = [
     ],
   },
   {
-    label: " ",
+    label: "Site Settings ",
     items: [
       {
         title: "Site Setting",
