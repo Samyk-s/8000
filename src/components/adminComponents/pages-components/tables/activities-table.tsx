@@ -14,6 +14,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import {
   deletePage,
+  fetchPages,
   getPageByType,
   searchPages,
   togglePageStatus,
@@ -23,7 +24,7 @@ import Loader from "../loader/loader";
 import { message, Popconfirm } from "antd";
 import { PageType } from "@/types/enum/enum";
 
-const DestinationTable: React.FC = () => {
+const ActivityTable: React.FC = () => {
   const { items, loading, error, meta } = useSelector(
     (state: RootState) => state?.pages,
   );
@@ -36,7 +37,7 @@ const DestinationTable: React.FC = () => {
   useEffect(() => {
     dispatch(
       getPageByType({
-        search: PageType.DESTINATION,
+        search: PageType.ACTIVITIES,
         page: page,
         limit: limit,
       }),
@@ -113,7 +114,10 @@ const DestinationTable: React.FC = () => {
                     Title
                   </th>
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
-                    Is Menu
+                    Parent
+                  </th>
+                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                    Order
                   </th>
 
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
@@ -150,7 +154,12 @@ const DestinationTable: React.FC = () => {
                       </td>
                       <td className="whitespace-nowrap px-6 py-4">
                         <div className="text-base text-gray-900 dark:text-white">
-                          {item?.isMenu}
+                          {item?.parent?.title}
+                        </div>
+                      </td>
+                      <td className="whitespace-nowrap px-6 py-4">
+                        <div className="text-base text-gray-900 dark:text-white">
+                          {item?.order}
                         </div>
                       </td>
 
@@ -224,4 +233,4 @@ const DestinationTable: React.FC = () => {
   );
 };
 
-export default DestinationTable;
+export default ActivityTable;
