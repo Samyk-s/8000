@@ -27,7 +27,7 @@ const DestinationSEO = () => {
       />
       <Card>
         <div className="flex flex-col gap-3">
-          <PageTabs id={id as string} />
+          <PageTabs id={id as string} path="destinations" />
           <SeoForm id={id} type={SeoEntity.PAGE} />
         </div>
       </Card>

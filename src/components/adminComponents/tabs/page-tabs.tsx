@@ -3,7 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
 
-const PageTabs = ({ id }: { id?: string }) => {
+const PageTabs = ({ id, path = "page" }: { id?: string; path?: string }) => {
   const pathname = usePathname();
 
   const isSeo = pathname.endsWith("/seo");
@@ -13,7 +13,7 @@ const PageTabs = ({ id }: { id?: string }) => {
   return isCreate ? (
     <div>
       <Link
-        href={`/admin/pages/${id}`}
+        href={`/admin/${path}/${id}`}
         className={`cursor-default ${isPage ? "bg-blue-600 text-white" : "bg-gray-300 text-gray-500 hover:text-gray-500"} px-4 py-1 font-semibold`}
       >
         Page
@@ -22,13 +22,13 @@ const PageTabs = ({ id }: { id?: string }) => {
   ) : (
     <div>
       <Link
-        href={`/admin/pages/${id}`}
+        href={`/admin/${path}/${id}`}
         className={`cursor-default ${isPage ? "bg-blue-600 text-white" : "bg-gray-300 text-gray-500 hover:text-gray-500"} px-4 py-1 font-semibold`}
       >
         Page
       </Link>
       <Link
-        href={`/admin/pages/${id}/seo`}
+        href={`/admin/${path}/${id}/seo`}
         className={`px-4 py-1 font-semibold ${isSeo ? "bg-blue-600 text-white" : "bg-gray-300 text-gray-500 hover:text-gray-500"} `}
       >
         SEO
