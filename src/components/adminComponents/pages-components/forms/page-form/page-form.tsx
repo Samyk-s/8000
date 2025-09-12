@@ -240,7 +240,7 @@ const PageForm: React.FC<PageFormProps> = ({ page }) => {
 
           {/* SHORT TITLE */}
           <Col xs={24}>
-            <Form.Item label="Short Title">
+            <Form.Item label="Short Title" name="shortTitle">
               <Input />
             </Form.Item>
           </Col>
