@@ -202,7 +202,7 @@ const PageForm: React.FC<PageFormProps> = ({ page }) => {
     if (page) {
       // Update mode
       dispatch(updatePage({ id: page.id, data: payload }));
-      router.push("/admin/pages");
+      router.back();
     } else {
       // Create mode
       dispatch(
@@ -211,7 +211,7 @@ const PageForm: React.FC<PageFormProps> = ({ page }) => {
           data: payload,
         }),
       );
-      router.push("/admin/pages");
+      router.back();
     }
   };
 
