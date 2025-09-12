@@ -82,9 +82,9 @@ class PageApi {
   }
 
   // get parent page
-  async getParentPage(type: string) {
+  async getParentPage() {
     try {
-      const res = await api.get(`/pages/by-type/${type}`);
+      const res = await api.get(`/pages/active-pages`);
       return res.data
     } catch (error) {
       throw error

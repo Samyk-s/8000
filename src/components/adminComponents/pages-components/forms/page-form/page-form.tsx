@@ -92,15 +92,19 @@ const PageForm: React.FC<PageFormProps> = ({ page }) => {
   }, [page, form]);
 
   // function for gettin parent page
-  const handlePageTypeChange = async (type: PageType | string) => {
-    try {
-      const res = await pageApi.getParentPage(type);
-      setParentPages(res?.items);
-      // console.log("res", res.items);
-    } catch (error: any) {
-      message.error(error.message);
+
+  useEffect(() => {
+    async function getPages() {
+      try {
+        const res = await pageApi.getParentPage();
+        setParentPages(res);
+        // console.log("res", res);
+      } catch (error: any) {
+        message.error(error.message);
+      }
     }
-  };
+    getPages();
+  }, [page]);
 
   /** Handle file upload */
   const handleFileUpload = async (file: File, type: "image" | "cover") => {
@@ -300,11 +304,7 @@ const PageForm: React.FC<PageFormProps> = ({ page }) => {
                 name="type"
                 rules={[{ required: true }]}
               >
-                <Select
-                  allowClear
-                  placeholder="Select page type"
-                  onChange={(value) => handlePageTypeChange(value)}
-                >
+                <Select allowClear placeholder="Select page type">
                   {Object.values(PageType).map((t) => (
                     <Select.Option key={t} value={t}>
                       {t}
