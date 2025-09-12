@@ -18,9 +18,11 @@ import {
 import pageApi from "@/lib/api/pageApi";
 import { PagePath } from "@/types/page";
 
-/**
- * Convert PagePath to draggable item format
- */
+interface CreatePackageTransferProps {
+  onChange?: (ids: number[]) => void;
+}
+
+// Convert PagePath to draggable item format
 const mapPagePathToItem = (p: PagePath) => ({
   key: p.pathIds.join("-"), // unique string
   title: p.fullPath,
@@ -118,7 +120,9 @@ const DroppableList: React.FC<{
 };
 
 // === Main Component ===
-const CreatePackageTransfer: React.FC = () => {
+const CreatePackageTransfer: React.FC<CreatePackageTransferProps> = ({
+  onChange,
+}) => {
   const [available, setAvailable] = useState<
     { key: string; title: string; raw: PagePath }[]
   >([]);
@@ -127,47 +131,11 @@ const CreatePackageTransfer: React.FC = () => {
   >([]);
   const [search, setSearch] = useState("");
 
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-    if (!over) return;
-    const activeId = active.id as string;
-
-    // Reorder inside available
-    if (available.find((i) => i.key === activeId) && over.id === "available") {
-      const oldIndex = available.findIndex((i) => i.key === activeId);
-      const newIndex = available.findIndex((i) => i.key === over.id);
-      if (oldIndex !== -1 && newIndex !== -1)
-        setAvailable(arrayMove(available, oldIndex, newIndex));
-    }
-
-    // Reorder inside selected
-    if (selected.find((i) => i.key === activeId) && over.id === "selected") {
-      const oldIndex = selected.findIndex((i) => i.key === activeId);
-      const newIndex = selected.findIndex((i) => i.key === over.id);
-      if (oldIndex !== -1 && newIndex !== -1)
-        setSelected(arrayMove(selected, oldIndex, newIndex));
-    }
-
-    // Available → Selected
-    if (available.find((i) => i.key === activeId) && over.id === "selected") {
-      const item = available.find((i) => i.key === activeId);
-      if (!item) return;
-      setSelected([...selected, item]);
-      setAvailable(available.filter((i) => i.key !== activeId));
-    }
-
-    // Selected → Available
-    if (selected.find((i) => i.key === activeId) && over.id === "available") {
-      const item = selected.find((i) => i.key === activeId);
-      if (!item) return;
-      setAvailable([...available, item]);
-      setSelected(selected.filter((i) => i.key !== activeId));
-    }
-  };
-
   const handleAdd = (item: { key: string; title: string; raw: PagePath }) => {
-    setSelected([...selected, item]);
+    const newSelected = [...selected, item];
+    setSelected(newSelected);
     setAvailable(available.filter((i) => i.key !== item.key));
+    onChange?.(newSelected.map((s) => s.raw.pathIds[s.raw.pathIds.length - 1]));
   };
 
   const handleRemove = (item: {
@@ -175,8 +143,42 @@ const CreatePackageTransfer: React.FC = () => {
     title: string;
     raw: PagePath;
   }) => {
+    const newSelected = selected.filter((i) => i.key !== item.key);
+    setSelected(newSelected);
     setAvailable([...available, item]);
-    setSelected(selected.filter((i) => i.key !== item.key));
+    onChange?.(newSelected.map((s) => s.raw.pathIds[s.raw.pathIds.length - 1]));
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over) return;
+    const activeId = active.id as string;
+
+    if (available.find((i) => i.key === activeId) && over.id === "available") {
+      const oldIndex = available.findIndex((i) => i.key === activeId);
+      const newIndex = available.findIndex((i) => i.key === over.id);
+      if (oldIndex !== -1 && newIndex !== -1)
+        setAvailable(arrayMove(available, oldIndex, newIndex));
+    }
+
+    if (selected.find((i) => i.key === activeId) && over.id === "selected") {
+      const oldIndex = selected.findIndex((i) => i.key === activeId);
+      const newIndex = selected.findIndex((i) => i.key === over.id);
+      if (oldIndex !== -1 && newIndex !== -1)
+        setSelected(arrayMove(selected, oldIndex, newIndex));
+    }
+
+    if (available.find((i) => i.key === activeId) && over.id === "selected") {
+      const item = available.find((i) => i.key === activeId);
+      if (!item) return;
+      handleAdd(item);
+    }
+
+    if (selected.find((i) => i.key === activeId) && over.id === "available") {
+      const item = selected.find((i) => i.key === activeId);
+      if (!item) return;
+      handleRemove(item);
+    }
   };
 
   useEffect(() => {
