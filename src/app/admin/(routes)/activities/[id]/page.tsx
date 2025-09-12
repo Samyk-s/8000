@@ -40,7 +40,7 @@ const EditActivity = () => {
       />
       <Card>
         <div className="flex flex-col gap-3">
-          <PageTabs id={id as string} path="activities" />
+          <PageTabs id={id as string} path="activities" title="Acitvity" />
           <Suspense fallback={"loading..."}>
             <PageForm page={page as PageItem} />
           </Suspense>

@@ -1,9 +1,18 @@
 "use client";
+import Title from "antd/es/skeleton/Title";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
 
-const PageTabs = ({ id, path = "page" }: { id?: string; path?: string }) => {
+const PageTabs = ({
+  id,
+  path = "page",
+  title = "Page",
+}: {
+  id?: string;
+  path?: string;
+  title?: string;
+}) => {
   const pathname = usePathname();
 
   const isSeo = pathname.endsWith("/seo");
@@ -16,7 +25,7 @@ const PageTabs = ({ id, path = "page" }: { id?: string; path?: string }) => {
         href={`/admin/${path}/${id}`}
         className={`cursor-default ${isPage ? "bg-blue-600 text-white" : "bg-gray-300 text-gray-500 hover:text-gray-500"} px-4 py-1 font-semibold`}
       >
-        Page
+        {title}
       </Link>
     </div>
   ) : (
@@ -25,7 +34,7 @@ const PageTabs = ({ id, path = "page" }: { id?: string; path?: string }) => {
         href={`/admin/${path}/${id}`}
         className={`cursor-default ${isPage ? "bg-blue-600 text-white" : "bg-gray-300 text-gray-500 hover:text-gray-500"} px-4 py-1 font-semibold`}
       >
-        Page
+        {title}
       </Link>
       <Link
         href={`/admin/${path}/${id}/seo`}

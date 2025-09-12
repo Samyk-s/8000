@@ -76,7 +76,7 @@ const ActivityTable: React.FC = () => {
           <div className="flex flex-col gap-3 border-b border-gray-200 p-6">
             <div className="flex justify-end">
               <Link
-                href={"/admin/pages/create-page"}
+                href={"/admin/activities/create"}
                 className="flex w-fit items-center gap-1 rounded-md bg-black px-2 py-1 text-white dark:bg-white dark:text-black"
               >
                 <PlusIcon />
@@ -166,14 +166,14 @@ const ActivityTable: React.FC = () => {
                       <td className="whitespace-nowrap px-6 py-4 text-base font-medium dark:text-white">
                         <div className="flex items-center space-x-2">
                           <Link
-                            href={`/admin/destinations/${item?.id}/seo`}
+                            href={`/admin/activities/${item?.id}/seo`}
                             title="SEO"
                           >
                             <SeoIcon />
                           </Link>
 
                           <Link
-                            href={`/admin/destinations/${item?.id}`}
+                            href={`/admin/activities/${item?.id}`}
                             title="Edit Page"
                           >
                             <EditIcon />

@@ -27,7 +27,7 @@ const ActiivitySEO = () => {
       />
       <Card>
         <div className="flex flex-col gap-3">
-          <PageTabs id={id as string} path="activities" />
+          <PageTabs id={id as string} path="activities" title="Activity" />
           <SeoForm id={id} type={SeoEntity.PAGE} />
         </div>
       </Card>
