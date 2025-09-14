@@ -56,6 +56,7 @@ const CreatePackageTransfer: React.FC<CreatePackageTransferProps> = ({
 
   return (
     <Transfer<TransferItem>
+      className="custom-transfer"
       dataSource={dataSource}
       titles={["Available Pages", "Selected Pages"]}
       targetKeys={value.map((id) => id.toString())}
