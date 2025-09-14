@@ -221,12 +221,20 @@ const PackageForm: React.FC<PackageFormProps> = ({ currentPackage }) => {
     console.log("payload", payload);
 
     if (currentPackage) {
-      dispatch(updatePackage({ id: currentPackage.id, data: payload }));
+      dispatch(updatePackage({ id: currentPackage.id, data: payload }))
+        .unwrap()
+        .then(() => {
+          router.back();
+        });
     } else {
-      dispatch(createPackage(payload));
+      dispatch(createPackage(payload))
+        .unwrap()
+        .then(() => {
+          router.back();
+        });
     }
 
-    router.push("/admin/packages");
+    // router.push("/admin/packages");
   };
 
   return (
