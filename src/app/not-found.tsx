@@ -1,8 +1,9 @@
 "use client";
-
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function NotFound() {
+  const router = useRouter();
   return (
     <div className="flex h-screen flex-col items-center justify-center bg-gradient-to-br from-red-50 to-red-100 p-6 text-center">
       {/* Animated Emoji */}
@@ -42,12 +43,12 @@ export default function NotFound() {
         >
           Go to Home
         </Link>
-        <Link
-          href="/admin/dashboard"
+        <button
           className="rounded-lg border border-red-500 bg-white px-6 py-3 font-medium text-red-500 shadow-md transition-all duration-300 hover:bg-red-50"
+          onClick={() => router.back()}
         >
-          Dashboard
-        </Link>
+          Back
+        </button>
       </div>
     </div>
   );
