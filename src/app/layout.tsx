@@ -13,7 +13,7 @@ import { Providers } from "./providers";
 
 export const metadata: Metadata = {
   title: {
-    template: process.env.NEXT_PUBLIC_APP_NAME!,
+    template: `%s ${process.env.NEXT_PUBLIC_APP_NAME!}`,
     default: process.env.NEXT_PUBLIC_APP_NAME!,
   },
   description:
