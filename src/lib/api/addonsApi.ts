@@ -62,4 +62,5 @@ class AddOnsApi {
   }
 }
 
-export default new AddOnsApi()
+const addonsApi = new AddOnsApi()
+export default addonsApi;

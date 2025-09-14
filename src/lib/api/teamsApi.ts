@@ -135,4 +135,6 @@ class TeamApi {
   }
 }
 
-export default new TeamApi()
+const teamApi = new TeamApi()
+
+export default teamApi;

@@ -43,4 +43,5 @@ class BlogsApi {
     }
   }
 }
-export default new BlogsApi()
+const blogsApi = new BlogsApi()
+export default blogsApi;

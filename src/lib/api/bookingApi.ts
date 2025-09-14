@@ -68,5 +68,6 @@ class BookingApi {
   }
 }
 
+const bookingApi = new BookingApi()
 
-export default new BookingApi()
+export default bookingApi

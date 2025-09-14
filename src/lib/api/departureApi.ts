@@ -49,4 +49,5 @@ class DepartureApi {
   }
 }
 
-export default new DepartureApi();
+const departureApi = new DepartureApi()
+export default departureApi;

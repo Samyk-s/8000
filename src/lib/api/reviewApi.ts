@@ -83,4 +83,6 @@ class ReviewApi {
 
 }
 
-export default new ReviewApi();
+const reviewApi = new ReviewApi()
+
+export default reviewApi;

@@ -60,4 +60,5 @@ class PackageApi {
   }
 }
 
-export default new PackageApi();
+const packageApi = new PackageApi()
+export default packageApi;

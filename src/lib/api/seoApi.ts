@@ -23,4 +23,6 @@ class SeoApi {
   }
 }
 
-export default new SeoApi()
+const seoApi = new SeoApi()
+
+export default seoApi

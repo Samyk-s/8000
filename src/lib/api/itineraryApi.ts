@@ -57,4 +57,6 @@ class ItineraryApi {
   }
 }
 
-export default new ItineraryApi();
+const itineraryApi = new ItineraryApi()
+
+export default itineraryApi;

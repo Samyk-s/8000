@@ -119,4 +119,5 @@ class SummitterApi {
   }
 }
 
-export default new SummitterApi()
+const summittterApi = new SummitterApi()
+export default summittterApi

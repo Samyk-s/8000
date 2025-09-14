@@ -20,4 +20,6 @@ class NewsLetterApi {
   }
 }
 
-export default new NewsLetterApi()
+const newsLetterApi = new NewsLetterApi()
+
+export default newsLetterApi

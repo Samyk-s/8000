@@ -21,4 +21,5 @@ class ResourceApi {
   }
 }
 
-export default new ResourceApi()
+const resourcesApi = new ResourceApi()
+export default resourcesApi

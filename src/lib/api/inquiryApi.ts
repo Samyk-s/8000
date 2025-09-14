@@ -30,4 +30,5 @@ class InquiryApi {
   }
 }
 
-export default new InquiryApi()
+const inquiryApi = new InquiryApi()
+export default inquiryApi

@@ -50,4 +50,5 @@ class FileApi {
   }
 }
 
-export default new FileApi()
+const fileApi = new FileApi();
+export default fileApi;

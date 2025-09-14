@@ -60,4 +60,6 @@ class TestmonialApi {
   }
 }
 
-export default new TestmonialApi()
+const testimonialApi = new TestmonialApi()
+
+export default testimonialApi
