@@ -128,7 +128,7 @@ const BookingTable: React.FC = () => {
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
                 {items && items.length > 0 ? (
-                  items.map((item: BookingItem, index) => (
+                  items.map((item: BookingItem, index: number) => (
                     <tr key={item.id} className="hover:bg-gray-50">
                       <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
                         {index + 1}
