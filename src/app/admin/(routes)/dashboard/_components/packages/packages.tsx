@@ -12,7 +12,7 @@ const Packages = () => {
         {/* Header link */}
         <div className="flex items-center justify-between rounded bg-yellow-700 p-2">
           <Typography.Title level={4} className="!text-md !text-white">
-            Bookings & Contacts
+            Packages
           </Typography.Title>
           <span className="text-sm font-semibold text-white">
             Highest booking package
