@@ -4,7 +4,7 @@ import { Logo } from "@/components/logo";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { NAV_DATA } from "./data";
 import { ArrowLeftIcon, ChevronUp } from "./icons";
 import { MenuItem } from "./menu-item";
@@ -21,9 +21,10 @@ export function Sidebar() {
     );
   };
 
-  // Helper to check if a URL or its subpages is active
-  const checkActive = (url: string) =>
-    pathname === url || pathname.startsWith(url + "/");
+  const checkActive = useCallback(
+    (url: string) => pathname === url || pathname.startsWith(url + "/"),
+    [pathname], // only depends on pathname
+  );
 
   useEffect(() => {
     // Automatically expand items if any of their subpages are active
@@ -39,7 +40,7 @@ export function Sidebar() {
         }
       });
     });
-  }, [pathname, expandedItems]);
+  }, [pathname, expandedItems, checkActive]); // now checkActive is stable
 
   return (
     <>

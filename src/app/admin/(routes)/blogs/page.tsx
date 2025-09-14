@@ -1,6 +1,7 @@
+"use client";
 import Breadcrumbs from "@/components/adminComponents/beadcrumb/bedcrumb";
 import BlogTable from "@/components/adminComponents/pages-components/tables/blogs-table";
-import React from "react";
+import React, { Suspense } from "react";
 
 const BlogsPage = () => {
   return (
@@ -18,7 +19,9 @@ const BlogsPage = () => {
         ]}
         separator="/"
       />
-      <BlogTable />
+      <Suspense fallback={null}>
+        <BlogTable />
+      </Suspense>
     </div>
   );
 };

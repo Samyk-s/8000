@@ -1,7 +1,7 @@
 "use client";
 import Breadcrumbs from "@/components/adminComponents/beadcrumb/bedcrumb";
 import IquiryTable from "@/components/adminComponents/pages-components/tables/inquiry-table";
-import React from "react";
+import React, { Suspense } from "react";
 
 const InquiryPage = () => {
   return (
@@ -13,7 +13,9 @@ const InquiryPage = () => {
         ]}
         separator="/"
       />
-      <IquiryTable />
+      <Suspense fallback={null}>
+        <IquiryTable />
+      </Suspense>
     </div>
   );
 };
