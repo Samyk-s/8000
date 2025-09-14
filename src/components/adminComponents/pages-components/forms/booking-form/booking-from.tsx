@@ -196,7 +196,9 @@ const BookingForm = ({ id }: { id: number }) => {
                 className="!bg-transparent"
               >
                 {booking?.addons?.map((addon) => (
-                  <Option value={addon?.id}>{addon?.title}</Option>
+                  <Option value={addon?.id} key={addon?.id}>
+                    {addon?.title}
+                  </Option>
                 ))}
               </Select>
             </Form.Item>

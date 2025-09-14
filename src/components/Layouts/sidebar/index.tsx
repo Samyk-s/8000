@@ -12,36 +12,34 @@ import { useSidebarContext } from "./sidebar-context";
 
 export function Sidebar() {
   const pathname = usePathname();
-  console.log(pathname);
   const { setIsOpen, isOpen, isMobile, toggleSidebar } = useSidebarContext();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
 
   const toggleExpanded = (title: string) => {
-    setExpandedItems((prev) => (prev.includes(title) ? [] : [title]));
-
-    // Uncomment the following line to enable multiple expanded items
-    // setExpandedItems((prev) =>
-    //   prev.includes(title) ? prev.filter((t) => t !== title) : [...prev, title],
-    // );
+    setExpandedItems((prev) =>
+      prev.includes(title) ? prev.filter((t) => t !== title) : [...prev, title],
+    );
   };
 
-  useEffect(() => {
-    // Keep collapsible open, when it's subpage is active
-    NAV_DATA.some((section) => {
-      return section.items.some((item) => {
-        return item.items.some((subItem) => {
-          if (subItem.url === pathname) {
-            if (!expandedItems.includes(item.title)) {
-              toggleExpanded(item.title);
-            }
+  // Helper to check if a URL or its subpages is active
+  const checkActive = (url: string) =>
+    pathname === url || pathname.startsWith(url + "/");
 
-            // Break the loop
-            return true;
+  useEffect(() => {
+    // Automatically expand items if any of their subpages are active
+    NAV_DATA.forEach((section) => {
+      section.items.forEach((item) => {
+        if (
+          item.items.length &&
+          item.items.some((subItem) => checkActive(subItem.url || ""))
+        ) {
+          if (!expandedItems.includes(item.title)) {
+            setExpandedItems((prev) => [...prev, item.title]);
           }
-        });
+        }
       });
     });
-  }, [pathname]);
+  }, [pathname, expandedItems]);
 
   return (
     <>
@@ -80,7 +78,6 @@ export function Sidebar() {
                 className="absolute left-3/4 right-4.5 top-1/2 -translate-y-1/2 text-right"
               >
                 <span className="sr-only">Close Menu</span>
-
                 <ArrowLeftIcon className="ml-auto size-7" />
               </button>
             )}
@@ -96,71 +93,61 @@ export function Sidebar() {
 
                 <nav role="navigation" aria-label={section.label}>
                   <ul className="space-y-2">
-                    {section.items.map((item) => (
-                      <li key={item.title}>
-                        {item.items.length ? (
-                          <div>
+                    {section.items.map((item) => {
+                      // If the item has subitems
+                      if (item.items.length) {
+                        const isExpanded = expandedItems.includes(item.title);
+                        const isActiveItem = item.items.some((sub) =>
+                          checkActive(sub.url || ""),
+                        );
+
+                        return (
+                          <li key={item.title}>
                             <MenuItem
-                              isActive={item.items.some(
-                                // ({ url }) => url === pathname,
-                                ({ url }) =>
-                                  console.log(
-                                    "url",
-                                    url,
-                                    "pathname",
-                                    pathname,
-                                    url === pathname,
-                                  ),
-                              )}
+                              isActive={isActiveItem}
                               onClick={() => toggleExpanded(item.title)}
                             >
                               <item.icon
                                 className="size-6 shrink-0"
                                 aria-hidden="true"
                               />
-
                               <span className="text-[16px]">{item.title}</span>
-
                               <ChevronUp
                                 className={cn(
                                   "ml-auto rotate-180 transition-transform duration-200",
-                                  expandedItems.includes(item.title) &&
-                                    "rotate-0",
+                                  isExpanded && "rotate-0",
                                 )}
                                 aria-hidden="true"
                               />
                             </MenuItem>
-                          </div>
-                        ) : (
-                          (() => {
-                            const href =
-                              "url" in item
-                                ? item.url + ""
-                                : "/" +
-                                  item.title
-                                    ?.toLowerCase()
-                                    .split(" ")
-                                    .join("-");
+                          </li>
+                        );
+                      }
 
-                            return (
-                              <MenuItem
-                                className="flex items-center gap-3 py-3"
-                                as="link"
-                                href={`${href}`}
-                                isActive={pathname === href}
-                              >
-                                <item.icon
-                                  className="size-6 shrink-0"
-                                  aria-hidden="true"
-                                />
+                      // Single item without subitems
+                      const href =
+                        "url" in item
+                          ? item.url + ""
+                          : "/" +
+                            item.title?.toLowerCase().split(" ").join("-");
 
-                                <span>{item.title}</span>
-                              </MenuItem>
-                            );
-                          })()
-                        )}
-                      </li>
-                    ))}
+                      return (
+                        <li key={item.title}>
+                          <MenuItem
+                            className="flex items-center gap-3 py-3"
+                            as="link"
+                            href={href}
+                            isActive={checkActive(href)}
+                          >
+                            <item.icon
+                              className="size-6 shrink-0"
+                              aria-hidden="true"
+                            />
+                            <span>{item.title}</span>
+                          </MenuItem>
+                        </li>
+                      );
+                    })}
                   </ul>
                 </nav>
               </div>

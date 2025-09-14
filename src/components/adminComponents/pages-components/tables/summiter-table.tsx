@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { EditIcon } from "@/components/icons/icnos";
 import Image from "next/image";
 import Link from "next/link";
@@ -7,7 +7,6 @@ import Entry from "../../entry/entry";
 import Pagination from "../../pagination/pagination";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux-store/store/store";
-import { togglePackageStatus } from "@/redux-store/slices/packageSlice";
 import ToggleButton from "../../toggle-button/toggle-button";
 import { PlusIcon, TrashIcon } from "@/assets/icons";
 import Loader from "../loader/loader";
@@ -18,7 +17,6 @@ import {
   toggleSummiter,
 } from "@/redux-store/slices/summiterSlice";
 import { SummitterItem } from "@/types/summitter";
-import SummitterTabs from "../../tabs/summitter-tabs";
 
 const SummitterTable = () => {
   const [limit, setLimit] = useState(10);
@@ -31,7 +29,7 @@ const SummitterTable = () => {
   // call api for getting summiters
   useEffect(() => {
     dispatch(fetchSummitters({ page, limit }));
-  }, [dispatch]);
+  }, [dispatch, limit, page]);
 
   if (loading) {
     return <Loader />;

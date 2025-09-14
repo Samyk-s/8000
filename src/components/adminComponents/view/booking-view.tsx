@@ -11,7 +11,7 @@ const BookingView = ({ id }: { id: number }) => {
   const dispatch = useDispatch<AppDispatch>();
   useEffect(() => {
     dispatch(fetchBookingById(id));
-  }, [id]);
+  }, [dispatch, id]);
 
   return (
     <div className="w-full max-w-6xl overflow-y-auto rounded-lg bg-white">

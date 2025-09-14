@@ -7,16 +7,10 @@ import Entry from "../../entry/entry";
 import Pagination from "../../pagination/pagination";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux-store/store/store";
-import { togglePackageStatus } from "@/redux-store/slices/packageSlice";
 import ToggleButton from "../../toggle-button/toggle-button";
 import { PlusIcon, TrashIcon } from "@/assets/icons";
 import Loader from "../loader/loader";
 import { message, Popconfirm } from "antd";
-import {
-  deleteSummiter,
-  fetchSummitters,
-  toggleSummiter,
-} from "@/redux-store/slices/summiterSlice";
 import { StoryItem, SummitterItem } from "@/types/summitter";
 import SummitterTabs from "../../tabs/summitter-tabs";
 import {
@@ -37,7 +31,7 @@ const SummitterStoryTable = () => {
   // call api for getting summiters
   useEffect(() => {
     dispatch(fetchSummitterStories({ page, limit }));
-  }, [dispatch]);
+  }, [dispatch, page, limit]);
 
   if (loading) {
     return <Loader />;

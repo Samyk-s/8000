@@ -1,5 +1,22 @@
 import * as Icons from "../icons";
-export const NAV_DATA = [
+import { ComponentType } from "react";
+
+// Type for a single navigation item
+export interface NavItem {
+  title: string;
+  url?: string; // optional because some items might not have direct url
+  icon: ComponentType<any>;
+  items: NavItem[]; // subitems for nested menus
+}
+
+// Type for a section containing multiple items
+export interface NavSection {
+  label: string;
+  items: NavItem[];
+}
+
+// Fully typed NAV_DATA
+export const NAV_DATA: NavSection[] = [
   {
     label: " ",
     items: [
@@ -9,18 +26,16 @@ export const NAV_DATA = [
         icon: Icons.WebsiteIcon,
         items: [],
       },
-
       {
         title: "Dashboard",
         url: "/admin/dashboard",
         icon: Icons.HomeIcon,
         items: [],
       },
-
     ],
   },
   {
-    label: " Inquiry Mangement",
+    label: "Inquiry Mangement",
     items: [
       {
         title: "Package Bookings",
@@ -90,9 +105,8 @@ export const NAV_DATA = [
     ],
   },
   {
-    label: " Site Management",
+    label: "Site Management",
     items: [
-
       {
         title: "Slider",
         url: "/admin/sliders",
@@ -105,7 +119,6 @@ export const NAV_DATA = [
         icon: Icons.PageIcon,
         items: [],
       },
-
       {
         title: "Blogs",
         url: "/admin/blogs",
@@ -157,7 +170,7 @@ export const NAV_DATA = [
     ],
   },
   {
-    label: "Site Settings ",
+    label: "Site Settings",
     items: [
       {
         title: "Site Setting",

@@ -39,7 +39,7 @@ const PackageTable: React.FC = () => {
   // call api for getting packages
   useEffect(() => {
     dispatch(fetchPackages({ page, limit }));
-  }, [dispatch]);
+  }, [dispatch, page, limit]);
 
   // search itinerary
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
