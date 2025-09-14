@@ -129,12 +129,18 @@ const TeamForm: React.FC<TeamFormProps> = ({ team }) => {
 
     if (team?.id) {
       // Update mode
-      dispatch(updateTeam({ id: team.id, values: payload }));
-      router.back();
+      dispatch(updateTeam({ id: team.id, values: payload }))
+        .unwrap()
+        .then(() => {
+          router.back();
+        });
     } else {
       // Create mode
-      dispatch(createTeam({ values: payload }));
-      router.back();
+      dispatch(createTeam({ values: payload }))
+        .unwrap()
+        .then(() => {
+          router.back();
+        });
     }
 
     router.push("/admin/teams");

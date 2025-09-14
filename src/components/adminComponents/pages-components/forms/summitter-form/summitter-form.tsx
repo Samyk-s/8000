@@ -128,12 +128,19 @@ const SummiterForm: React.FC<SummiterFormProps> = ({ summitter }) => {
 
     if (summitter) {
       // Update mode: only send updated file
-      dispatch(updateSummiter({ id: summitter.id, payload }));
+      dispatch(updateSummiter({ id: summitter.id, payload }))
+        .unwrap()
+        .then(() => {
+          router.back();
+        });
       router.push("/admin/summitters");
     } else {
       // Create mode
-      dispatch(createSummiter(payload));
-      router.push("/admin/summitters");
+      dispatch(createSummiter(payload))
+        .unwrap()
+        .then(() => {
+          router.back();
+        });
     }
   };
 

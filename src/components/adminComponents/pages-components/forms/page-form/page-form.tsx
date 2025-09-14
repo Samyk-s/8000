@@ -198,8 +198,11 @@ const PageForm: React.FC<PageFormProps> = ({ page }) => {
 
     if (page) {
       // Update page: only send updated files
-      dispatch(updatePage({ id: page.id, data: payload }));
-      router.back();
+      dispatch(updatePage({ id: page.id, data: payload }))
+        .unwrap()
+        .then(() => {
+          router.back();
+        });
     } else {
       // Create page: require page type
       dispatch(
@@ -207,8 +210,11 @@ const PageForm: React.FC<PageFormProps> = ({ page }) => {
           type: values.type,
           data: payload,
         }),
-      );
-      router.back();
+      )
+        .unwrap()
+        .then(() => {
+          router.back();
+        });
     }
   };
 

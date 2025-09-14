@@ -32,8 +32,11 @@ const BookingForm = ({ id }: { id: number }) => {
         id: Number(id),
         data: values,
       }),
-    );
-    router.push("/admin/bookings");
+    )
+      .unwrap()
+      .then(() => {
+        router.back();
+      });
   };
 
   const onFinishFailed = (errorInfo: any) => {

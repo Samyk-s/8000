@@ -81,9 +81,12 @@ const ReviewForm = () => {
         id: Number(id),
         data: payload,
       }),
-    );
+    )
+      .unwrap()
+      .then(() => {
+        router.back();
+      });
     form.resetFields();
-    router.back();
   };
 
   if (loading) return <Loader />;

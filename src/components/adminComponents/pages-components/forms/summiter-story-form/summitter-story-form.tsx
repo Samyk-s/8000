@@ -158,12 +158,18 @@ const SummiterStoryForm: React.FC<SummiterStoryFormProps> = ({ story }) => {
 
     if (story) {
       // Update mode: only send updated files
-      dispatch(updateSummitterStory({ id: story.id, payload }));
-      router.back();
+      dispatch(updateSummitterStory({ id: story.id, payload }))
+        .unwrap()
+        .then(() => {
+          router.back();
+        });
     } else {
       // Create mode
-      dispatch(createSummitterStory({ id: Number(id), payload }));
-      router.back();
+      dispatch(createSummitterStory({ id: Number(id), payload }))
+        .unwrap()
+        .then(() => {
+          router.back();
+        });
     }
   };
 

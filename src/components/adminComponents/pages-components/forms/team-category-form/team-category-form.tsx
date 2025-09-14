@@ -37,19 +37,23 @@ const TeamCategoryForm: React.FC<TeamCategoryFormProps> = ({
     }
   }, [teamCategory, form]);
 
-  const onFinish = async (values: TeamCategoryPayload) => {
+  const onFinish = (values: TeamCategoryPayload) => {
     const payload = { ...values, order: Number(values?.order) };
 
     if (teamCategory?.id) {
       // UPDATE
-      await dispatch(
-        updateTeamCategory({ id: teamCategory.id, values: payload }),
-      );
-      router.back();
+      dispatch(updateTeamCategory({ id: teamCategory.id, values: payload }))
+        .unwrap()
+        .then(() => {
+          router.back();
+        });
     } else {
       // CREATE
-      await dispatch(createTeamCategory({ values: payload }));
-      router.back();
+      dispatch(createTeamCategory({ values: payload }))
+        .unwrap()
+        .then(() => {
+          router.back();
+        });
     }
 
     router.push("/admin/teams/categories"); // redirect after submit

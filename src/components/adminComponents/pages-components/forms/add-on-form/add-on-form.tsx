@@ -6,7 +6,7 @@ import Loader from "../../loader/loader";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux-store/store/store";
 import { createAddon, updateAddon } from "@/redux-store/slices/addonSlice";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { AddOnItem, AddOnPayload } from "@/types/addOns";
 
 const TextEditor = dynamic(() => import("../../text-editor/text-editor"), {
@@ -24,6 +24,7 @@ const AddOnForm = ({
   const dispatch = useDispatch<AppDispatch>();
   const { id } = useParams<{ id: string }>();
   const { loading } = useSelector((state: RootState) => state.addons);
+  const router = useRouter();
 
   // Pre-fill form if editing
   useEffect(() => {
@@ -53,8 +54,11 @@ const AddOnForm = ({
             addonId: addon.id,
             data: payload,
           }),
-        );
-        message.success("Addon updated successfully");
+        )
+          .unwrap()
+          .then(() => {
+            router.back();
+          });
       } else {
         // Create new addon
         dispatch(
@@ -62,8 +66,11 @@ const AddOnForm = ({
             packageId: Number(id),
             data: payload,
           }),
-        );
-        message.success("Addon created successfully");
+        )
+          .unwrap()
+          .then(() => {
+            router.back();
+          });
       }
 
       form.resetFields();
