@@ -10,6 +10,7 @@ import { Modal, Typography } from "antd";
 import { fetchBooking } from "@/redux-store/slices/bookinSlice";
 import Link from "next/link";
 import BookingView from "../../view/booking-view";
+import { BookingStatus } from "@/types/enum/enum";
 const RecentBookingTable: React.FC = () => {
   const { items, loading, error, meta } = useSelector(
     (state: RootState) => state?.bookings,
@@ -132,7 +133,7 @@ const RecentBookingTable: React.FC = () => {
                       </td>
 
                       <td className="whitespace-nowrap px-6 py-4">
-                        <StatusBadge status={item.status} />
+                        <StatusBadge status={item.status as BookingStatus} />
                       </td>
                       <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
                         {formatTimeAgo(item?.createdAt)}

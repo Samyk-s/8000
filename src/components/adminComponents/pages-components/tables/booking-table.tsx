@@ -158,7 +158,7 @@ const BookingTable: React.FC = () => {
                         <StatusBadge status={item.status} />
                       </td> */}
                       <td className="whitespace-nowrap px-6 py-4">
-                        <ViewedBadge isViewed={item.isViewd} />
+                        <ViewedBadge isViewed={item.isViewd as 0 | 1} />
                       </td>
                       <td className="whitespace-nowrap px-6 py-4 text-base font-medium">
                         <div className="flex space-x-2">

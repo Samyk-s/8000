@@ -1,5 +1,5 @@
 import teamsApi from "@/lib/api/teamsApi";
-import { Meta } from "@/types/booking";
+import { Meta } from "@/types/utils-type";
 import { TeamCategoryPayload, TeamCatgoryItem } from "@/types/teams";
 import { Params } from "@/types/utils-type";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";

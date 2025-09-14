@@ -1,9 +1,10 @@
-import { Package } from "./package";
+
+import { PackageItem } from "./package";
 import { MediaFile } from "./utils-type";
 
 export interface ReviewItem {
   id: number;
-  package: Package;
+  package: PackageItem;
   fullName: string;
   email: string;
   country: string;
