@@ -376,7 +376,11 @@ const PackageForm: React.FC<PackageFormProps> = ({ currentPackage }) => {
 
         {/* Parent Pages */}
         <Col span={24}>
-          <Form.Item label="Activity/Destination/Pages" name="parentPageIds">
+          <Form.Item
+            label="Activity/Destination/Pages"
+            name="parentPageIds"
+            rules={[{ required: true, message: "Parent page is required" }]}
+          >
             <CreatePackageTransfer />
           </Form.Item>
         </Col>
