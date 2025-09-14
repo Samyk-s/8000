@@ -69,7 +69,7 @@ const ItineraryForm = ({
       setIsModalOpen(false);
       form.resetFields();
     } catch (error) {
-      console.error("Failed to save itinerary:", error);
+      // console.error("Failed to save itinerary:", error);
       message.error("Failed to save itinerary");
     }
   };

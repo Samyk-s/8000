@@ -31,7 +31,7 @@ export const searchTeamCategory = createAsyncThunk<
 >("teamCategoreis/searchTeamsCategories", async ({ params }, { rejectWithValue }) => {
   try {
     const res = await teamsApi.searchTeamCategory(params as Params);
-    console.log(res, "jsbfsdk ")
+    // console.log(res, "jsbfsdk ")
     return res;
   } catch (err: any) {
     return rejectWithValue(err.message);
@@ -88,7 +88,7 @@ export const getTeamCategory = createAsyncThunk<
   async (id, { rejectWithValue }) => {
     try {
       const res = await teamsApi.getTeamCategoryId(id);
-      console.log("res", res)
+      // console.log("res", res)
       return res; // return the fetched TeamItem
     } catch (err: any) {
       message.error(err?.message);
@@ -104,7 +104,7 @@ export const createTeamCategory = createAsyncThunk<
 >("teamsCategories/createTeamsCategory", async ({ values }, { rejectWithValue }) => {
   try {
     const res = await teamsApi.createTeamCategory(values);
-    console.log(res, "teams")
+    // console.log(res, "teams")
     return res;
   } catch (err: any) {
     return rejectWithValue(err.message);

@@ -27,7 +27,7 @@ const TeamCategoryForm: React.FC<TeamCategoryFormProps> = ({
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
   const { loading } = useSelector((state: RootState) => state.teamsCategory);
-  console.log(teamCategory, "sddsfskf");
+  // console.log(teamCategory, "sddsfskf");
   useEffect(() => {
     if (teamCategory) {
       form.setFieldsValue({

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Transfer } from "antd";
+import { message, Transfer } from "antd";
 import type { TransferItem } from "antd/es/transfer";
 import type { Key } from "react";
 import type { TransferDirection } from "antd/es/transfer";
@@ -38,8 +38,9 @@ const CreatePackageTransfer: React.FC<CreatePackageTransferProps> = ({
           }));
 
         setDataSource(mapped);
-      } catch (err) {
-        console.error("Failed to fetch pages", err);
+      } catch (err: any) {
+        message.error(err.message);
+        // console.error("Failed to fetch pages", err);
       }
     };
     fetchPages();

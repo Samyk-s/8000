@@ -83,7 +83,7 @@ const SummiterForm: React.FC<SummiterFormProps> = ({ summitter }) => {
         message.error("File upload failed");
       }
     } catch (error) {
-      console.error(error);
+      // console.error(error);
       setUploading(false);
       message.error("File upload failed");
     }
@@ -138,7 +138,7 @@ const SummiterForm: React.FC<SummiterFormProps> = ({ summitter }) => {
   };
 
   const onFinishFailed = (errorInfo: any) => {
-    console.log("Failed:", errorInfo);
+    // console.log("Failed:", errorInfo);
     message.error("Please fill all required fields.");
   };
 

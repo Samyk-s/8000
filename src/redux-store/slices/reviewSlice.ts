@@ -14,7 +14,7 @@ export const fetchReviews = createAsyncThunk<
 >("reviews/fetchReviews", async ({ id, params }, { rejectWithValue }) => {
   try {
     const res = await reviewApi.getPackageReviews(id, params);
-    console.log(res, "reviews")
+    // console.log(res, "reviews")
     return res;
   } catch (err: any) {
     return rejectWithValue(err.message);
@@ -43,7 +43,7 @@ export const getAllReviews = createAsyncThunk<
 >("reviews/fetchAllReviews", async ({ params }, { rejectWithValue }) => {
   try {
     const res = await reviewApi.getAllReviews(params);
-    console.log(res, "reviews")
+    // console.log(res, "reviews")
     return res;
   } catch (err: any) {
     return rejectWithValue(err.message);

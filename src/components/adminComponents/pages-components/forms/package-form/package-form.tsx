@@ -126,7 +126,7 @@ const PackageForm: React.FC<PackageFormProps> = ({ currentPackage }) => {
       if (type === "route") setUploadingRoute(true);
 
       const res: MediaFile = await resourceApi.createResource(formData);
-      console.log(res);
+      // console.log(res);
 
       const uploadObj: UploadFile = {
         uid: res.uid,
@@ -150,7 +150,7 @@ const PackageForm: React.FC<PackageFormProps> = ({ currentPackage }) => {
         `${type.charAt(0).toUpperCase() + type.slice(1)} uploaded successfully!`,
       );
     } catch (error) {
-      console.error(error);
+      // console.error(error);
       message.error(
         `${type.charAt(0).toUpperCase() + type.slice(1)} upload failed`,
       );

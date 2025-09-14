@@ -103,7 +103,7 @@ const SummiterStoryForm: React.FC<SummiterStoryFormProps> = ({ story }) => {
         message.error(`${type} upload failed`);
       }
     } catch (error) {
-      console.error(error);
+      // console.error(error);
       message.error("File upload failed");
     } finally {
       if (type === "image") setUploadingImage(false);

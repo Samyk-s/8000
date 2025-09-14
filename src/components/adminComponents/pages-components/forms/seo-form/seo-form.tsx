@@ -48,7 +48,7 @@ const SeoForm = ({ id, type }: { id: string; type: string }) => {
         message.error("File upload failed");
       }
     } catch (error) {
-      console.error(error);
+      // console.error(error);
       setUploading(false);
       message.error("File upload failed");
     }
@@ -91,7 +91,7 @@ const SeoForm = ({ id, type }: { id: string; type: string }) => {
           ]);
         }
       } catch (error) {
-        console.error("Failed to fetch SEO:", error);
+        // console.error("Failed to fetch SEO:", error);
         message.error("Failed to load SEO data");
       } finally {
         setLoading(false);
@@ -122,11 +122,11 @@ const SeoForm = ({ id, type }: { id: string; type: string }) => {
         };
       }
 
-      console.log("Final SEO Payload:", payload);
+      // console.log("Final SEO Payload:", payload);
       await seoApi.updateSeo(Number(seoId), payload);
       message.success("SEO updated successfully");
     } catch (error) {
-      console.error("Failed to update SEO:", error);
+      // console.error("Failed to update SEO:", error);
       message.error("Failed to update SEO");
     }
   };

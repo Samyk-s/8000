@@ -10,7 +10,7 @@ class PageApi {
       const response = await api.get(`/pages?page=${param.page}limit=${param.limit}`);
       return response.data
     } catch (error) {
-      console.error(error)
+      // console.error(error)
       throw error
     }
   }
@@ -19,7 +19,7 @@ class PageApi {
       const response = await api.get(`/pages/by-id/${id}`);
       return response.data
     } catch (error) {
-      console.error(error)
+      // console.error(error)
       throw error
     }
   }
@@ -28,7 +28,7 @@ class PageApi {
       const response = await api.get(`/pages/by-type/${params?.search}?page=${params?.page}&limit=${params?.limit}`);
       return response.data
     } catch (error) {
-      console.error(error)
+      // console.error(error)
       throw error
     }
   }
@@ -37,7 +37,7 @@ class PageApi {
       const response = await api.patch(`/pages/${id}/toggle-status`)
       return response.data
     } catch (error) {
-      console.error(error)
+      // console.error(error)
       throw error
     }
   }

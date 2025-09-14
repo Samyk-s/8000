@@ -47,7 +47,7 @@ const ReviewForm = () => {
         message.error("File upload failed");
       }
     } catch (error) {
-      console.error(error);
+      // console.error(error);
       setUploading(false);
       message.error("File upload failed");
     }

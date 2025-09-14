@@ -38,7 +38,7 @@ export const viewBookingById = createAsyncThunk<
 >("bookings/fetchbookingview", async ({ id, isViewed }, { rejectWithValue }) => {
   try {
     const res = await bookingApi.viwBooking(id, isViewed);
-    console.log(res, "sdfds")
+    // console.log(res, "sdfds")
     return res;
   } catch (err: any) {
     return rejectWithValue(err.message);

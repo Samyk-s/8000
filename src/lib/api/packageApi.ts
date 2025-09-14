@@ -9,7 +9,7 @@ class PackageApi {
       const response = await api.get(`/packages?search=${param?.search}&page=${param?.page}limit=${param?.limit}`);
       return response.data
     } catch (error) {
-      console.error(error)
+      // console.error(error)
       throw error
     }
   }
@@ -18,7 +18,7 @@ class PackageApi {
       const response = await api.post("/packages", data);
       return response;
     } catch (error) {
-      console.error(error)
+      // console.error(error)
       throw error
     }
   }
@@ -28,7 +28,7 @@ class PackageApi {
       const response = await api.patch(`/packages/${id}/toggle-status`)
       return response.data
     } catch (error) {
-      console.error(error)
+      // console.error(error)
       throw error
     }
   }
@@ -37,7 +37,7 @@ class PackageApi {
       const response = await api.get(`/packages/search?keyword=${param?.search}&page=${param?.page}&limit=${param?.limit}`)
       return response.data
     } catch (error) {
-      console.error(error)
+      // console.error(error)
       throw error
     }
   }
@@ -46,7 +46,7 @@ class PackageApi {
       const response = await api.patch(`/packages/${id}`, data);
       return response;
     } catch (error) {
-      console.error(error)
+      // console.error(error)
       throw error
     }
   }

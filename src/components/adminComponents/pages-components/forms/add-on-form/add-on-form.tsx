@@ -69,7 +69,7 @@ const AddOnForm = ({
       form.resetFields();
       setIsModalOpen(false);
     } catch (error) {
-      console.error("Failed to save addon:", error);
+      // console.error("Failed to save addon:", error);
       message.error("Failed to save addon");
     }
   };

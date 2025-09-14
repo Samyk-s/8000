@@ -37,7 +37,7 @@ const BookingForm = ({ id }: { id: number }) => {
   };
 
   const onFinishFailed = (errorInfo: any) => {
-    console.log("Failed:", errorInfo);
+    // console.log("Failed:", errorInfo);
     message.error("Please fill all required fields.");
   };
 

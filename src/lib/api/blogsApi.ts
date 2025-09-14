@@ -8,7 +8,7 @@ class BlogsApi {
       const response = await api.get(`/pages?page=${param.page}limit=${param.limit}`);
       return response.data
     } catch (error) {
-      console.error(error)
+      // console.error(error)
       throw error
     }
   }
@@ -17,7 +17,7 @@ class BlogsApi {
       const response = await api.get(`/pages/by-id/${id}`);
       return response.data
     } catch (error) {
-      console.error(error)
+      // console.error(error)
       throw error
     }
   }
@@ -26,7 +26,7 @@ class BlogsApi {
       const response = await api.patch(`/pages/${id}/toggle-status`)
       return response.data
     } catch (error) {
-      console.error(error)
+      // console.error(error)
       throw error
     }
   }

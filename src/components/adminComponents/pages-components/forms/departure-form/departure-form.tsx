@@ -50,7 +50,7 @@ const DepartureForm = ({
       form.resetFields();
       message.success("Departure saved successfully!");
     } catch (error) {
-      console.error("Failed to save departure:", error);
+      // console.error("Failed to save departure:", error);
       message.error("Failed to save departure");
     }
   };

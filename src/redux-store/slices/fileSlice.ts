@@ -14,7 +14,7 @@ export const fetchFiles = createAsyncThunk<
 >("files/fetchFiles", async ({ params }, { rejectWithValue }) => {
   try {
     const res = await fileApi.getFile(params);
-    console.log(res, "files")
+    // console.log(res, "files")
     return res;
   } catch (err: any) {
     return rejectWithValue(err.message);

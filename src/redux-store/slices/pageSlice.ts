@@ -84,7 +84,7 @@ export const getPageById = createAsyncThunk<PageItem, number>(
   async (id: number, { rejectWithValue }) => {
     try {
       const res = await pageApi.getPageById(id);
-      console.log("res", res)
+      // console.log("res", res)
       return res;
     } catch (err: any) {
       message.error(err?.message || "Failed to fetch page");
@@ -99,7 +99,7 @@ export const getPageByType = createAsyncThunk<{ items: PageItem[], meta: Meta },
   async (param, { rejectWithValue }) => {
     try {
       const res = await pageApi.getPageByType(param);
-      console.log("res", res)
+      // console.log("res", res)
       return res;
     } catch (err: any) {
       message.error(err?.message || "Failed to fetch page");

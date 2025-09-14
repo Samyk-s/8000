@@ -2,7 +2,6 @@
 import Breadcrumbs from "@/components/adminComponents/beadcrumb/bedcrumb";
 import { Card } from "antd";
 import dynamic from "next/dynamic";
-import { useParams } from "next/navigation";
 import React from "react";
 const PackageForm = dynamic(
   () =>
@@ -12,14 +11,6 @@ const PackageForm = dynamic(
 );
 
 const CreatePackage: React.FC = () => {
-  const onFinish = (values: { title: string }) => {
-    console.log("Success:", values);
-  };
-
-  const onFinishFailed = (errorInfo: any) => {
-    console.log("Failed:", errorInfo);
-  };
-
   return (
     <div className="flex flex-col gap-3">
       <Breadcrumbs

@@ -17,7 +17,7 @@ export const fetchTeams = createAsyncThunk<
 >("teams/fetchTeams", async ({ params }, { rejectWithValue }) => {
   try {
     const res = await teamsApi.getTeams(params as Params);
-    console.log(res, "teams")
+    // console.log(res, "teams")
     return res;
   } catch (err: any) {
     return rejectWithValue(err.message);
@@ -30,7 +30,7 @@ export const searchTeam = createAsyncThunk<
 >("teams/searchTeams", async ({ params }, { rejectWithValue }) => {
   try {
     const res = await teamsApi.searchTeam(params as Params);
-    console.log(res, "teams")
+    // console.log(res, "teams")
     return res;
   } catch (err: any) {
     return rejectWithValue(err.message);
@@ -44,7 +44,8 @@ export const createTeam = createAsyncThunk<
 >("teams/createTeams", async ({ values }, { rejectWithValue }) => {
   try {
     const res = await teamsApi.createTeam(values);
-    console.log(res, "teams")
+    // console.log(res, "teams")
+    message.success(res?.message)
     return res;
   } catch (err: any) {
     return rejectWithValue(err.message);

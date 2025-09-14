@@ -59,7 +59,7 @@ class TeamApi {
   }
   //create category
   async createTeamCategory(data: TeamCategoryPayload) {
-    console.log(data, "dsfd")
+    // console.log(data, "dsfd")
     try {
       const res = await api.post(`/teams-categories`, data)
       return res.data
