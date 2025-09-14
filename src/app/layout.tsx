@@ -13,8 +13,8 @@ import { Providers } from "./providers";
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | 8000 Club - Next.js Dashboard Kit",
-    default: "8000 Club - Next.js Dashboard Kit",
+    template: process.env.NEXT_PUBLIC_APP_NAME!,
+    default: process.env.NEXT_PUBLIC_APP_NAME!,
   },
   description:
     "Next.js admin dashboard toolkit with 200+ templates, UI components, and integrations for fast dashboard development.",
