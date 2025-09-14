@@ -312,8 +312,12 @@ const PackageForm: React.FC<PackageFormProps> = ({ currentPackage }) => {
 
         {/* Numeric and Select Fields */}
         <Col xs={24} md={8}>
-          <Form.Item label="Altitude" name="altitude">
-            <Input type="number" min={1} />
+          <Form.Item
+            label="Altitude"
+            name="altitude"
+            rules={[{ required: true, message: "Altitude is required" }]}
+          >
+            <Input type="number" min={0} />
           </Form.Item>
         </Col>
         <Col xs={24} md={8}>
@@ -392,17 +396,29 @@ const PackageForm: React.FC<PackageFormProps> = ({ currentPackage }) => {
           </Form.Item>
         </Col>
         <Col xs={24} lg={12}>
-          <Form.Item label="Includes" name="includes">
+          <Form.Item
+            label="Includes"
+            name="includes"
+            rules={[{ required: true, message: "Includes is required" }]}
+          >
             <TextEditor />
           </Form.Item>
         </Col>
         <Col xs={24} lg={12}>
-          <Form.Item label="Excludes" name="excludes">
+          <Form.Item
+            label="Excludes"
+            name="excludes"
+            rules={[{ required: true, message: "Excludes is required" }]}
+          >
             <TextEditor />
           </Form.Item>
         </Col>
         <Col span={24}>
-          <Form.Item label="Trip Notes" name="tripNotes">
+          <Form.Item
+            label="Trip Notes"
+            name="tripNotes"
+            rules={[{ required: true, message: "Trip note is required" }]}
+          >
             <TextEditor />
           </Form.Item>
         </Col>
