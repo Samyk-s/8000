@@ -61,7 +61,7 @@ class TestmonialApi {
   // search testimonial
   async searchTesimonial(params: Params) {
     try {
-      const res = await api.patch(`/testimonials/search?keyword=${params?.search}&page=${params?.page}&limit=${params?.limit}`)
+      const res = await api.get(`/testimonials/search?keyword=${params?.search}&page=${params?.page}&limit=${params?.limit}`)
       return res.data
     } catch (error) {
       throw error;
