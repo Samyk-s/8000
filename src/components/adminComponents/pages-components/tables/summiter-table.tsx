@@ -17,6 +17,7 @@ import {
   toggleSummiter,
 } from "@/redux-store/slices/summiterSlice";
 import { SummitterItem } from "@/types/summitter";
+import summittterApi from "@/lib/api/summitterApi";
 
 const SummitterTable = () => {
   const [limit, setLimit] = useState(10);
@@ -136,6 +137,23 @@ const SummitterTable = () => {
 
                       <td className="whitespace-nowrap px-6 py-4 text-base font-medium">
                         <div className="flex items-center space-x-2">
+                          <button
+                            className="rounded p-1 text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                            title="Add Certificate"
+                            onClick={async () => {
+                              try {
+                                const res =
+                                  await summittterApi.summitterCertificate(
+                                    item?.id,
+                                  );
+                                message.success(res.message);
+                              } catch (error: any) {
+                                message.error(error.message);
+                              }
+                            }}
+                          >
+                            <PlusIcon />
+                          </button>
                           <Link
                             href={`/admin/summitters/${item?.id}`}
                             title="Edit Summitter"

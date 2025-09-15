@@ -117,6 +117,14 @@ class SummitterApi {
       throw error
     }
   }
+  async summitterCertificate(id: number) {
+    try {
+      const res = await api.post(`/summitter/${id}/certificate`)
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
 }
 
 const summittterApi = new SummitterApi()
