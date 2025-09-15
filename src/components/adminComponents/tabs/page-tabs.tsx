@@ -6,7 +6,7 @@ import React from "react";
 
 const PageTabs = ({
   id,
-  path = "page",
+  path = "pages",
   title = "Page",
 }: {
   id?: string;
