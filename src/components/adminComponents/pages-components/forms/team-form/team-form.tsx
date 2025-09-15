@@ -231,7 +231,7 @@ const TeamForm: React.FC<TeamFormProps> = ({ team }) => {
         <Col xs={24} md={12}>
           <Form.Item
             label="Category"
-            name="page_id"
+            name="category"
             rules={[{ required: true, message: "Category is required" }]}
           >
             <Select placeholder="Select category" allowClear>

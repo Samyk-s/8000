@@ -55,8 +55,6 @@ const TeamCategoryForm: React.FC<TeamCategoryFormProps> = ({
           router.back();
         });
     }
-
-    router.push("/admin/teams/categories"); // redirect after submit
   };
 
   if (loading) return <Loader />;
@@ -94,7 +92,13 @@ const TeamCategoryForm: React.FC<TeamCategoryFormProps> = ({
 
         {/* DESCRIPTION */}
         <Col span={24}>
-          <Form.Item label="Description" name="description">
+          <Form.Item
+            label="Description"
+            name="description"
+            rules={[
+              { required: true, message: "Description name is required" },
+            ]}
+          >
             <TextEditor />
           </Form.Item>
         </Col>
