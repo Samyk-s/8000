@@ -142,8 +142,6 @@ const TeamForm: React.FC<TeamFormProps> = ({ team }) => {
           router.back();
         });
     }
-
-    router.push("/admin/teams");
   };
 
   if (!isClient) return null;
@@ -231,7 +229,7 @@ const TeamForm: React.FC<TeamFormProps> = ({ team }) => {
         <Col xs={24} md={12}>
           <Form.Item
             label="Category"
-            name="category"
+            name="categoryId"
             rules={[{ required: true, message: "Category is required" }]}
           >
             <Select placeholder="Select category" allowClear>
