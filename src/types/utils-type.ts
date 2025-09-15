@@ -1,3 +1,5 @@
+import { FileType } from "./enum/enum";
+
 export interface Meta {
   totalItems: number;
   itemCount: number;
@@ -38,3 +40,7 @@ export interface FetchFilePayload {
   id: number;
   params: FileParams;
 }
+export interface SearchFilePayload {
+  params: FileParams;
+}
+

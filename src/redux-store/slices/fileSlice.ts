@@ -1,6 +1,6 @@
 // store/packagesSlice.ts
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { FetchFilePayload, FileParams, Meta } from "@/types/utils-type";
+import { FetchFilePayload, FileParams, Meta, SearchFilePayload } from "@/types/utils-type";
 import { FileItem, FilePayload } from "@/types/file";
 import fileApi from "@/lib/api/fileApi";
 import { message } from "antd";
@@ -20,19 +20,23 @@ export const fetchFiles = createAsyncThunk<
     return rejectWithValue(err.message);
   }
 });
+export const searchFile = createAsyncThunk<
+  { items: FileItem[]; meta: Meta },
+  SearchFilePayload
+>("files/searchFiles", async ({ params }, { rejectWithValue }) => {
+  try {
+    const res = await fileApi.searchFile(params);
+    console.log(res, "res")
+    return res;
+  } catch (err: any) {
+    return rejectWithValue(err.message);
+  }
+});
 
 interface ToggleFilePayload {
   id: number
 }
-// interface UpdateItineraryPayload {
-//   packageId: number;
-//   itineraryId: number;
-//   data: Partial<ItineraryItem>;
-// }
-// interface DeleteItineraryPayload {
-//   packageId: number;
-//   itineraryId: number;
-// }
+
 
 // Create
 export const createFile = createAsyncThunk<
@@ -97,18 +101,6 @@ export const deleteFile = createAsyncThunk<
   }
 );
 
-//search
-// export const searchItineraries = createAsyncThunk<
-//   { items: ItineraryItem[]; meta: Meta },
-//   FetchPackagePayload
-// >("itineraries/searchItineraries", async ({ id, params }, { rejectWithValue }) => {
-//   try {
-//     const res = await itineraryApi.searchItinerary(id, params);
-//     return res;
-//   } catch (err: any) {
-//     return rejectWithValue(err.message);
-//   }
-// });
 // ================= State =================
 interface FileState {
   items: FileItem[];
@@ -148,6 +140,21 @@ const filesSlice = createSlice({
         state.loading = false;
       })
       .addCase(fetchFiles.rejected, (state, action: PayloadAction<any>) => {
+        state.error = action.payload || "Failed to fetch itineraries";
+        state.loading = false;
+      });
+    // search
+    builder
+      .addCase(searchFile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(searchFile.fulfilled, (state, action) => {
+        state.items = action.payload.items;
+        state.meta = action.payload.meta;
+        state.loading = false;
+      })
+      .addCase(searchFile.rejected, (state, action: PayloadAction<any>) => {
         state.error = action.payload || "Failed to fetch itineraries";
         state.loading = false;
       });

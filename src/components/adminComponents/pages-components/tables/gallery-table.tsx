@@ -9,14 +9,13 @@ import ToggleButton from "../../toggle-button/toggle-button";
 import { PlusIcon, TrashIcon } from "@/assets/icons";
 import Loader from "../loader/loader";
 import { Button, message, Modal, Popconfirm } from "antd";
-import { ItineraryItem } from "@/types/itinerary";
 import PackageTabs from "../../tabs/package-tabs";
 import { useParams } from "next/navigation";
-import { searchDeparture } from "@/redux-store/slices/departureSlice";
 import dynamic from "next/dynamic";
 import {
   deleteFile,
   fetchFiles,
+  searchFile,
   toggleFileStatus,
 } from "@/redux-store/slices/fileSlice";
 import { FileType, PageTemplate } from "@/types/enum/enum";
@@ -72,9 +71,15 @@ const GalleryTable: React.FC = () => {
     // Set new timeout
     debounceRef.current = setTimeout(() => {
       dispatch(
-        searchDeparture({
-          id: Number(id),
-          params: { limit, page, search: value },
+        searchFile({
+          params: {
+            page: page,
+            limit: limit,
+            related_id: Number(id),
+            type: FileType.GALLERY,
+            file_of: PageTemplate.PACKAGE,
+            search: search,
+          },
         }),
       );
     }, 300); // 300ms debounce

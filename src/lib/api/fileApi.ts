@@ -1,6 +1,6 @@
 import { FileParams } from "@/types/utils-type";
 import { api } from "../axios-config/api";
-import { FileItem, FilePayload } from "@/types/file";
+import { FilePayload } from "@/types/file";
 
 class FileApi {
   async getFile(params: FileParams) {
@@ -43,6 +43,14 @@ class FileApi {
   async deleteFile(id: number) {
     try {
       const res = await api.delete(`/files/${id}`);
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
+  async searchFile(params: FileParams) {
+    try {
+      const res = await api.get(`/files/search?keword=${params?.search}&file_of=${params?.file_of}&related_id=${params?.related_id}&type=${params?.type}&page=${params?.page}&limit=${params?.limit}`)
       return res.data
     } catch (error) {
       throw error
