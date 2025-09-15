@@ -7,7 +7,7 @@ import { TrashIcon } from "@/assets/icons";
 import Pagination from "../../pagination/pagination";
 import Entry from "../../entry/entry";
 import Loader from "../loader/loader";
-import { message, Popconfirm } from "antd";
+import { Button, message, Popconfirm } from "antd";
 import {
   deleteNewsLetter,
   fetchNewsLetter,
@@ -15,6 +15,9 @@ import {
 } from "@/redux-store/slices/newsLetterSlice";
 import { NewsLetterItem } from "@/types/news-letter";
 import Search from "../../search/search";
+import { FileIcon } from "lucide-react";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 const SubscriptionTable: React.FC = () => {
   const { items, loading, error, meta } = useSelector(
@@ -58,6 +61,36 @@ const SubscriptionTable: React.FC = () => {
     }, 300); // 300ms debounce
   };
 
+  const handleExport = () => {
+    if (!items || items.length === 0) {
+      message.warning("No subscriber data to export");
+      return;
+    }
+
+    // Map data to export
+    const exportData = items.map((item, index) => ({
+      "S.N.": index + 1,
+      ID: item?.id,
+      Email: item.email,
+      "Received On": new Date(item?.createdAt).toLocaleString(),
+    }));
+
+    // Create worksheet
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+
+    // Create workbook and append worksheet
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Subscribers");
+
+    // Write workbook and save as file
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+    const data = new Blob([excelBuffer], { type: "application/octet-stream" });
+    saveAs(data, "subscribers.xlsx");
+  };
+
   if (loading) return <Loader />;
   if (error) message.error(error);
 
@@ -67,6 +100,16 @@ const SubscriptionTable: React.FC = () => {
         <div className="rounded-lg bg-white shadow-sm">
           {/* Header */}
           <div className="flex flex-col gap-3 border-b border-gray-200 p-6">
+            <div className="flex justify-end">
+              <Button
+                type="primary"
+                className="w-fit bg-black text-white hover:!bg-black hover:!text-white"
+                onClick={handleExport}
+              >
+                <FileIcon size={15} />
+                <span> Export</span>
+              </Button>
+            </div>
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <Entry
                 value={limit}
