@@ -54,11 +54,7 @@ const AddOnForm = ({
             addonId: addon.id,
             data: payload,
           }),
-        )
-          .unwrap()
-          .then(() => {
-            router.back();
-          });
+        );
       } else {
         // Create new addon
         dispatch(
@@ -66,11 +62,7 @@ const AddOnForm = ({
             packageId: Number(id),
             data: payload,
           }),
-        )
-          .unwrap()
-          .then(() => {
-            router.back();
-          });
+        );
       }
 
       form.resetFields();
