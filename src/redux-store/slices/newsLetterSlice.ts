@@ -22,6 +22,18 @@ export const fetchNewsLetter = createAsyncThunk<
     return rejectWithValue(err.message);
   }
 });
+export const searchNewsLetter = createAsyncThunk<
+  { items: NewsLetterItem[]; meta: Meta },
+  { params: Params }
+>("newsletter/searchNewsLetter", async ({ params }, { rejectWithValue }) => {
+  try {
+    const res = await newsLetterApi.searchNewsLetter(params);
+    // console.log("res", "res")
+    return res;
+  } catch (err: any) {
+    return rejectWithValue(err.message);
+  }
+});
 
 
 // Create
@@ -77,18 +89,7 @@ export const getNewsLetter = createAsyncThunk<
   }
 );
 
-//search
-// export const searchItineraries = createAsyncThunk<
-//   { items: ItineraryItem[]; meta: Meta },
-//   FetchPackagePayload
-// >("itineraries/searchItineraries", async ({ id, params }, { rejectWithValue }) => {
-//   try {
-//     const res = await itineraryApi.searchItinerary(id, params);
-//     return res;
-//   } catch (err: any) {
-//     return rejectWithValue(err.message);
-//   }
-// });
+
 // ================= State =================
 interface NewsLetterState {
   items: NewsLetterItem[];
@@ -130,6 +131,21 @@ const newsLetterSlice = createSlice({
         state.loading = false;
       })
       .addCase(fetchNewsLetter.rejected, (state, action: PayloadAction<any>) => {
+        state.error = action.payload || "Failed to fetch itineraries";
+        state.loading = false;
+      });
+    // search
+    builder
+      .addCase(searchNewsLetter.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(searchNewsLetter.fulfilled, (state, action) => {
+        state.items = action.payload.items;
+        state.meta = action.payload.meta;
+        state.loading = false;
+      })
+      .addCase(searchNewsLetter.rejected, (state, action: PayloadAction<any>) => {
         state.error = action.payload || "Failed to fetch itineraries";
         state.loading = false;
       });

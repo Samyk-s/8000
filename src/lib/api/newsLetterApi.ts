@@ -10,6 +10,14 @@ class NewsLetterApi {
       throw error
     }
   }
+  async searchNewsLetter(params: Params) {
+    try {
+      const res = await api.get(`/subscriber/search?keyword=${params?.search}&page=${params?.page}&limit=${params.limit}`)
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
   async deleteNewsLetter(id: number) {
     try {
       const res = await api.delete(`/subscriber/${id}`)

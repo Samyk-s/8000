@@ -1,18 +1,20 @@
 "use client";
 
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux-store/store/store";
 import { TrashIcon } from "@/assets/icons";
 import Pagination from "../../pagination/pagination";
 import Entry from "../../entry/entry";
 import Loader from "../loader/loader";
-import { Button, message, Popconfirm } from "antd";
+import { message, Popconfirm } from "antd";
 import {
   deleteNewsLetter,
   fetchNewsLetter,
+  searchNewsLetter,
 } from "@/redux-store/slices/newsLetterSlice";
 import { NewsLetterItem } from "@/types/news-letter";
+import Search from "../../search/search";
 
 const SubscriptionTable: React.FC = () => {
   const { items, loading, error, meta } = useSelector(
@@ -22,6 +24,8 @@ const SubscriptionTable: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState<number>(10);
+  const [search, setSearch] = useState("");
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
   // Fetch news letter when page, limit
   useEffect(() => {
@@ -35,7 +39,24 @@ const SubscriptionTable: React.FC = () => {
     [dispatch],
   );
 
-  // Close modal handler
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearch(value);
+
+    // Clear previous timeout
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+
+    // Set new timeout
+    debounceRef.current = setTimeout(async () => {
+      await dispatch(
+        searchNewsLetter({
+          params: { limit, page, search: value },
+        }),
+      );
+    }, 300); // 300ms debounce
+  };
 
   if (loading) return <Loader />;
   if (error) message.error(error);
@@ -51,6 +72,11 @@ const SubscriptionTable: React.FC = () => {
                 value={limit}
                 onChange={(val) => setLimit(Number(val))}
                 total={meta?.totalItems}
+              />
+              <Search
+                placeholder="Search pages..."
+                search={search}
+                onChange={handleSearch}
               />
             </div>
           </div>
@@ -111,7 +137,7 @@ const SubscriptionTable: React.FC = () => {
                       colSpan={6}
                       className="px-6 py-8 text-center text-gray-500"
                     >
-                      No inquiries found.
+                      No subscriber found.
                     </td>
                   </tr>
                 )}
