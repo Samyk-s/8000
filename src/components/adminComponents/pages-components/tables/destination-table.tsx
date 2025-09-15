@@ -57,7 +57,7 @@ const DestinationTable: React.FC = () => {
     debounceRef.current = setTimeout(async () => {
       await dispatch(
         searchPages({
-          params: { limit, page, search: value },
+          params: { limit, page, search: value, type: PageType.DESTINATION },
         }),
       );
     }, 300); // 300ms debounce

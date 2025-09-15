@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { PageItem, PagePayload } from "@/types/page";
-import { Meta, Params } from "@/types/utils-type";
+import { Meta, Params, SearchPagePayload } from "@/types/utils-type";
 import pageApi from "@/lib/api/pageApi";
 import { message } from "antd";
 import { PageTemplate } from "@/types/enum/enum";
@@ -20,8 +20,9 @@ export const fetchPages = createAsyncThunk<{ items: PageItem[]; meta: Meta }, Pa
   }
 );
 
+
 // Search Pages
-export const searchPages = createAsyncThunk<{ items: PageItem[]; meta: Meta }, { params: Params }>(
+export const searchPages = createAsyncThunk<{ items: PageItem[]; meta: Meta }, { params: SearchPagePayload }>(
   "pages/searchPages",
   async ({ params }, { rejectWithValue }) => {
     try {

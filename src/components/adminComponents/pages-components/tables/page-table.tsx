@@ -21,6 +21,7 @@ import {
 import { PageItem } from "@/types/page";
 import Loader from "../loader/loader";
 import { message, Popconfirm } from "antd";
+import { PageType } from "@/types/enum/enum";
 
 const PageTable: React.FC = () => {
   const { items, loading, error, meta } = useSelector(
@@ -50,7 +51,7 @@ const PageTable: React.FC = () => {
     debounceRef.current = setTimeout(async () => {
       await dispatch(
         searchPages({
-          params: { limit, page, search: value },
+          params: { limit, page, search: value, type: PageType.PAGE },
         }),
       );
     }, 300); // 300ms debounce

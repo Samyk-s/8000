@@ -1,4 +1,4 @@
-import { Params } from "@/types/utils-type";
+import { Params, SearchPagePayload } from "@/types/utils-type";
 import { api } from "../axios-config/api";
 import { PageTemplate } from "@/types/enum/enum";
 import { PagePayload } from "@/types/page";
@@ -41,11 +41,11 @@ class PageApi {
       throw error
     }
   }
-  async searchPages(params: Params) {
+  async searchPages(params: SearchPagePayload) {
 
     try {
       const res = await api?.get(
-        `/pages/search?keyword=${params?.search || ''}&page=${params?.page || 1}&limit=${params?.limit || 10}`
+        `/pages/search?keyword=${params?.search || ''}&page_type=${params?.type}&page=${params?.page || 1}&limit=${params?.limit || 10}`
       );
 
       return res.data

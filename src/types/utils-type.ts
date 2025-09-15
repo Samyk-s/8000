@@ -1,4 +1,4 @@
-import { FileType } from "./enum/enum";
+import { FileType, PageType } from "./enum/enum";
 
 export interface Meta {
   totalItems: number;
@@ -42,5 +42,12 @@ export interface FetchFilePayload {
 }
 export interface SearchFilePayload {
   params: FileParams;
+}
+
+export interface SearchPagePayload {
+  page?: number;
+  limit?: number;
+  search?: string,
+  type: PageType
 }
 
