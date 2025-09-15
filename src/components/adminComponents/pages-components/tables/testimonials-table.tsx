@@ -13,10 +13,12 @@ import Link from "next/link";
 import {
   deleteTestimonial,
   getTestimonials,
+  searchTestimonials,
   toggleTestimonialStatus,
 } from "@/redux-store/slices/testimonialSlice";
 import { TestimonialItem } from "@/types/testimonials";
 import Image from "next/image";
+import Search from "../../search/search";
 
 const TestimonialsTable: React.FC = () => {
   const { items, loading, error, meta } = useSelector(
@@ -27,7 +29,6 @@ const TestimonialsTable: React.FC = () => {
   const [limit, setLimit] = useState<number>(10);
   const [search, setSearch] = useState("");
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
-  const [reviewId, setReviewId] = useState<number>(0);
   useEffect(() => {
     dispatch(
       getTestimonials({
@@ -36,6 +37,25 @@ const TestimonialsTable: React.FC = () => {
       }),
     );
   }, [dispatch, limit, page]);
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearch(value);
+
+    // Clear previous timeout
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+
+    // Set new timeout
+    debounceRef.current = setTimeout(async () => {
+      await dispatch(
+        searchTestimonials({
+          params: { limit, page, search: value },
+        }),
+      );
+    }, 300); // 300ms debounce
+  };
 
   if (loading) return <Loader />;
   if (error) message.error(error);
@@ -60,6 +80,11 @@ const TestimonialsTable: React.FC = () => {
                 onChange={(value) => setLimit(Number(value))}
                 value={limit}
                 total={meta?.totalItems}
+              />
+              <Search
+                placeholder="Search pages..."
+                search={search}
+                onChange={handleSearch}
               />
             </div>
           </div>

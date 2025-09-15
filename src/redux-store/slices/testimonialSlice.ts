@@ -31,6 +31,17 @@ export const getTestimonials = createAsyncThunk<
     return rejectWithValue(err.message);
   }
 });
+export const searchTestimonials = createAsyncThunk<
+  { items: TestimonialItem[]; meta: Meta },
+  { params: Params }
+>("testimonials/searchTestimonials", async ({ params }, { rejectWithValue }) => {
+  try {
+    const res = await testimonialApi.searchTesimonial(params);
+    return res;
+  } catch (err: any) {
+    return rejectWithValue(err.message);
+  }
+});
 
 // Delete testimonial
 export const deleteTestimonial = createAsyncThunk<
@@ -157,6 +168,24 @@ const testimonialSlice = createSlice({
         },
       )
       .addCase(getTestimonials.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
+    // ===== search TESTIMONIALS =====
+    builder
+      .addCase(searchTestimonials.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        searchTestimonials.fulfilled,
+        (state, action: PayloadAction<{ items: TestimonialItem[]; meta: Meta }>) => {
+          state.loading = false;
+          state.items = action.payload.items;
+          state.meta = action.payload.meta;
+        },
+      )
+      .addCase(searchTestimonials.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });
