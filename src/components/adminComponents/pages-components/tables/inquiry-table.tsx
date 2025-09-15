@@ -6,6 +6,7 @@ import { AppDispatch, RootState } from "@/redux-store/store/store";
 import {
   fetchInquiries,
   deleteInquiry,
+  searchInquiries,
 } from "@/redux-store/slices/inquirySlice";
 import { InquiryItem } from "@/types/inquiry";
 import InquiryView from "../../view/inquiry-view";
@@ -17,6 +18,7 @@ import Loader from "../loader/loader";
 import { Button, message, Modal, Popconfirm } from "antd";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ViewIcon } from "@/components/icons/icnos";
+import Search from "../../search/search";
 
 const InquiryTable: React.FC = () => {
   const { items, loading, error, meta } = useSelector(
@@ -51,12 +53,18 @@ const InquiryTable: React.FC = () => {
   // Search handler with debounce
   const handleSearch = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
+      const type = searchParams.get("type") || "general";
       const value = e.target.value;
+
       setSearch(value);
 
       if (debounceRef.current) clearTimeout(debounceRef.current);
       debounceRef.current = setTimeout(() => {
-        dispatch(fetchInquiries({ params: { page, limit, search: value } }));
+        dispatch(
+          searchInquiries({
+            params: { page, limit, search: value, inquiry_type: type },
+          }),
+        );
       }, 300);
     },
     [dispatch, page, limit],
@@ -101,11 +109,11 @@ const InquiryTable: React.FC = () => {
                 onChange={(val) => setLimit(Number(val))}
                 total={meta?.totalItems}
               />
-              {/* <Search
+              <Search
                 placeholder="Search inquiries..."
                 search={search}
                 onChange={handleSearch}
-              /> */}
+              />
             </div>
           </div>
 

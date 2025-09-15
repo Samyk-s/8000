@@ -1,6 +1,6 @@
 // store/packagesSlice.ts
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { Meta, Params } from "@/types/utils-type";
+import { Meta, Params, SearchInquiriesParams } from "@/types/utils-type";
 import { InquiryItem } from "@/types/inquiry";
 import inquiryApi from "@/lib/api/inquiryApi";
 import { message } from "antd";
@@ -14,6 +14,19 @@ export const fetchInquiries = createAsyncThunk<
 >("inquiries/fetchInquiries", async ({ params }, { rejectWithValue }) => {
   try {
     const res = await inquiryApi.getInquiries(params);
+    // console.log("res", "res")
+    return res;
+  } catch (err: any) {
+    return rejectWithValue(err.message);
+  }
+});
+// search
+export const searchInquiries = createAsyncThunk<
+  { items: InquiryItem[]; meta: Meta },
+  { params: SearchInquiriesParams }
+>("inquiries/searchInquiries", async ({ params }, { rejectWithValue }) => {
+  try {
+    const res = await inquiryApi.searchInquiries(params);
     // console.log("res", "res")
     return res;
   } catch (err: any) {
@@ -79,18 +92,7 @@ export const getInquiry = createAsyncThunk<
   }
 );
 
-//search
-// export const searchItineraries = createAsyncThunk<
-//   { items: ItineraryItem[]; meta: Meta },
-//   FetchPackagePayload
-// >("itineraries/searchItineraries", async ({ id, params }, { rejectWithValue }) => {
-//   try {
-//     const res = await itineraryApi.searchItinerary(id, params);
-//     return res;
-//   } catch (err: any) {
-//     return rejectWithValue(err.message);
-//   }
-// });
+
 // ================= State =================
 interface InquiryState {
   items: InquiryItem[];
@@ -132,6 +134,21 @@ const inquiriesSlice = createSlice({
         state.loading = false;
       })
       .addCase(fetchInquiries.rejected, (state, action: PayloadAction<any>) => {
+        state.error = action.payload || "Failed to fetch itineraries";
+        state.loading = false;
+      });
+    // search
+    builder
+      .addCase(searchInquiries.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(searchInquiries.fulfilled, (state, action) => {
+        state.items = action.payload.items;
+        state.meta = action.payload.meta;
+        state.loading = false;
+      })
+      .addCase(searchInquiries.rejected, (state, action: PayloadAction<any>) => {
         state.error = action.payload || "Failed to fetch itineraries";
         state.loading = false;
       });
