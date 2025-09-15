@@ -6,7 +6,7 @@ class PackageApi {
 
   async getPackages(param?: Params) {
     try {
-      const response = await api.get(`/packages?page=${param?.page}limit=${param?.limit}`);
+      const response = await api.get(`/packages?page=${param?.page}&limit=${param?.limit}`);
       return response.data
     } catch (error) {
       // console.error(error)
