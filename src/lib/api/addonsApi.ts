@@ -6,7 +6,7 @@ class AddOnsApi {
   // get all addons
   async getAddons(id: number, param: Params) {
     try {
-      const res = await api.get(`/packages/${id}/addon`);
+      const res = await api.get(`/packages/${id}/addon?page=${param?.page}&limit=${param?.limit}`);
       return res.data
     } catch (error) {
       throw error
