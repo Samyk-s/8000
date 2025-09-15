@@ -8,7 +8,7 @@ import Pagination from "../../pagination/pagination";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux-store/store/store";
 import ToggleButton from "../../toggle-button/toggle-button";
-import { PlusIcon, TrashIcon } from "@/assets/icons";
+import { EmailIcon, PlusIcon, TrashIcon } from "@/assets/icons";
 import Loader from "../loader/loader";
 import { message, Popconfirm } from "antd";
 import {
@@ -162,7 +162,7 @@ const SummitterTable = () => {
                         <div className="flex items-center space-x-2">
                           <button
                             className="rounded p-1 text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-                            title="Add Certificate"
+                            title="Send Certificate"
                             onClick={async () => {
                               try {
                                 const res =
@@ -175,7 +175,7 @@ const SummitterTable = () => {
                               }
                             }}
                           >
-                            <PlusIcon />
+                            <EmailIcon />
                           </button>
                           <Link
                             href={`/admin/summitters/${item?.id}`}
