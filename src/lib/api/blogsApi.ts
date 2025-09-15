@@ -5,7 +5,7 @@ class BlogsApi {
 
   async getBlogsCategory(param: Params) {
     try {
-      const response = await api.get(`/pages?page=${param.page}limit=${param.limit}`);
+      const response = await api.get(`/pages?page=${param.page}&limit=${param.limit}`);
       return response.data
     } catch (error) {
       // console.error(error)
