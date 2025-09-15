@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { EditIcon } from "@/components/icons/icnos";
 import Image from "next/image";
 import Link from "next/link";
@@ -14,10 +14,12 @@ import { message, Popconfirm } from "antd";
 import {
   deleteSummiter,
   fetchSummitters,
+  searchSummitters,
   toggleSummiter,
 } from "@/redux-store/slices/summiterSlice";
 import { SummitterItem } from "@/types/summitter";
 import summittterApi from "@/lib/api/summitterApi";
+import Search from "../../search/search";
 
 const SummitterTable = () => {
   const [limit, setLimit] = useState(10);
@@ -26,12 +28,28 @@ const SummitterTable = () => {
   );
   const [page, setPage] = useState(meta?.currentPage);
   const dispatch = useDispatch<AppDispatch>();
+  const [search, setSearch] = useState("");
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
   // call api for getting summiters
   useEffect(() => {
     dispatch(fetchSummitters({ page, limit }));
   }, [dispatch, limit, page]);
 
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearch(value);
+
+    // Clear previous timeout
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+
+    // Set new timeout
+    debounceRef.current = setTimeout(async () => {
+      await dispatch(searchSummitters({ limit, page, search: value }));
+    }, 300); // 300ms debounce
+  };
   if (loading) {
     return <Loader />;
   }
@@ -58,6 +76,11 @@ const SummitterTable = () => {
               onChange={(value) => setLimit(Number(value))}
               value={limit}
               total={meta?.totalItems}
+            />
+            <Search
+              placeholder="Search pages..."
+              search={search}
+              onChange={handleSearch}
             />
           </div>
 

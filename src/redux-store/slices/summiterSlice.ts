@@ -44,6 +44,22 @@ export const fetchSummitters = createAsyncThunk<
     }
   }
 );
+// search summiter list
+export const searchSummitters = createAsyncThunk<
+  { items: SummitterItem[]; meta: Meta },
+  Params,
+  { rejectValue: string }
+>(
+  "summiter/searchSummiter",
+  async (params, { rejectWithValue }) => {
+    try {
+      const res = await summitterApi.searchSummiters(params as Params);
+      return res;
+    } catch (err: any) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
 
 // Toggle summiter status
 export const toggleSummiter = createAsyncThunk<
@@ -172,6 +188,24 @@ const summiterSlice = createSlice({
         }
       )
       .addCase(fetchSummitters.rejected, (state, action) => {
+        state.error = action.payload || "Failed to fetch summitter list";
+        state.loading = false;
+      });
+    // SEARCh summiter list
+    builder
+      .addCase(searchSummitters.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        searchSummitters.fulfilled,
+        (state, action: PayloadAction<{ items: SummitterItem[]; meta: Meta }>) => {
+          state.items = action.payload.items;
+          state.meta = action.payload.meta;
+          state.loading = false;
+        }
+      )
+      .addCase(searchSummitters.rejected, (state, action) => {
         state.error = action.payload || "Failed to fetch summitter list";
         state.loading = false;
       });
