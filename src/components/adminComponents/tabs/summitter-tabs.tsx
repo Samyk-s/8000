@@ -4,12 +4,17 @@ import { useParams, usePathname } from "next/navigation";
 import React from "react";
 
 const SummitterTabs = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams<{ id?: string }>();
   const pathname = usePathname();
+
+  // ✅ Don't show tabs on /summitters/create
+  if (pathname.includes("/summitters/create")) {
+    return null;
+  }
 
   // Define all tabs with label and path suffix
   const tabs = [
-    { label: "Summiter", path: "" },
+    { label: "Summitter", path: "" },
     { label: "Stories", path: "stories" },
   ];
 
