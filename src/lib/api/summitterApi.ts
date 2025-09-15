@@ -90,6 +90,15 @@ class SummitterApi {
       throw error
     }
   }
+  //search summiter story
+  async searchSummitterStories(params: Params) {
+    try {
+      const res = await api.get(`/stories/search?keyword=${params?.search}&page=${params?.page}&limit=${params?.limit}`)
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
   //update summiter story
   async updateSummitterStory(id: number, data: StoryPayload) {
     try {

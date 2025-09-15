@@ -16,9 +16,11 @@ import SummitterTabs from "../../tabs/summitter-tabs";
 import {
   deleteSummitterStory,
   fetchSummitterStories,
+  searchchSummitterStories,
   toggleSummitterStory,
 } from "@/redux-store/slices/storySlice";
 import { useParams } from "next/navigation";
+import Search from "../../search/search";
 
 const SummitterStoryTable = () => {
   const [limit, setLimit] = useState(10);
@@ -28,10 +30,28 @@ const SummitterStoryTable = () => {
   const [page, setPage] = useState(meta?.currentPage);
   const dispatch = useDispatch<AppDispatch>();
   const { id } = useParams();
+  const [search, setSearch] = useState("");
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
+
   // call api for getting summiters
   useEffect(() => {
     dispatch(fetchSummitterStories({ page, limit }));
   }, [dispatch, page, limit]);
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearch(value);
+
+    // Clear previous timeout
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+
+    // Set new timeout
+    debounceRef.current = setTimeout(async () => {
+      await dispatch(searchchSummitterStories({ limit, page, search: value }));
+    }, 300); // 300ms debounce
+  };
 
   if (loading) {
     return <Loader />;
@@ -61,6 +81,11 @@ const SummitterStoryTable = () => {
               onChange={(value) => setLimit(Number(value))}
               value={limit}
               total={meta?.totalItems}
+            />
+            <Search
+              placeholder="Search pages..."
+              search={search}
+              onChange={handleSearch}
             />
           </div>
 

@@ -78,6 +78,22 @@ export const fetchSummitterStories = createAsyncThunk<
     return rejectWithValue(err.message || "Failed to fetch stories");
   }
 });
+// search Stories
+export const searchchSummitterStories = createAsyncThunk<
+  { items: StoryItem[]; meta: Meta },
+  Params | undefined,
+  { rejectValue: string }
+>("summiterStory/searchAll", async (params, { rejectWithValue }) => {
+  try {
+    const res = await summitterApi.searchSummitterStories(params as Params);
+    return {
+      items: res.items as StoryItem[],
+      meta: res.meta as Meta,
+    };
+  } catch (err: any) {
+    return rejectWithValue(err.message || "Failed to fetch stories");
+  }
+});
 
 // Update Story
 export const updateSummitterStory = createAsyncThunk<
@@ -180,6 +196,24 @@ const summiterStorySlice = createSlice({
         }
       )
       .addCase(fetchSummitterStories.rejected, (state, action) => {
+        state.error = action.payload || "Failed to fetch stories";
+        state.loading = false;
+      });
+    // SEARCH ALL
+    builder
+      .addCase(searchchSummitterStories.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        searchchSummitterStories.fulfilled,
+        (state, action: PayloadAction<{ items: StoryItem[]; meta: Meta }>) => {
+          state.items = action.payload.items;
+          state.meta = action.payload.meta;
+          state.loading = false;
+        }
+      )
+      .addCase(searchchSummitterStories.rejected, (state, action) => {
         state.error = action.payload || "Failed to fetch stories";
         state.loading = false;
       });
