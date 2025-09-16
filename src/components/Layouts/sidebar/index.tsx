@@ -63,12 +63,12 @@ export function Sidebar() {
         aria-hidden={!isOpen}
         inert={!isOpen}
       >
-        <div className="flex h-full flex-col py-10 pl-[25px] pr-[7px]">
+        <div className="flex h-full flex-col py-4 pl-[25px] pr-[7px]">
           <div className="relative pr-4.5">
             <Link
               href={"/admin"}
               onClick={() => isMobile && toggleSidebar()}
-              className="px-0 py-2.5 min-[850px]:py-0"
+              className="px-0 min-[850px]:py-0"
             >
               <Logo />
             </Link>

@@ -16,6 +16,7 @@ import summiterReducer from "../slices/summiterSlice"
 import summiterStoryReducer from "../slices/storySlice"
 import addOnsReducer from "../slices/addonSlice"
 import blogReducer from "../slices/blogSlice"
+import settingReducer from "../slices/siteSlice"
 
 const rootReducer = combineReducers({
   packges: packageReducer,
@@ -33,7 +34,8 @@ const rootReducer = combineReducers({
   summiter: summiterReducer,
   stories: summiterStoryReducer,
   addons: addOnsReducer,
-  blogs: blogReducer
+  blogs: blogReducer,
+  setting: settingReducer
 });
 
 export const store = configureStore({
