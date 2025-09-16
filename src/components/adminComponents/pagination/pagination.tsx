@@ -20,7 +20,7 @@ const Pagination: FC<PaginationProps> = ({
 }) => {
   return (
     <div
-      className={`flex flex-col items-center justify-between px-6 py-4 sm:flex-row ${className}`}
+      className={`flex flex-col items-center justify-between px-6 py-4 sm:flex-row ${className} border-t`}
     >
       {/* Info text */}
       <div className="mb-2 text-sm text-gray-700 dark:text-white sm:mb-0">
