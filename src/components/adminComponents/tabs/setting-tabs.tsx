@@ -1,28 +1,26 @@
 "use client";
 import Link from "next/link";
-import { useParams, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import React from "react";
 
 const SettingTabs = () => {
-  const { id } = useParams<{ id?: string }>();
   const pathname = usePathname();
-
-  // ✅ Don't show tabs on /summitters/create
-  if (pathname.includes("/summitters/create")) {
-    return null;
-  }
 
   // Define all tabs with label and path suffix
   const tabs = [
     { label: "Setting", path: "" },
-    { label: "SEO", path: "stories" },
+    { label: "SEO", path: "seo" },
   ];
 
   return (
-    <div className="flex flex-wrap justify-center md:justify-start">
+    <div className="flex flex-wrap">
       {tabs.map((tab) => {
-        const tabPath = `/admin/site-setting/${id}${tab.path ? `/${tab.path}` : ""}`;
-        const isActive = pathname === tabPath;
+        const tabPath = `/admin/site-setting${tab.path ? `/${tab.path}` : ""}`;
+
+        // Normalize by removing trailing slash
+        const normalize = (p: string) => p.replace(/\/$/, "");
+        const isActive = normalize(pathname) === normalize(tabPath);
+
         return (
           <Link
             key={tab.label}
