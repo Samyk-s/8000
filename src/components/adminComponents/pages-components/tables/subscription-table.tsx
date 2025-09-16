@@ -88,7 +88,7 @@ const SubscriptionTable: React.FC = () => {
       type: "array",
     });
     const data = new Blob([excelBuffer], { type: "application/octet-stream" });
-    saveAs(data, "subscribers.xlsx");
+    saveAs(data, `subscribers${Date.now()}.xlsx`);
   };
 
   if (loading) return <Loader />;
