@@ -45,17 +45,17 @@ const PlanMyTripTable: React.FC = () => {
   const [search, setSearch] = useState("");
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
   const [reviewId, setReviewId] = useState<number>(0);
-  useEffect(() => {
-    dispatch(
-      fetchReviews({
-        id: Number(id),
-        params: {
-          limit: limit,
-          page: page,
-        },
-      }),
-    );
-  }, [dispatch, id, limit, page]);
+  // useEffect(() => {
+  //   dispatch(
+  //     fetchReviews({
+  //       id: Number(id),
+  //       params: {
+  //         limit: limit,
+  //         page: page,
+  //       },
+  //     }),
+  //   );
+  // }, [dispatch, id, limit, page]);
 
   // search itinerary
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -158,14 +158,24 @@ const PlanMyTripTable: React.FC = () => {
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
                     S.N.
                   </th>
-                  {/* <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
-                    Image
-                  </th> */}
+
+                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                    Received on
+                  </th>
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
                     Name
                   </th>
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
-                    Country
+                    Email
+                  </th>
+                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                    Phone
+                  </th>
+                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                    Package
+                  </th>
+                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                    Seen
                   </th>
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
                     Actions
