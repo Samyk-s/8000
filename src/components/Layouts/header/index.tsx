@@ -4,9 +4,12 @@ import Link from "next/link";
 import { useSidebarContext } from "../sidebar/sidebar-context";
 import { UserInfo } from "./user-info";
 import { MenuIcon } from "./icons";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux-store/store/store";
 
 export function Header() {
   const { toggleSidebar, isMobile } = useSidebarContext();
+  const { item } = useSelector((state: RootState) => state.setting);
 
   return (
     <header className="sticky top-0 z-10 flex items-center justify-between border-b border-stroke bg-white px-4 py-5 shadow-1 dark:border-stroke-dark dark:bg-gray-dark md:px-5 2xl:px-10">
@@ -34,7 +37,7 @@ export function Header() {
         <h1 className="mb-0.5 text-heading-5 font-bold text-dark dark:text-white">
           Dashboard
         </h1>
-        <p className="font-medium">8000 Club Admin Dashboard</p>
+        <p className="font-medium capitalize">${item?.title} Admin Dashboard</p>
       </div>
 
       <div className="flex flex-1 items-center justify-end gap-2 min-[375px]:gap-4">
