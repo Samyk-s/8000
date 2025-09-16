@@ -170,7 +170,7 @@ const SettingForm: React.FC<SummiterFormProps> = ({ summitter }) => {
               name="name"
               rules={[{ required: true, message: "Name is required" }]}
             >
-              <Input />
+              <Input placeholder="Enter site title" />
             </Form.Item>
           </Col>
           {/* email */}
@@ -273,7 +273,7 @@ const SettingForm: React.FC<SummiterFormProps> = ({ summitter }) => {
               name="nationality"
               rules={[{ required: true, message: "Adrress is required" }]}
             >
-              <Input />
+              <Input placeholder="Enter address" />
             </Form.Item>
           </Col>
           {/* Trip advisiore logo */}
