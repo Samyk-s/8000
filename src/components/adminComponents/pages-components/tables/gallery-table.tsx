@@ -1,89 +1,44 @@
 "use client";
-import React, { Suspense, useEffect, useRef, useState } from "react";
+import React, { Suspense } from "react";
+import { useParams } from "next/navigation";
+import { useGallery } from "@/hooks/gallery/useGallery";
+import Loader from "../loader/loader";
 import Entry from "../../entry/entry";
 import Search from "../../search/search";
 import Pagination from "../../pagination/pagination";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/redux-store/store/store";
 import ToggleButton from "../../toggle-button/toggle-button";
 import { PlusIcon, TrashIcon } from "@/assets/icons";
-import Loader from "../loader/loader";
 import { Button, message, Modal, Popconfirm } from "antd";
 import PackageTabs from "../../tabs/package-tabs";
-import { useParams } from "next/navigation";
 import dynamic from "next/dynamic";
-import {
-  deleteFile,
-  fetchFiles,
-  searchFile,
-  toggleFileStatus,
-} from "@/redux-store/slices/fileSlice";
-import { FileType, PageTemplate } from "@/types/enum/enum";
-import { FileItem } from "@/types/file";
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
+
 const FileForm = dynamic(() => import("../forms/file-form/file-form"), {
   ssr: false,
 });
 
 const GalleryTable: React.FC = () => {
-  const { items, loading, error, meta } = useSelector(
-    (state: RootState) => state?.files,
-  );
-  const dispatch = useDispatch<AppDispatch>();
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const { id } = useParams<{ id: string }>();
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState<number>(10);
-  const [search, setSearch] = useState("");
-  const debounceRef = useRef<NodeJS.Timeout | null>(null);
+  const packageId = Number(id);
 
-  useEffect(() => {
-    dispatch(
-      fetchFiles({
-        id: Number(id),
-        params: {
-          file_of: PageTemplate.PACKAGE,
-          type: FileType.GALLERY,
-          related_id: Number(id),
-          limit: limit,
-          page: page,
-        },
-      }),
-    );
-  }, [dispatch, id, limit, page]);
-
-  // Close modal
-  const handleClose = () => {
-    setIsModalOpen(false);
-  };
-
-  // search itinerary
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearch(value);
-
-    // Clear previous timeout
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
-    }
-
-    // Set new timeout
-    debounceRef.current = setTimeout(() => {
-      dispatch(
-        searchFile({
-          params: {
-            page: page,
-            limit: limit,
-            related_id: Number(id),
-            type: FileType.GALLERY,
-            file_of: PageTemplate.PACKAGE,
-            search: search,
-          },
-        }),
-      );
-    }, 300); // 300ms debounce
-  };
+  const {
+    items,
+    loading,
+    error,
+    meta,
+    limit,
+    search,
+    isModalOpen,
+    openModal,
+    closeModal,
+    handleSearch,
+    handleDelete,
+    handleToggleStatus,
+    changePage,
+    changeLimit,
+    setIsModalOpen,
+  } = useGallery({ packageId });
 
   if (loading) return <Loader />;
   if (error) message.error(error);
@@ -98,9 +53,7 @@ const GalleryTable: React.FC = () => {
               <PackageTabs />
               <Button
                 className="flex w-fit items-center gap-1 rounded-md bg-black px-2 py-1 text-white hover:!bg-black hover:!text-white dark:bg-white dark:text-black"
-                onClick={() => {
-                  setIsModalOpen(true);
-                }}
+                onClick={openModal}
               >
                 <PlusIcon />
                 <span>Create</span>
@@ -108,14 +61,14 @@ const GalleryTable: React.FC = () => {
             </div>
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <Entry
-                onChange={(value) => setLimit(Number(value))}
                 value={limit}
+                onChange={(val) => changeLimit(Number(val))}
                 total={meta?.totalItems}
               />
               <Search
-                placeholder="Search package..."
+                placeholder="Search gallery..."
                 search={search}
-                onChange={handleSearch}
+                onChange={(e) => handleSearch(e.target.value)}
               />
             </div>
           </div>
@@ -132,7 +85,7 @@ const GalleryTable: React.FC = () => {
                     Image
                   </th>
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
-                    alt
+                    Alt
                   </th>
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
                     Actions
@@ -140,19 +93,16 @@ const GalleryTable: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
-                {items && items?.length > 0 ? (
-                  items?.map((item: FileItem, index) => (
-                    <tr key={item?.id || Date.now()}>
+                {items && items.length > 0 ? (
+                  items.map((item, index) => (
+                    <tr key={item.id}>
                       <td className="px-6 py-4">{index + 1}</td>
                       <td className="whitespace-nowrap px-6 py-4">
-                        <Link
-                          href={`/${item?.file?.url as string}`}
-                          target="_blank"
-                        >
-                          <div className="h-20 w-30 text-base font-medium text-gray-900">
+                        <Link href={`/${item.file.url}`} target="_blank">
+                          <div className="h-20 w-30">
                             <Image
-                              src={`${item?.file?.url as string}`}
-                              alt={item?.alt}
+                              src={item.file.url}
+                              alt={item.alt}
                               width={1080}
                               height={720}
                               className="aspect-video"
@@ -160,8 +110,8 @@ const GalleryTable: React.FC = () => {
                           </div>
                         </Link>
                       </td>
-                      <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
-                        {item?.alt}
+                      <td className="px-6 py-4 text-base text-gray-900">
+                        {item.alt}
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center space-x-2">
@@ -169,35 +119,20 @@ const GalleryTable: React.FC = () => {
                             title="Delete the Image"
                             description="Are you sure to delete this image?"
                             onCancel={() => message.error("Cancelled")}
-                            onConfirm={() =>
-                              dispatch(
-                                deleteFile({
-                                  id: item?.id,
-                                }),
-                              )
-                            }
+                            onConfirm={() => handleDelete(item.id)}
                             okText="Yes"
                             cancelText="No"
                           >
-                            <button
-                              className="rounded p-1 text-red-600 hover:bg-red-50 hover:text-red-900"
-                              title="Delete the image"
-                            >
+                            <button className="rounded p-1 text-red-600 hover:bg-red-50 hover:text-red-900">
                               <TrashIcon />
                             </button>
                           </Popconfirm>
 
                           <ToggleButton
-                            onChange={() =>
-                              dispatch(
-                                toggleFileStatus({
-                                  id: item?.id,
-                                }),
-                              )
-                            }
-                            checked={item?.status === 1}
+                            onChange={() => handleToggleStatus(item.id)}
+                            checked={item.status === 1}
                             title={
-                              item?.status === 1 ? "Deactivate" : "Activate"
+                              item.status === 1 ? "Deactivate" : "Activate"
                             }
                           />
                         </div>
@@ -210,7 +145,7 @@ const GalleryTable: React.FC = () => {
                       colSpan={7}
                       className="px-6 py-8 text-center text-base text-gray-500"
                     >
-                      No departure found.
+                      No gallery found.
                     </td>
                   </tr>
                 )}
@@ -224,20 +159,20 @@ const GalleryTable: React.FC = () => {
             totalPages={meta?.totalPages}
             itemsPerPage={limit}
             totalItems={meta?.totalItems}
-            onPageChange={(page) => setPage(page)}
+            onPageChange={changePage}
           />
         </div>
       </div>
 
-      {/* Create / Edit Modal */}
+      {/* Modal */}
       <Modal
         title="Add Gallery"
         open={isModalOpen}
-        onCancel={handleClose}
+        onCancel={closeModal}
         footer={null}
         centered
         width={800}
-        style={{ maxWidth: "90%", padding: "0" }}
+        style={{ maxWidth: "90%", padding: 0 }}
       >
         <Suspense fallback={null}>
           <FileForm setIsModalOpen={setIsModalOpen} />
