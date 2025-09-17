@@ -71,19 +71,19 @@ const TestimonialsTable: React.FC = () => {
           <Table className="w-full">
             <TableHeader className="bg-blue-900 text-white">
               <TableRow>
-                <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                   S.N.
                 </TableHead>
-                <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                   Image
                 </TableHead>
-                <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                   Name
                 </TableHead>
-                <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                   Country
                 </TableHead>
-                <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                   Actions
                 </TableHead>
               </TableRow>
