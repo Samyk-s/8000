@@ -1,26 +1,10 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import {
-  Form,
-  Input,
-  Button,
-  Row,
-  Col,
-  Upload,
-  message,
-  Select,
-  Checkbox,
-} from "antd";
+import React from "react";
+import { Form, Input, Button, Row, Col, Upload, Select, Checkbox } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import dynamic from "next/dynamic";
-import resourceApi from "@/lib/api/resourceApi";
-import { MediaFile } from "@/types/utils-type";
-import { TeamItem, TeamPayload } from "@/types/teams";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/redux-store/store/store";
-import { createTeam, updateTeam } from "@/redux-store/slices/teamSlice";
-import { fetchTeamsCategories } from "@/redux-store/slices/teamCategorySlice";
-import { useRouter } from "next/navigation";
+import { TeamItem } from "@/types/teams";
+import { useTeamForm } from "@/hooks/teams/useTeamForm";
 
 const TextEditor = dynamic(() => import("../../text-editor/text-editor"), {
   ssr: false,
@@ -31,118 +15,20 @@ interface TeamFormProps {
 }
 
 const TeamForm: React.FC<TeamFormProps> = ({ team }) => {
-  const [form] = Form.useForm();
-  const [uploading, setUploading] = useState(false);
-  const [isClient, setIsClient] = useState(false);
-
-  const [image, setImage] = useState<MediaFile | null>(null);
-  const [coverImage, setCoverImage] = useState<MediaFile | null>(null);
-  const [bioData, setBioData] = useState<MediaFile | null>(null);
-
-  const dispatch = useDispatch<AppDispatch>();
-  const router = useRouter();
-
-  const { items: categories } = useSelector(
-    (state: RootState) => state?.teamsCategory,
-  );
-
-  useEffect(() => {
-    setIsClient(true); // ensure client rendering
-    dispatch(fetchTeamsCategories({}));
-
-    if (team) {
-      // Set initial form values for edit
-      form.setFieldsValue({
-        name: team?.name,
-        post: team?.post,
-        page_id: team?.category?.id,
-        email: team?.email,
-        phoneNo: team?.phone_no,
-        fbLink: team?.fblink,
-        instagramLink: team?.instagramlink,
-        twitter: team?.twitter,
-        linkedIn: team?.linkedIn,
-        youtube: team?.youtube,
-        order: team?.order,
-        status: team?.status === 1,
-        description: team?.description,
-      });
-
-      // Initialize Upload state with existing files
-      if (team?.image) setImage(team?.image);
-      if (team?.cover_image) setCoverImage(team?.cover_image);
-      if (team?.bio_data) setBioData(team?.bio_data);
-    }
-  }, [dispatch, team, form]);
-
-  const handleFileUpload = async (
-    rawFile: File,
-    setter: (file: MediaFile) => void,
-  ) => {
-    const formData = new FormData();
-    formData.append("file", rawFile);
-
-    try {
-      setUploading(true);
-      const res = await resourceApi.createResource(formData);
-      setUploading(false);
-
-      if (res) {
-        setter(res);
-        message.success("File uploaded successfully!");
-      } else {
-        message.error("File upload failed");
-      }
-    } catch (error) {
-      // console.error(error);
-      setUploading(false);
-      message.error("File upload failed");
-    }
-    return false; // prevent auto upload
-  };
-
-  const onFinish = (values: any) => {
-    // CREATE: require main image
-    if (!team && !image) {
-      message.error("Please upload an image before submitting");
-      return;
-    }
-
-    const payload: any = {
-      ...values,
-      order: Number(values.order) || 0,
-      status: values.status ? 1 : 0,
-    };
-
-    // Include image if it's new or changed
-    if (image && (!team || team.image?.uid !== image.uid)) {
-      payload.image = image;
-    }
-
-    if (coverImage && (!team || team.cover_image?.uid !== coverImage.uid)) {
-      payload.coverImage = coverImage;
-    }
-
-    if (bioData && (!team || team.bio_data?.uid !== bioData.uid)) {
-      payload.bioData = bioData;
-    }
-
-    if (team?.id) {
-      // Update mode
-      dispatch(updateTeam({ id: team.id, values: payload }))
-        .unwrap()
-        .then(() => {
-          router.back();
-        });
-    } else {
-      // Create mode
-      dispatch(createTeam({ values: payload }))
-        .unwrap()
-        .then(() => {
-          router.back();
-        });
-    }
-  };
+  const {
+    form,
+    uploading,
+    isClient,
+    image,
+    setImage,
+    coverImage,
+    setCoverImage,
+    bioData,
+    setBioData,
+    categories,
+    handleFileUpload,
+    onFinish,
+  } = useTeamForm(team);
 
   if (!isClient) return null;
 
@@ -225,6 +111,7 @@ const TeamForm: React.FC<TeamFormProps> = ({ team }) => {
             <Input />
           </Form.Item>
         </Col>
+
         {/* CATEGORY */}
         <Col xs={24} md={12}>
           <Form.Item
@@ -241,6 +128,7 @@ const TeamForm: React.FC<TeamFormProps> = ({ team }) => {
             </Select>
           </Form.Item>
         </Col>
+
         {/* IMAGE */}
         <Col xs={24} md={12} lg={8}>
           <Form.Item label="Image" name="image">
@@ -251,13 +139,7 @@ const TeamForm: React.FC<TeamFormProps> = ({ team }) => {
               maxCount={1}
               fileList={
                 image
-                  ? [
-                      {
-                        uid: image?.uid,
-                        name: image?.name,
-                        url: image?.url,
-                      },
-                    ]
+                  ? [{ uid: image.uid, name: image.name, url: image.url }]
                   : []
               }
               onRemove={() => setImage(null)}
@@ -281,9 +163,9 @@ const TeamForm: React.FC<TeamFormProps> = ({ team }) => {
                 coverImage
                   ? [
                       {
-                        uid: coverImage?.uid,
-                        name: coverImage?.name,
-                        url: coverImage?.url,
+                        uid: coverImage.uid,
+                        name: coverImage.name,
+                        url: coverImage.url,
                       },
                     ]
                   : []
@@ -306,13 +188,7 @@ const TeamForm: React.FC<TeamFormProps> = ({ team }) => {
               maxCount={1}
               fileList={
                 bioData
-                  ? [
-                      {
-                        uid: bioData?.uid,
-                        name: bioData?.name,
-                        url: bioData?.url,
-                      },
-                    ]
+                  ? [{ uid: bioData.uid, name: bioData.name, url: bioData.url }]
                   : []
               }
               onRemove={() => setBioData(null)}

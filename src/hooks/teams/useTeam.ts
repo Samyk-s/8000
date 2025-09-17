@@ -7,12 +7,13 @@ import {
   searchTeam,
   deleteTeam,
   toggleTeam,
+  getTeam,
 } from "@/redux-store/slices/teamSlice";
 import { message } from "antd";
 
 export const useTeams = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { items, loading, error, meta } = useSelector(
+  const { items, loading, error, meta, team } = useSelector(
     (state: RootState) => state.teams
   );
 
@@ -52,6 +53,10 @@ export const useTeams = () => {
     }, 300);
   };
 
+  const getTeamByid = async (id: number) => {
+    await dispatch(getTeam(id))
+  }
+
   if (error) message.error(error);
 
   return {
@@ -66,5 +71,7 @@ export const useTeams = () => {
     handleSearch,
     handleDelete,
     handleToggle,
+    team,
+    getTeamByid
   };
 };
