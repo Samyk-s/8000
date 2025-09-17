@@ -1,75 +1,40 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
-import { EditIcon } from "@/components/icons/icnos";
+import React from "react";
+import { useParams } from "next/navigation";
+import { useItinerary } from "@/hooks/itinererary/useItinerary";
 import Entry from "../../entry/entry";
 import Search from "../../search/search";
 import Pagination from "../../pagination/pagination";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/redux-store/store/store";
 import ToggleButton from "../../toggle-button/toggle-button";
 import { PlusIcon, TrashIcon } from "@/assets/icons";
-import Loader from "../loader/loader";
 import { Button, message, Modal, Popconfirm } from "antd";
-import {
-  deleteItinerary,
-  fetchItineraries,
-  searchItineraries,
-  toggleItineraryStatus,
-} from "@/redux-store/slices/itinerarySlice";
-import { ItineraryItem } from "@/types/itinerary";
 import PackageTabs from "../../tabs/package-tabs";
 import ItineraryForm from "../forms/itinerary-form/itinerary-form";
-import { useParams } from "next/navigation";
+import { EditIcon } from "@/components/icons/icnos";
+import Loader from "../loader/loader";
 
 const ItineraryTable: React.FC = () => {
-  const { items, loading, error, meta } = useSelector(
-    (state: RootState) => state?.itineraries,
-  );
-  const dispatch = useDispatch<AppDispatch>();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedItinerary, setSelectedItinerary] =
-    useState<ItineraryItem | null>(null); // 👈 NEW
   const { id } = useParams<{ id: string }>();
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState<number>(10);
-  const [search, setSearch] = useState("");
-  const debounceRef = useRef<NodeJS.Timeout | null>(null);
+  const packageId = Number(id);
 
-  useEffect(() => {
-    dispatch(
-      fetchItineraries({
-        id: Number(id),
-        params: { limit: limit, page: page },
-      }),
-    );
-  }, [dispatch, id, limit, page]);
-
-  // Close modal
-  const handleClose = () => {
-    setIsModalOpen(false);
-    setSelectedItinerary(null); // reset
-  };
-
-  // search itinerary
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearch(value);
-
-    // Clear previous timeout
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
-    }
-
-    // Set new timeout
-    debounceRef.current = setTimeout(() => {
-      dispatch(
-        searchItineraries({
-          id: Number(id),
-          params: { limit, page, search: value },
-        }),
-      );
-    }, 300); // 300ms debounce
-  };
+  const {
+    items,
+    loading,
+    error,
+    meta,
+    limit,
+    search,
+    isModalOpen,
+    selectedItinerary,
+    openModal,
+    closeModal,
+    handleSearch,
+    handleDelete,
+    handleToggleStatus,
+    changePage,
+    changeLimit,
+    setIsModalOpen,
+  } = useItinerary({ packageId });
 
   if (loading) return <Loader />;
   if (error) message.error(error);
@@ -84,10 +49,7 @@ const ItineraryTable: React.FC = () => {
               <PackageTabs />
               <Button
                 className="flex w-fit items-center gap-1 rounded-md bg-black px-2 py-1 text-white hover:!bg-black hover:!text-white dark:bg-white dark:text-black"
-                onClick={() => {
-                  setSelectedItinerary(null); // 👈 Reset to create mode
-                  setIsModalOpen(true);
-                }}
+                onClick={() => openModal()}
               >
                 <PlusIcon />
                 <span>Create</span>
@@ -95,14 +57,14 @@ const ItineraryTable: React.FC = () => {
             </div>
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <Entry
-                onChange={(value) => setLimit(Number(value))}
                 value={limit}
+                onChange={(val) => changeLimit(Number(val))}
                 total={meta?.totalItems}
               />
               <Search
-                placeholder="Search package..."
+                placeholder="Search itinerary..."
                 search={search}
-                onChange={handleSearch}
+                onChange={(e) => handleSearch(e.target.value)}
               />
             </div>
           </div>
@@ -127,19 +89,16 @@ const ItineraryTable: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
-                {items && items?.length > 0 ? (
-                  items?.map((item: ItineraryItem, index) => (
-                    <tr key={item?.id}>
+                {items && items.length > 0 ? (
+                  items.map((item, index) => (
+                    <tr key={item.id}>
                       <td className="px-6 py-4">{index + 1}</td>
                       <td className="px-6 py-4">{item.day}</td>
                       <td className="px-6 py-4">{item.title}</td>
                       <td className="px-6 py-4">
                         <div className="flex items-center space-x-2">
                           <button
-                            onClick={() => {
-                              setSelectedItinerary(item);
-                              setIsModalOpen(true);
-                            }}
+                            onClick={() => openModal(item)}
                             title="Edit Itinerary"
                           >
                             <EditIcon />
@@ -149,34 +108,17 @@ const ItineraryTable: React.FC = () => {
                             title="Delete the Itinerary"
                             description="Are you sure to delete this itinerary?"
                             onCancel={() => message.error("Cancelled")}
-                            onConfirm={() =>
-                              dispatch(
-                                deleteItinerary({
-                                  packageId: Number(id),
-                                  itineraryId: Number(item?.id),
-                                }),
-                              )
-                            }
+                            onConfirm={() => handleDelete(item.id)}
                             okText="Yes"
                             cancelText="No"
                           >
-                            <button
-                              className="rounded p-1 text-red-600 hover:bg-red-50 hover:text-red-900"
-                              title="Delete Itinerary"
-                            >
+                            <button className="rounded p-1 text-red-600 hover:bg-red-50 hover:text-red-900">
                               <TrashIcon />
                             </button>
                           </Popconfirm>
 
                           <ToggleButton
-                            onChange={() =>
-                              dispatch(
-                                toggleItineraryStatus({
-                                  packageId: Number(id),
-                                  itineraryId: Number(item?.id),
-                                }),
-                              )
-                            }
+                            onChange={() => handleToggleStatus(item.id)}
                             checked={item.status === 1}
                             title={
                               item.status === 1 ? "Deactivate" : "Activate"
@@ -206,20 +148,20 @@ const ItineraryTable: React.FC = () => {
             totalPages={meta?.totalPages}
             itemsPerPage={limit}
             totalItems={meta?.totalItems}
-            onPageChange={(page) => setPage(page)}
+            onPageChange={changePage}
           />
         </div>
       </div>
 
-      {/* Create / Edit Modal */}
+      {/* Modal */}
       <Modal
         title={selectedItinerary ? "Edit Itinerary" : "Add Itinerary"}
         open={isModalOpen}
-        onCancel={handleClose}
+        onCancel={closeModal}
         footer={null}
         centered
         width={800}
-        style={{ maxWidth: "90%", padding: "0" }}
+        style={{ maxWidth: "90%", padding: 0 }}
       >
         <ItineraryForm
           setIsModalOpen={setIsModalOpen}
