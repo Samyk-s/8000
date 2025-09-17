@@ -77,12 +77,12 @@ export const useTestimonialForm = (testimonial?: TestimonialItem) => {
 
     try {
       if (testimonial?.id) {
-        console.log("payload", payload)
+        // console.log("payload", payload)
         await dispatch(updateTestimonial({ id: testimonial.id, values: payload })).unwrap();
-        message.success("Testimonial updated successfully!");
+
       } else {
         await dispatch(createTestimonial({ values: payload })).unwrap();
-        message.success("Testimonial created successfully!");
+
       }
       router.push("/admin/testimonials");
     } catch {
