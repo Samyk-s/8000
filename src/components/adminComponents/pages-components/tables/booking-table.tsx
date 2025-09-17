@@ -1,79 +1,37 @@
 "use client";
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
-import { BookingItem } from "@/types/booking";
-import { formatDate } from "@/utils/bookingUtils";
-import { StatusBadge, ViewedBadge } from "@/components/ui/StatusBadge";
-import { EyeIcon, EditIcon, TrashIcon } from "@/components/icons/icnos";
-import { AppDispatch, RootState } from "@/redux-store/store/store";
-import { useDispatch, useSelector } from "react-redux";
+import React from "react";
+import { useBooking } from "@/hooks/booking/useBooking";
 import Loader from "../loader/loader";
 import Search from "../../search/search";
 import Entry from "../../entry/entry";
-import { Button, message, Modal, Popconfirm } from "antd";
-import { PlusIcon } from "@/assets/icons";
-import {
-  deleteBooking,
-  fetchBooking,
-  searchBooking,
-} from "@/redux-store/slices/bookinSlice";
 import Pagination from "../../pagination/pagination";
-import Link from "next/link";
 import BookingView from "../../view/booking-view";
+import { EyeIcon, EditIcon, TrashIcon } from "@/components/icons/icnos";
 import { AffiliationIcon } from "@/components/Layouts/sidebar/icons";
+import { Modal, Popconfirm, message } from "antd";
+import Link from "next/link";
+import { formatDate } from "@/utils/bookingUtils";
+import { ViewedBadge } from "@/components/ui/StatusBadge";
 
 const BookingTable: React.FC = () => {
-  const { items, loading, error, meta } = useSelector(
-    (state: RootState) => state?.bookings,
-  );
-  const dispatch = useDispatch<AppDispatch>();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedId, setSelectedId] = useState(0);
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState<number>(10);
-  const [search, setSearch] = useState("");
-  const debounceRef = useRef<NodeJS.Timeout | null>(null);
-
-  // search booking
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearch(value);
-
-    // Clear previous timeout
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
-    }
-
-    // Set new timeout
-    debounceRef.current = setTimeout(() => {
-      dispatch(
-        searchBooking({
-          params: { limit, page, search: value },
-        }),
-      );
-    }, 300); // 300ms debounce
-  };
-  useEffect(() => {
-    dispatch(
-      fetchBooking({
-        params: { limit, page },
-      }),
-    );
-  }, [dispatch, limit, page]);
-
-  // Open modal handler
-  const handleOpenModal = useCallback((id: number) => {
-    setSelectedId(id);
-    setIsModalOpen(true);
-  }, []);
-
-  // Close modal handler
-  const handleCloseModal = useCallback(() => {
-    setIsModalOpen(false);
-    setSelectedId(0);
-  }, []);
+  const {
+    items,
+    loading,
+    meta,
+    limit,
+    search,
+    selectedId,
+    isModalOpen,
+    setPage,
+    setLimit,
+    handleSearch,
+    handleOpenModal,
+    handleCloseModal,
+    handleDelete,
+  } = useBooking();
 
   if (loading) return <Loader />;
+
   return (
     <>
       <div className="min-h-screen p-1">
@@ -88,7 +46,7 @@ const BookingTable: React.FC = () => {
               <Search
                 placeholder="Search package..."
                 search={search}
-                onChange={handleSearch}
+                onChange={(e) => handleSearch(e.target.value)}
               />
             </div>
           </div>
@@ -115,9 +73,6 @@ const BookingTable: React.FC = () => {
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
                     Created Date
                   </th>
-                  {/* <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
-                    Status
-                  </th> */}
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
                     Viewed
                   </th>
@@ -126,37 +81,31 @@ const BookingTable: React.FC = () => {
                   </th>
                 </tr>
               </thead>
+
               <tbody className="divide-y divide-gray-200 bg-white">
                 {items && items.length > 0 ? (
-                  items.map((item: BookingItem, index: number) => (
+                  items.map((item, index) => (
                     <tr key={item.id} className="hover:bg-gray-50">
                       <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
                         {index + 1}
                       </td>
-                      <td className="whitespace-nowrap px-6 py-4">
-                        <div className="text-base font-medium text-gray-900">
-                          {item.customerName}
-                        </div>
+                      <td className="whitespace-nowrap px-6 py-4 text-base font-medium text-gray-900">
+                        {item.customerName}
                       </td>
                       <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
                         {item.customerPhone}
                       </td>
-                      <td className="whitespace-nowrap px-6 py-4">
-                        <div className="text-base text-gray-900">
-                          <Link
-                            href={`/admin/packages/${item?.package?.id}`}
-                            className="text-blue-400"
-                          >
-                            {item.package?.title || "N/A"}
-                          </Link>
-                        </div>
+                      <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
+                        <Link
+                          href={`/admin/packages/${item?.package?.id}`}
+                          className="text-blue-400"
+                        >
+                          {item.package?.title || "N/A"}
+                        </Link>
                       </td>
                       <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
                         {formatDate(item.createdAt)}
                       </td>
-                      {/* <td className="whitespace-nowrap px-6 py-4">
-                        <StatusBadge status={item.status} />
-                      </td> */}
                       <td className="whitespace-nowrap px-6 py-4">
                         <ViewedBadge isViewed={item.isViewd as 0 | 1} />
                       </td>
@@ -187,7 +136,7 @@ const BookingTable: React.FC = () => {
                             title="Delete the Booking"
                             description="Are you sure to delete this booking?"
                             onCancel={() => message.error("Cancelled")}
-                            onConfirm={() => dispatch(deleteBooking(item?.id))}
+                            onConfirm={() => handleDelete(item.id)}
                             okText="Yes"
                             cancelText="No"
                           >
@@ -216,17 +165,16 @@ const BookingTable: React.FC = () => {
             </table>
           </div>
 
-          {/* Pagination */}
           <Pagination
             currentPage={meta?.currentPage}
             totalPages={meta?.totalPages}
             itemsPerPage={limit}
             totalItems={meta?.totalItems}
-            onPageChange={(page: number) => setPage(page)}
+            onPageChange={setPage}
           />
         </div>
       </div>
-      {/* View Modal */}
+
       <Modal
         open={isModalOpen}
         onCancel={handleCloseModal}
