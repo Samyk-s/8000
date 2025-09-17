@@ -4,12 +4,18 @@ import Link from "next/link";
 import { useSidebarContext } from "../sidebar/sidebar-context";
 import { UserInfo } from "./user-info";
 import { MenuIcon } from "./icons";
-import { useSelector } from "react-redux";
-import { RootState } from "@/redux-store/store/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/redux-store/store/store";
+import { useEffect } from "react";
+import { fetchSetting } from "@/redux-store/slices/siteSlice";
 
 export function Header() {
   const { toggleSidebar, isMobile } = useSidebarContext();
   const { item } = useSelector((state: RootState) => state.setting);
+  const dispatch = useDispatch<AppDispatch>();
+  useEffect(() => {
+    dispatch(fetchSetting());
+  }, [dispatch]);
 
   return (
     <header className="sticky top-0 z-10 flex items-center justify-between border-b border-stroke bg-white px-4 py-5 shadow-1 dark:border-stroke-dark dark:bg-gray-dark md:px-5 2xl:px-10">
