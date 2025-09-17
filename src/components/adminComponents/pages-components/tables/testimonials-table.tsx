@@ -11,6 +11,15 @@ import ToggleButton from "../../toggle-button/toggle-button";
 import Loader from "../loader/loader";
 import { useTestimonials } from "@/hooks/testimonial/useTestimonial";
 import { EditIcon } from "@/components/icons/icnos";
+import { TestimonialItem } from "@/types/testimonials";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 const TestimonialsTable: React.FC = () => {
   const {
@@ -59,32 +68,32 @@ const TestimonialsTable: React.FC = () => {
 
         {/* Table */}
         <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-blue-900 text-white">
-              <tr>
-                <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+          <Table className="w-full">
+            <TableHeader className="bg-blue-900 text-white">
+              <TableRow>
+                <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
                   S.N.
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                </TableHead>
+                <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
                   Image
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                </TableHead>
+                <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
                   Name
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                </TableHead>
+                <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
                   Country
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                </TableHead>
+                <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
                   Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody className="divide-y divide-gray-200 bg-white">
               {items && items.length > 0 ? (
-                items.map((item, index) => (
-                  <tr key={item.id}>
-                    <td className="px-6 py-4">{index + 1}</td>
-                    <td className="whitespace-nowrap px-6 py-4">
+                items.map((item: TestimonialItem, index: number) => (
+                  <TableRow key={item.id}>
+                    <TableCell className="px-6 py-4">{index + 1}</TableCell>
+                    <TableCell className="whitespace-nowrap px-6 py-4">
                       <Link
                         href={item.image?.url || "/images/broken/broken.png"}
                         target="_blank"
@@ -100,14 +109,14 @@ const TestimonialsTable: React.FC = () => {
                           />
                         </div>
                       </Link>
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
+                    </TableCell>
+                    <TableCell className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
                       {item.name}
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
+                    </TableCell>
+                    <TableCell className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
                       {item.country}
-                    </td>
-                    <td className="px-6 py-4">
+                    </TableCell>
+                    <TableCell className="px-6 py-4">
                       <div className="flex items-center space-x-2">
                         <Link
                           href={`/admin/testimonials/${item.id}`}
@@ -135,21 +144,21 @@ const TestimonialsTable: React.FC = () => {
                           title={item.status === 1 ? "Deactivate" : "Activate"}
                         />
                       </div>
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 ))
               ) : (
-                <tr>
-                  <td
+                <TableRow>
+                  <TableCell
                     colSpan={5}
                     className="px-6 py-8 text-center text-base text-gray-500"
                   >
                     No testimonials found.
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               )}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
 
         {/* Pagination */}

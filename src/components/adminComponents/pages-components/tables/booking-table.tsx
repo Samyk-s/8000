@@ -13,6 +13,15 @@ import Link from "next/link";
 import { formatDate } from "@/utils/bookingUtils";
 import { ViewedBadge } from "@/components/ui/StatusBadge";
 import dynamic from "next/dynamic";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { BookingItem } from "@/types/booking";
 
 const BookingTable: React.FC = () => {
   const {
@@ -53,64 +62,67 @@ const BookingTable: React.FC = () => {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead
-                style={{ backgroundColor: "oklch(37.9% 0.146 265.522)" }}
-                className="text-white"
+            <Table className="w-full">
+              <TableHeader
+                style={{
+                  backgroundColor: "oklch(37.9% 0.146 265.522)",
+                  color: "white",
+                }}
+                className="text-white hover:!bg-none"
               >
-                <tr>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                <TableRow>
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     S. N.
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  </TableHead>
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     Customer Name
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  </TableHead>
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     Phone
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  </TableHead>
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     Package
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  </TableHead>
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     Created Date
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  </TableHead>
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     Viewed
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  </TableHead>
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     Actions
-                  </th>
-                </tr>
-              </thead>
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
 
-              <tbody className="divide-y divide-gray-200 bg-white">
+              <TableBody className="divide-y divide-gray-200 bg-white">
                 {items && items.length > 0 ? (
-                  items.map((item, index) => (
-                    <tr key={item.id} className="hover:bg-gray-50">
-                      <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
+                  items.map((item: BookingItem, index: number) => (
+                    <TableRow key={item.id} className="hover:bg-gray-50">
+                      <TableCell className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
                         {index + 1}
-                      </td>
-                      <td className="whitespace-nowrap px-6 py-4 text-base font-medium text-gray-900">
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap px-6 py-4 text-base font-medium text-gray-900">
                         {item.customerName}
-                      </td>
-                      <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
                         {item.customerPhone}
-                      </td>
-                      <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
                         <Link
                           href={`/admin/packages/${item?.package?.id}`}
                           className="text-blue-400"
                         >
                           {item.package?.title || "N/A"}
                         </Link>
-                      </td>
-                      <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
                         {formatDate(item.createdAt)}
-                      </td>
-                      <td className="whitespace-nowrap px-6 py-4">
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap px-6 py-4">
                         <ViewedBadge isViewed={item.isViewd as 0 | 1} />
-                      </td>
-                      <td className="whitespace-nowrap px-6 py-4 text-base font-medium">
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap px-6 py-4 text-base font-medium">
                         <div className="flex space-x-2">
                           <button
                             className="rounded p-1 text-blue-600 hover:bg-blue-50 hover:text-blue-900"
@@ -149,21 +161,21 @@ const BookingTable: React.FC = () => {
                             </button>
                           </Popconfirm>
                         </div>
-                      </td>
-                    </tr>
+                      </TableCell>
+                    </TableRow>
                   ))
                 ) : (
-                  <tr>
-                    <td
+                  <TableRow>
+                    <TableCell
                       colSpan={7}
                       className="px-6 py-8 text-center text-base text-gray-500"
                     >
                       No bookings found matching your search criteria.
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 )}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
 
           <Pagination
@@ -183,7 +195,7 @@ const BookingTable: React.FC = () => {
         centered
         width={800}
         style={{ maxWidth: "90%", padding: 0 }}
-        title="Inquiry Details"
+        title="Booking Details"
       >
         {selectedId > 0 && (
           <Suspense fallback={<Loader />}>

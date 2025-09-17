@@ -13,6 +13,15 @@ import PackageTabs from "../../tabs/package-tabs";
 import ReviewView from "../../view/review-view";
 import { ViewIcon } from "@/components/icons/icnos";
 import Link from "next/link";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { ReviewItem } from "@/types/packge-review";
 
 const ReviewTable: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -71,31 +80,35 @@ const ReviewTable: React.FC = () => {
 
           {/* Table */}
           <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-blue-900 text-white">
-                <tr>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+            <Table className="w-full">
+              <TableHeader className="bg-blue-900 text-white">
+                <TableRow>
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     S.N.
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  </TableHead>
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     Name
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  </TableHead>
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     Country
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  </TableHead>
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 bg-white">
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody className="divide-y divide-gray-200 bg-white">
                 {items && items.length > 0 ? (
-                  items.map((item, index) => (
-                    <tr key={item.id}>
-                      <td className="px-6 py-4">{index + 1}</td>
-                      <td className="px-6 py-4">{item.fullName}</td>
-                      <td className="px-6 py-4">{item.country}</td>
-                      <td className="px-6 py-4">
+                  items.map((item: ReviewItem, index: number) => (
+                    <TableRow key={item.id}>
+                      <TableCell className="px-6 py-4">{index + 1}</TableCell>
+                      <TableCell className="px-6 py-4">
+                        {item.fullName}
+                      </TableCell>
+                      <TableCell className="px-6 py-4">
+                        {item.country}
+                      </TableCell>
+                      <TableCell className="px-6 py-4">
                         <div className="flex items-center space-x-2">
                           <button onClick={() => openModal(item.id)}>
                             <ViewIcon />
@@ -123,21 +136,21 @@ const ReviewTable: React.FC = () => {
                             }
                           />
                         </div>
-                      </td>
-                    </tr>
+                      </TableCell>
+                    </TableRow>
                   ))
                 ) : (
-                  <tr>
-                    <td
+                  <TableRow>
+                    <TableCell
                       colSpan={7}
                       className="px-6 py-8 text-center text-base text-gray-500"
                     >
                       No review found.
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 )}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
 
           {/* Pagination */}

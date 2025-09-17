@@ -11,6 +11,15 @@ import ToggleButton from "../../toggle-button/toggle-button";
 import Loader from "../loader/loader";
 import { useSummitter } from "@/hooks/summitter/useSummiter";
 import { EditIcon } from "@/components/icons/icnos";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { SummitterItem } from "@/types/summitter";
 
 const SummitterTable = () => {
   const {
@@ -60,38 +69,38 @@ const SummitterTable = () => {
 
           {/* Table */}
           <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-blue-900 text-white">
-                <tr>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+            <Table className="w-full">
+              <TableHeader className="bg-blue-900 text-white">
+                <TableRow>
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     S.N.
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  </TableHead>
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     Image
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  </TableHead>
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     Name
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  </TableHead>
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     Nationality
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  </TableHead>
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     Lead By
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  </TableHead>
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     Peak
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  </TableHead>
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 bg-white">
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody className="divide-y divide-gray-200 bg-white">
                 {items && items.length > 0 ? (
-                  items.map((item, index) => (
-                    <tr key={item.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4">{index + 1}</td>
-                      <td className="px-6 py-4">
+                  items.map((item: SummitterItem, index: number) => (
+                    <TableRow key={item.id} className="hover:bg-gray-50">
+                      <TableCell className="px-6 py-4">{index + 1}</TableCell>
+                      <TableCell className="px-6 py-4">
                         <Image
                           src={item.image?.url || "/images/broken/broken.png"}
                           alt={item.name}
@@ -99,12 +108,16 @@ const SummitterTable = () => {
                           height={720}
                           className="aspect-video"
                         />
-                      </td>
-                      <td className="px-6 py-4">{item.name}</td>
-                      <td className="px-6 py-4">{item.nationality}</td>
-                      <td className="px-6 py-4">{item.ledBy?.name}</td>
-                      <td className="px-6 py-4">{item.peak}</td>
-                      <td className="px-6 py-4">
+                      </TableCell>
+                      <TableCell className="px-6 py-4">{item.name}</TableCell>
+                      <TableCell className="px-6 py-4">
+                        {item.nationality}
+                      </TableCell>
+                      <TableCell className="px-6 py-4">
+                        {item.ledBy?.name}
+                      </TableCell>
+                      <TableCell className="px-6 py-4">{item.peak}</TableCell>
+                      <TableCell className="px-6 py-4">
                         <div className="flex items-center space-x-2">
                           <button
                             className="rounded p-1 text-gray-600 hover:bg-gray-50 hover:text-gray-900"
@@ -138,21 +151,21 @@ const SummitterTable = () => {
                             }
                           />
                         </div>
-                      </td>
-                    </tr>
+                      </TableCell>
+                    </TableRow>
                   ))
                 ) : (
-                  <tr>
-                    <td
+                  <TableRow>
+                    <TableCell
                       colSpan={7}
                       className="px-6 py-8 text-center text-gray-500"
                     >
                       No summitter found matching your search criteria.
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 )}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
 
           {/* Pagination */}

@@ -18,6 +18,15 @@ import {
 import { PlusIcon } from "@/assets/icons";
 import { usePackage } from "@/hooks/package/usePackage";
 import { message } from "antd";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { PackageItem } from "@/types/package";
 
 const PackageTable: React.FC = () => {
   const {
@@ -64,41 +73,41 @@ const PackageTable: React.FC = () => {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead
+            <Table className="w-full">
+              <TableHeader
                 style={{ backgroundColor: "oklch(37.9% 0.146 265.522)" }}
                 className="text-white"
               >
-                <tr>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                <TableRow>
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     S.N.
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  </TableHead>
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     Image
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  </TableHead>
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     Title
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  </TableHead>
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     Altitude
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  </TableHead>
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     Grade
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  </TableHead>
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     Actions
-                  </th>
-                </tr>
-              </thead>
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
 
-              <tbody className="divide-y divide-gray-200 bg-white">
+              <TableBody className="divide-y divide-gray-200 bg-white">
                 {items && items.length > 0 ? (
-                  items.map((item, index) => (
-                    <tr key={item.id} className="hover:bg-gray-50">
-                      <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
+                  items.map((item: PackageItem, index: number) => (
+                    <TableRow key={item.id} className="hover:bg-gray-50">
+                      <TableCell className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
                         {index + 1}
-                      </td>
-                      <td className="whitespace-nowrap px-6 py-4">
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap px-6 py-4">
                         <Link
                           href={item.image?.url || "/images/broken/broken.png"}
                           target="_blank"
@@ -115,17 +124,17 @@ const PackageTable: React.FC = () => {
                             />
                           </div>
                         </Link>
-                      </td>
-                      <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
                         {item.title}
-                      </td>
-                      <td className="whitespace-nowrap px-6 py-4 text-base text-gray-600">
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap px-6 py-4 text-base text-gray-600">
                         {item.altitude}
-                      </td>
-                      <td className="whitespace-nowrap px-6 py-4 text-base text-gray-500">
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap px-6 py-4 text-base text-gray-500">
                         {item.grade}
-                      </td>
-                      <td className="whitespace-nowrap px-6 py-4 text-base font-medium">
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap px-6 py-4 text-base font-medium">
                         <div className="flex space-x-2">
                           <Link
                             href={`/admin/packages/${item.id}/itinerary`}
@@ -174,21 +183,21 @@ const PackageTable: React.FC = () => {
                             }
                           />
                         </div>
-                      </td>
-                    </tr>
+                      </TableCell>
+                    </TableRow>
                   ))
                 ) : (
-                  <tr>
-                    <td
+                  <TableRow>
+                    <TableCell
                       colSpan={7}
                       className="px-6 py-8 text-center text-base text-gray-500"
                     >
                       No packages found.
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 )}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
 
           <Pagination

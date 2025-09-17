@@ -31,6 +31,14 @@ import Link from "next/link";
 import { FileIcon } from "lucide-react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 const PlanMyTripTable: React.FC = () => {
   const { items, loading, error, meta } = useSelector(
@@ -152,41 +160,41 @@ const PlanMyTripTable: React.FC = () => {
 
           {/* Table */}
           <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-blue-900 text-white">
-                <tr>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+            <Table className="w-full">
+              <TableHeader className="bg-blue-900 text-white">
+                <TableRow>
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     S.N.
-                  </th>
+                  </TableHead>
 
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     Received on
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  </TableHead>
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     Name
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  </TableHead>
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     Email
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  </TableHead>
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     Phone
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  </TableHead>
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     Package
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  </TableHead>
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     Seen
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  </TableHead>
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 bg-white">
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody className="divide-y divide-gray-200 bg-white">
                 {items && items?.length > 0 ? (
                   items?.map((item: ReviewItem, index) => (
-                    <tr key={item?.id}>
-                      <td className="px-6 py-4">{index + 1}</td>
+                    <TableRow key={item?.id}>
+                      <TableCell className="px-6 py-4">{index + 1}</TableCell>
                       {/* <td className="whitespace-nowrap px-6 py-4">
                         <Link href={item?.file?.url} target="_blank">
                           <div className="h-20 w-30 text-base font-medium text-gray-900">
@@ -200,13 +208,13 @@ const PlanMyTripTable: React.FC = () => {
                           </div>
                         </Link>
                       </td> */}
-                      <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
+                      <TableCell className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
                         {item?.fullName}
-                      </td>
-                      <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
                         {item?.country}
-                      </td>
-                      <td className="px-6 py-4">
+                      </TableCell>
+                      <TableCell className="px-6 py-4">
                         <div className="flex items-center space-x-2">
                           <button onClick={() => handleOpenModal(item?.id)}>
                             <ViewIcon />
@@ -248,21 +256,21 @@ const PlanMyTripTable: React.FC = () => {
                             }
                           />
                         </div>
-                      </td>
-                    </tr>
+                      </TableCell>
+                    </TableRow>
                   ))
                 ) : (
-                  <tr>
-                    <td
+                  <TableRow>
+                    <TableCell
                       colSpan={7}
                       className="px-6 py-8 text-center text-base text-gray-500"
                     >
                       No trips found.
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 )}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
 
           {/* Pagination */}

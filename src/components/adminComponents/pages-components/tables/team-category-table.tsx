@@ -11,6 +11,15 @@ import TeamTabs from "../../tabs/team-tab";
 import Loader from "../loader/loader";
 import { useTeamCategory } from "@/hooks/teams/useTeamCategory";
 import { EditIcon } from "@/components/icons/icnos";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { TeamCatgoryItem } from "@/types/teams";
 
 const TeamCategoryTable: React.FC = () => {
   const {
@@ -61,40 +70,40 @@ const TeamCategoryTable: React.FC = () => {
 
         {/* Table */}
         <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead
+          <Table className="w-full">
+            <TableHeader
               style={{ backgroundColor: "oklch(37.9% 0.146 265.522)" }}
               className="text-white"
             >
-              <tr>
-                <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+              <TableRow>
+                <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                   S.N.
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                </TableHead>
+                <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                   Name
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                </TableHead>
+                <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                   Slug
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                </TableHead>
+                <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                   Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 bg-white dark:bg-[#020D1A]">
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody className="divide-y divide-gray-200 bg-white dark:bg-[#020D1A]">
               {items && items.length > 0 ? (
-                items.map((item, index) => (
-                  <tr key={item.id}>
-                    <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900 dark:text-white">
+                items.map((item: TeamCatgoryItem, index: number) => (
+                  <TableRow key={item.id}>
+                    <TableCell className="whitespace-nowrap px-6 py-4 text-base text-gray-900 dark:text-white">
                       {index + 1}
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900 dark:text-white">
+                    </TableCell>
+                    <TableCell className="whitespace-nowrap px-6 py-4 text-base text-gray-900 dark:text-white">
                       {item.name}
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900 dark:text-white">
+                    </TableCell>
+                    <TableCell className="whitespace-nowrap px-6 py-4 text-base text-gray-900 dark:text-white">
                       {item.slug}
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-base font-medium dark:text-white">
+                    </TableCell>
+                    <TableCell className="whitespace-nowrap px-6 py-4 text-base font-medium dark:text-white">
                       <div className="flex items-center space-x-2">
                         <Link
                           href={`/admin/teams/categories/${item.id}`}
@@ -126,21 +135,21 @@ const TeamCategoryTable: React.FC = () => {
                           }
                         />
                       </div>
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 ))
               ) : (
-                <tr>
-                  <td
+                <TableRow>
+                  <TableCell
                     colSpan={4}
                     className="px-6 py-8 text-center text-base text-gray-500"
                   >
                     No categories found matching your search criteria.
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               )}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
 
         {/* Pagination */}

@@ -13,6 +13,15 @@ import { useSummitterStory } from "@/hooks/summiter-story/useSummiterStory";
 import Loader from "../loader/loader";
 import { useParams } from "next/navigation";
 import { EditIcon } from "@/components/icons/icnos";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { StoryItem } from "@/types/summitter";
 
 const SummitterStoryTable = () => {
   const { id } = useParams();
@@ -62,32 +71,32 @@ const SummitterStoryTable = () => {
 
           {/* Table */}
           <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-blue-900 text-white">
-                <tr>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+            <Table className="w-full">
+              <TableHeader className="bg-blue-900 text-white">
+                <TableRow>
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     S.N.
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  </TableHead>
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     Image
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  </TableHead>
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     Cover Image
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  </TableHead>
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     Title
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  </TableHead>
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 bg-white">
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody className="divide-y divide-gray-200 bg-white">
                 {items && items.length > 0 ? (
-                  items.map((item, index) => (
-                    <tr key={item.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4">{index + 1}</td>
-                      <td className="px-6 py-4">
+                  items.map((item: StoryItem, index: number) => (
+                    <TableRow key={item.id} className="hover:bg-gray-50">
+                      <TableCell className="px-6 py-4">{index + 1}</TableCell>
+                      <TableCell className="px-6 py-4">
                         <Image
                           src={item.image?.url || "/images/broken/broken.png"}
                           alt={item.title}
@@ -96,8 +105,8 @@ const SummitterStoryTable = () => {
                           className="aspect-video h-20 w-30 object-cover"
                           loading="lazy"
                         />
-                      </td>
-                      <td className="px-6 py-4">
+                      </TableCell>
+                      <TableCell className="px-6 py-4">
                         <Image
                           src={
                             item.coverImage?.url || "/images/broken/broken.png"
@@ -108,9 +117,9 @@ const SummitterStoryTable = () => {
                           className="aspect-video h-20 w-30 object-cover"
                           loading="lazy"
                         />
-                      </td>
-                      <td className="px-6 py-4">{item.title}</td>
-                      <td className="px-6 py-4">
+                      </TableCell>
+                      <TableCell className="px-6 py-4">{item.title}</TableCell>
+                      <TableCell className="px-6 py-4">
                         <div className="flex items-center space-x-2">
                           <Link
                             href={`/admin/summitters/${id}/stories/${item.id}`}
@@ -137,21 +146,21 @@ const SummitterStoryTable = () => {
                             }
                           />
                         </div>
-                      </td>
-                    </tr>
+                      </TableCell>
+                    </TableRow>
                   ))
                 ) : (
-                  <tr>
-                    <td
+                  <TableRow>
+                    <TableCell
                       colSpan={5}
                       className="px-6 py-8 text-center text-gray-500"
                     >
                       No summitter stories found.
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 )}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
 
           {/* Pagination */}

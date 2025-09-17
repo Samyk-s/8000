@@ -13,6 +13,15 @@ import PackageTabs from "../../tabs/package-tabs";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { FileItem } from "@/types/file";
 
 const FileForm = dynamic(() => import("../forms/file-form/file-form"), {
   ssr: false,
@@ -75,29 +84,29 @@ const GalleryTable: React.FC = () => {
 
           {/* Table */}
           <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-blue-900 text-white">
-                <tr>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+            <Table className="w-full">
+              <TableHeader className="bg-blue-900 text-white">
+                <TableRow>
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     S.N.
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  </TableHead>
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     Image
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  </TableHead>
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     Alt
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  </TableHead>
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 bg-white">
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody className="divide-y divide-gray-200 bg-white">
                 {items && items.length > 0 ? (
-                  items.map((item, index) => (
-                    <tr key={item.id}>
-                      <td className="px-6 py-4">{index + 1}</td>
-                      <td className="whitespace-nowrap px-6 py-4">
+                  items.map((item: FileItem, index: number) => (
+                    <TableRow key={item.id}>
+                      <TableCell className="px-6 py-4">{index + 1}</TableCell>
+                      <TableCell className="whitespace-nowrap px-6 py-4">
                         <Link href={`/${item.file.url}`} target="_blank">
                           <div className="h-20 w-30">
                             <Image
@@ -109,11 +118,11 @@ const GalleryTable: React.FC = () => {
                             />
                           </div>
                         </Link>
-                      </td>
-                      <td className="px-6 py-4 text-base text-gray-900">
+                      </TableCell>
+                      <TableCell className="px-6 py-4 text-base text-gray-900">
                         {item.alt}
-                      </td>
-                      <td className="px-6 py-4">
+                      </TableCell>
+                      <TableCell className="px-6 py-4">
                         <div className="flex items-center space-x-2">
                           <Popconfirm
                             title="Delete the Image"
@@ -136,21 +145,21 @@ const GalleryTable: React.FC = () => {
                             }
                           />
                         </div>
-                      </td>
-                    </tr>
+                      </TableCell>
+                    </TableRow>
                   ))
                 ) : (
-                  <tr>
-                    <td
+                  <TableRow>
+                    <TableCell
                       colSpan={7}
                       className="px-6 py-8 text-center text-base text-gray-500"
                     >
                       No gallery found.
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 )}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
 
           {/* Pagination */}

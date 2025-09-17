@@ -12,6 +12,15 @@ import InquiryTabs from "../../tabs/inquiry-tabs";
 import Search from "../../search/search";
 import { useInquiry } from "@/hooks/inquiry/useInquiry";
 import dynamic from "next/dynamic";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { InquiryItem } from "@/types/inquiry";
 
 const InquiryTable: React.FC = () => {
   const {
@@ -61,41 +70,43 @@ const InquiryTable: React.FC = () => {
 
           {/* Table */}
           <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-blue-900 text-white">
-                <tr>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+            <Table className="w-full">
+              <TableHeader className="bg-blue-900 text-white">
+                <TableRow>
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     S.N.
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  </TableHead>
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     Name
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  </TableHead>
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     Email
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  </TableHead>
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     Phone
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  </TableHead>
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     Received on
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  </TableHead>
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 bg-white">
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody className="divide-y divide-gray-200 bg-white">
                 {items && items.length > 0 ? (
-                  items.map((item, index) => (
-                    <tr key={item.id}>
-                      <td className="px-6 py-4">{index + 1}</td>
-                      <td className="px-6 py-4">{item.name}</td>
-                      <td className="px-6 py-4">{item.email}</td>
-                      <td className="px-6 py-4">{item.phoneNumber}</td>
-                      <td className="px-6 py-4">
+                  items.map((item: InquiryItem, index: number) => (
+                    <TableRow key={item.id}>
+                      <TableCell className="px-6 py-4">{index + 1}</TableCell>
+                      <TableCell className="px-6 py-4">{item.name}</TableCell>
+                      <TableCell className="px-6 py-4">{item.email}</TableCell>
+                      <TableCell className="px-6 py-4">
+                        {item.phoneNumber}
+                      </TableCell>
+                      <TableCell className="px-6 py-4">
                         {new Date(item.createdAt).toLocaleString()}
-                      </td>
-                      <td className="px-6 py-4">
+                      </TableCell>
+                      <TableCell className="px-6 py-4">
                         <div className="flex items-center space-x-2">
                           <button onClick={() => openModal(item.id)}>
                             <ViewIcon />
@@ -115,21 +126,21 @@ const InquiryTable: React.FC = () => {
                             </button>
                           </Popconfirm>
                         </div>
-                      </td>
-                    </tr>
+                      </TableCell>
+                    </TableRow>
                   ))
                 ) : (
-                  <tr>
-                    <td
+                  <TableRow>
+                    <TableCell
                       colSpan={6}
                       className="px-6 py-8 text-center text-gray-500"
                     >
                       No inquiries found.
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 )}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
 
           {/* Pagination */}

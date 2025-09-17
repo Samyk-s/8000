@@ -13,6 +13,15 @@ import BlogTabs from "../../tabs/blog-tabs";
 import { PlusIcon, TrashIcon } from "@/assets/icons";
 import { useBlog } from "@/hooks/blogs/useBlog";
 import { EditIcon, SeoIcon } from "@/components/icons/icnos";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { BlogItem } from "@/types/blog";
 
 const BlogTable: React.FC = () => {
   const {
@@ -56,37 +65,37 @@ const BlogTable: React.FC = () => {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead
+          <Table className="w-full">
+            <TableHeader
               className="text-white"
               style={{ backgroundColor: "oklch(37.9% 0.146 265.522)" }}
             >
-              <tr>
-                <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+              <TableRow>
+                <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                   S.N.
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                </TableHead>
+                <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                   Image
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                </TableHead>
+                <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                   Title
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                </TableHead>
+                <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                   Published At
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                </TableHead>
+                <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                   Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 bg-white dark:bg-[#020D1A]">
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody className="divide-y divide-gray-200 bg-white dark:bg-[#020D1A]">
               {items && items.length > 0 ? (
-                items.map((item, index) => (
-                  <tr key={uuidv4()}>
-                    <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900 dark:text-white">
+                items.map((item: BlogItem, index: number) => (
+                  <TableRow key={uuidv4()}>
+                    <TableCell className="whitespace-nowrap px-6 py-4 text-base text-gray-900 dark:text-white">
                       {index + 1}
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4">
+                    </TableCell>
+                    <TableCell className="whitespace-nowrap px-6 py-4">
                       <Link
                         href={item?.image?.url || "/images/broken/broken.png"}
                         target="_blank"
@@ -104,11 +113,11 @@ const BlogTable: React.FC = () => {
                           />
                         </div>
                       </Link>
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900 dark:text-white">
+                    </TableCell>
+                    <TableCell className="whitespace-nowrap px-6 py-4 text-base text-gray-900 dark:text-white">
                       {item?.title}
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900 dark:text-white">
+                    </TableCell>
+                    <TableCell className="whitespace-nowrap px-6 py-4 text-base text-gray-900 dark:text-white">
                       {item?.createdAt
                         ? new Date(item.createdAt).toLocaleDateString("en-US", {
                             year: "numeric",
@@ -116,8 +125,8 @@ const BlogTable: React.FC = () => {
                             day: "numeric",
                           })
                         : "-"}
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-base font-medium dark:text-white">
+                    </TableCell>
+                    <TableCell className="whitespace-nowrap px-6 py-4 text-base font-medium dark:text-white">
                       <div className="flex items-center space-x-2">
                         <Link href={`/admin/blogs/${item?.id}/seo`} title="SEO">
                           <SeoIcon />
@@ -148,21 +157,21 @@ const BlogTable: React.FC = () => {
                           title={item?.status === 1 ? "Deactive" : "Active"}
                         />
                       </div>
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 ))
               ) : (
-                <tr>
-                  <td
+                <TableRow>
+                  <TableCell
                     colSpan={7}
                     className="px-6 py-8 text-center text-base text-gray-500"
                   >
                     No Pages found matching your search criteria.
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               )}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
 
         <Pagination

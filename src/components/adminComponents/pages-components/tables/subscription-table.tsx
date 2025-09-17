@@ -8,6 +8,15 @@ import Entry from "../../entry/entry";
 import Search from "../../search/search";
 import Loader from "../loader/loader";
 import { useSubscription } from "@/hooks/subscription/useSubscription";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { NewsLetterItem } from "@/types/news-letter";
 
 const SubscriptionTable: React.FC = () => {
   const {
@@ -57,33 +66,36 @@ const SubscriptionTable: React.FC = () => {
 
         {/* Table */}
         <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-blue-900 text-white">
-              <tr>
-                <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+          <Table className="w-full">
+            <TableHeader className="bg-blue-900 text-white">
+              <TableRow>
+                <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                   S.N.
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                </TableHead>
+                <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                   Email
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                </TableHead>
+                <TableHead
+                  className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider"
+                  text-white
+                >
                   Received on
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                </TableHead>
+                <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                   Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody className="divide-y divide-gray-200 bg-white">
               {items && items.length > 0 ? (
-                items.map((item, index) => (
-                  <tr key={item.id}>
-                    <td className="px-6 py-4">{index + 1}</td>
-                    <td className="px-6 py-4">{item.email}</td>
-                    <td className="px-6 py-4">
+                items.map((item: NewsLetterItem, index: number) => (
+                  <TableRow key={item.id}>
+                    <TableCell className="px-6 py-4">{index + 1}</TableCell>
+                    <TableCell className="px-6 py-4">{item.email}</TableCell>
+                    <TableCell className="px-6 py-4">
                       {new Date(item.createdAt).toLocaleString()}
-                    </td>
-                    <td className="px-6 py-4">
+                    </TableCell>
+                    <TableCell className="px-6 py-4">
                       <Popconfirm
                         title="Delete Subscriber"
                         description="Are you sure you want to delete this subscriber?"
@@ -95,21 +107,21 @@ const SubscriptionTable: React.FC = () => {
                           <TrashIcon />
                         </button>
                       </Popconfirm>
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 ))
               ) : (
-                <tr>
-                  <td
+                <TableRow>
+                  <TableCell
                     colSpan={4}
                     className="px-6 py-8 text-center text-gray-500"
                   >
                     No subscriber found.
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               )}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
 
         {/* Pagination */}

@@ -10,6 +10,14 @@ const BookingView = dynamic(() => import("../../view/booking-view"));
 import { BookingStatus } from "@/types/enum/enum";
 import { useBooking } from "@/hooks/booking/useBooking";
 import dynamic from "next/dynamic";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 const RecentBookingTable: React.FC = () => {
   const {
     items,
@@ -68,40 +76,40 @@ const RecentBookingTable: React.FC = () => {
             </Link>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="text-gray-800">
-                <tr>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+            <Table className="w-full">
+              <TableHeader className="text-gray-800">
+                <TableRow>
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     Customer Name
-                  </th>
+                  </TableHead>
 
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     Package
-                  </th>
+                  </TableHead>
 
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     Status
-                  </th>
+                  </TableHead>
 
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
                     Created Date
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 bg-white">
+                  </TableHead>
+                  <TableHead className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider text-white">
+                    Action
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody className="divide-y divide-gray-200 bg-white">
                 {items && items.length > 0 ? (
-                  items.map((item: BookingItem, index) => (
-                    <tr key={item.id} className="hover:bg-gray-50">
-                      <td className="whitespace-nowrap px-6 py-4">
+                  items.map((item: BookingItem) => (
+                    <TableRow key={item.id} className="hover:bg-gray-50">
+                      <TableCell className="whitespace-nowrap px-6 py-4">
                         <div className="text-base font-medium text-gray-900">
                           {item.customerName}
                         </div>
-                      </td>
+                      </TableCell>
 
-                      <td className="whitespace-nowrap px-6 py-4">
+                      <TableCell className="whitespace-nowrap px-6 py-4">
                         <div className="text-base text-gray-900">
                           <Link
                             href={`/admin/packages/${item?.package?.id}`}
@@ -110,16 +118,16 @@ const RecentBookingTable: React.FC = () => {
                             {item.package?.title || "N/A"}
                           </Link>
                         </div>
-                      </td>
+                      </TableCell>
 
-                      <td className="whitespace-nowrap px-6 py-4">
+                      <TableCell className="whitespace-nowrap px-6 py-4">
                         <StatusBadge status={item.status as BookingStatus} />
-                      </td>
-                      <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap px-6 py-4 text-base text-gray-900">
                         {formatTimeAgo(item?.createdAt)}
-                      </td>
+                      </TableCell>
 
-                      <td className="whitespace-nowrap px-6 py-4 text-base font-medium">
+                      <TableCell className="whitespace-nowrap px-6 py-4 text-base font-medium">
                         <div className="flex space-x-2">
                           <button
                             className="rounded p-1 text-blue-600 hover:bg-blue-50 hover:text-blue-900"
@@ -137,21 +145,21 @@ const RecentBookingTable: React.FC = () => {
                             <EditIcon />
                           </Link>
                         </div>
-                      </td>
-                    </tr>
+                      </TableCell>
+                    </TableRow>
                   ))
                 ) : (
-                  <tr>
-                    <td
+                  <TableRow>
+                    <TableCell
                       colSpan={7}
                       className="px-6 py-8 text-center text-base text-gray-500"
                     >
                       No bookings found matching your search criteria.
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 )}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
         </div>
       </div>
@@ -163,7 +171,7 @@ const RecentBookingTable: React.FC = () => {
         centered
         width={800}
         style={{ maxWidth: "90%", padding: 0 }}
-        title="Inquiry Details"
+        title="Booking Details"
       >
         {selectedId > 0 && (
           <Suspense fallback={<Loader />}>
