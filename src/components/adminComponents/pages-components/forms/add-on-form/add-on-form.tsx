@@ -1,13 +1,12 @@
 "use client";
-import React, { useEffect } from "react";
-import { Form, Input, Button, Row, Col, message } from "antd";
+import React from "react";
+import { Form, Input, Button, Row, Col } from "antd";
 import dynamic from "next/dynamic";
 import Loader from "../../loader/loader";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/redux-store/store/store";
-import { createAddon, updateAddon } from "@/redux-store/slices/addonSlice";
-import { useParams, useRouter } from "next/navigation";
-import { AddOnItem, AddOnPayload } from "@/types/addOns";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux-store/store/store";
+import { useAddOnForm } from "@/hooks/addon/useAddonForm";
+import { AddOnItem } from "@/types/addOns";
 
 const TextEditor = dynamic(() => import("../../text-editor/text-editor"), {
   ssr: false,
@@ -20,58 +19,8 @@ const AddOnForm = ({
   onClose: () => void;
   addon?: AddOnItem | null;
 }) => {
-  const [form] = Form.useForm();
-  const dispatch = useDispatch<AppDispatch>();
-  const { id } = useParams<{ id: string }>();
+  const { form, onFinish } = useAddOnForm(addon, onClose);
   const { loading } = useSelector((state: RootState) => state.addons);
-  const router = useRouter();
-
-  // Pre-fill form if editing
-  useEffect(() => {
-    if (addon) {
-      form.setFieldsValue({
-        title: addon.title,
-        price: addon.price,
-        order: addon.order,
-        description: addon.description,
-      });
-    }
-  }, [addon, form]);
-
-  const onFinish = async (values: AddOnPayload) => {
-    try {
-      const payload = {
-        ...values,
-        price: Number(values.price),
-        order: Number(values.order),
-      };
-
-      if (addon) {
-        // Update existing addon
-        dispatch(
-          updateAddon({
-            packageId: Number(id),
-            addonId: addon.id,
-            data: payload,
-          }),
-        );
-      } else {
-        // Create new addon
-        dispatch(
-          createAddon({
-            packageId: Number(id),
-            data: payload,
-          }),
-        );
-      }
-
-      form.resetFields();
-      onClose();
-    } catch (error) {
-      // console.error("Failed to save addon:", error);
-      message.error("Failed to save addon");
-    }
-  };
 
   if (loading) return <Loader />;
 
@@ -85,7 +34,6 @@ const AddOnForm = ({
         onFinish={onFinish}
       >
         <Row gutter={16}>
-          {/* TITLE */}
           <Col xs={24}>
             <Form.Item
               label={<span className="uppercase dark:text-white">Title</span>}
@@ -96,7 +44,6 @@ const AddOnForm = ({
             </Form.Item>
           </Col>
 
-          {/* PRICE */}
           <Col xs={24} md={12}>
             <Form.Item
               label={<span className="uppercase dark:text-white">Price</span>}
@@ -107,7 +54,6 @@ const AddOnForm = ({
             </Form.Item>
           </Col>
 
-          {/* ORDER */}
           <Col xs={24} md={12}>
             <Form.Item
               label={<span className="uppercase dark:text-white">Order</span>}
@@ -118,7 +64,6 @@ const AddOnForm = ({
             </Form.Item>
           </Col>
 
-          {/* DESCRIPTION */}
           <Col span={24}>
             <Form.Item
               label={
@@ -132,7 +77,6 @@ const AddOnForm = ({
             </Form.Item>
           </Col>
 
-          {/* SUBMIT */}
           <Col span={24}>
             <Form.Item>
               <Button
