@@ -160,11 +160,11 @@ const inquiriesSlice = createSlice({
       .addCase(getInquiry.fulfilled, (state, action) => {
 
         state.inquiry = action.payload;
-        state.loading = false;
+
       })
       .addCase(getInquiry.rejected, (state, action: PayloadAction<any>) => {
         state.error = action.payload || "Failed to fetch itineraries";
-        state.loading = false;
+
       });
 
     // create

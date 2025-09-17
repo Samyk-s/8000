@@ -1,94 +1,36 @@
 "use client";
 
-import React, { useEffect, useRef, useState, useCallback } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/redux-store/store/store";
-import {
-  fetchInquiries,
-  deleteInquiry,
-  searchInquiries,
-} from "@/redux-store/slices/inquirySlice";
-import { InquiryItem } from "@/types/inquiry";
-import InquiryView from "../../view/inquiry-view";
-import InquiryTabs from "../../tabs/inquiry-tabs";
+import React, { Suspense } from "react";
 import { TrashIcon } from "@/assets/icons";
+import { ViewIcon } from "@/components/icons/icnos";
+import { Modal, Popconfirm, message } from "antd";
 import Pagination from "../../pagination/pagination";
 import Entry from "../../entry/entry";
 import Loader from "../loader/loader";
-import { Button, message, Modal, Popconfirm } from "antd";
-import { useRouter, useSearchParams } from "next/navigation";
-import { ViewIcon } from "@/components/icons/icnos";
+const InquiryView = dynamic(() => import("../../view/inquiry-view"));
+import InquiryTabs from "../../tabs/inquiry-tabs";
 import Search from "../../search/search";
+import { useInquiry } from "@/hooks/inquiry/useInquiry";
+import dynamic from "next/dynamic";
 
 const InquiryTable: React.FC = () => {
-  const { items, loading, error, meta } = useSelector(
-    (state: RootState) => state.inquiries,
-  );
-
-  const dispatch = useDispatch<AppDispatch>();
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedId, setSelectedId] = useState<number>(0);
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState<number>(10);
-  const [search, setSearch] = useState("");
-  const debounceRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Set default query param once
-  useEffect(() => {
-    const type = searchParams.get("type") || "general";
-    if (!searchParams.get("type")) {
-      router.replace(`/admin/inquiries?type=${type}`);
-    }
-  }, [router, searchParams]);
-
-  // Fetch inquiries when page, limit or search changes
-  useEffect(() => {
-    const type = searchParams.get("type") || "general";
-    dispatch(fetchInquiries({ params: { page, limit, search: type } }));
-  }, [dispatch, page, limit, searchParams]);
-
-  // Search handler with debounce
-  const handleSearch = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const type = searchParams.get("type") || "general";
-      const value = e.target.value;
-
-      setSearch(value);
-
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-      debounceRef.current = setTimeout(() => {
-        dispatch(
-          searchInquiries({
-            params: { page, limit, search: value, inquiry_type: type },
-          }),
-        );
-      }, 300);
-    },
-    [dispatch, page, limit],
-  );
-
-  // Delete handler
-  const handleDelete = useCallback(
-    (id: number) => {
-      dispatch(deleteInquiry({ id }));
-    },
-    [dispatch],
-  );
-
-  // Open modal handler
-  const handleOpenModal = useCallback((id: number) => {
-    setSelectedId(id);
-    setIsModalOpen(true);
-  }, []);
-
-  // Close modal handler
-  const handleCloseModal = useCallback(() => {
-    setIsModalOpen(false);
-    setSelectedId(0);
-  }, []);
+  const {
+    items,
+    loading,
+    error,
+    meta,
+    page,
+    setPage,
+    limit,
+    setLimit,
+    search,
+    handleSearch,
+    handleDelete,
+    isModalOpen,
+    selectedId,
+    openModal,
+    closeModal,
+  } = useInquiry();
 
   if (loading) return <Loader />;
   if (error) message.error(error);
@@ -144,7 +86,7 @@ const InquiryTable: React.FC = () => {
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
                 {items && items.length > 0 ? (
-                  items.map((item: InquiryItem, index) => (
+                  items.map((item, index) => (
                     <tr key={item.id}>
                       <td className="px-6 py-4">{index + 1}</td>
                       <td className="px-6 py-4">{item.name}</td>
@@ -155,10 +97,9 @@ const InquiryTable: React.FC = () => {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center space-x-2">
-                          <button onClick={() => handleOpenModal(item.id)}>
+                          <button onClick={() => openModal(item.id)}>
                             <ViewIcon />
                           </button>
-
                           <Popconfirm
                             title="Delete Inquiry"
                             description="Are you sure you want to delete this inquiry?"
@@ -205,14 +146,18 @@ const InquiryTable: React.FC = () => {
       {/* View Modal */}
       <Modal
         open={isModalOpen}
-        onCancel={handleCloseModal}
+        onCancel={closeModal}
         footer={null}
         centered
         width={800}
         style={{ maxWidth: "90%", padding: 0 }}
         title="Inquiry Details"
       >
-        {selectedId > 0 && <InquiryView id={selectedId} />}
+        {selectedId && (
+          <Suspense fallback={<Loader />}>
+            <InquiryView id={selectedId} />
+          </Suspense>
+        )}
       </Modal>
     </>
   );
