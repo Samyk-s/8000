@@ -1,75 +1,42 @@
 "use client";
-import React, { Suspense, useEffect, useRef, useState } from "react";
+import React, { Suspense } from "react";
+import { useParams } from "next/navigation";
+import { useDepartures } from "@/hooks/departure/useDeparture";
+import Loader from "../loader/loader";
 import Entry from "../../entry/entry";
 import Search from "../../search/search";
 import Pagination from "../../pagination/pagination";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/redux-store/store/store";
 import ToggleButton from "../../toggle-button/toggle-button";
 import { PlusIcon, TrashIcon } from "@/assets/icons";
-import Loader from "../loader/loader";
 import { Button, message, Modal, Popconfirm } from "antd";
 import PackageTabs from "../../tabs/package-tabs";
-import { useParams } from "next/navigation";
-import {
-  deleteDeparture,
-  fetchDepartures,
-  searchDeparture,
-  toggleDepartureStatus,
-} from "@/redux-store/slices/departureSlice";
-import { DepartureItem } from "@/types/departure";
 import dynamic from "next/dynamic";
+
 const DepartureForm = dynamic(
   () => import("../forms/departure-form/departure-form"),
   { ssr: false },
 );
 
 const DepartureTable: React.FC = () => {
-  const { items, loading, error, meta } = useSelector(
-    (state: RootState) => state?.departures,
-  );
-  const dispatch = useDispatch<AppDispatch>();
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const { id } = useParams<{ id: string }>();
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState<number>(10);
-  const [search, setSearch] = useState("");
-  const debounceRef = useRef<NodeJS.Timeout | null>(null);
+  const packageId = Number(id);
 
-  useEffect(() => {
-    dispatch(
-      fetchDepartures({
-        id: Number(id),
-        params: { limit: limit, page: page },
-      }),
-    );
-  }, [dispatch, id, limit, page]);
-
-  // Close modal
-  const handleClose = () => {
-    setIsModalOpen(false);
-  };
-
-  // search itinerary
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearch(value);
-
-    // Clear previous timeout
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
-    }
-
-    // Set new timeout
-    debounceRef.current = setTimeout(() => {
-      dispatch(
-        searchDeparture({
-          id: Number(id),
-          params: { limit, page, search: value },
-        }),
-      );
-    }, 300); // 300ms debounce
-  };
+  const {
+    items,
+    loading,
+    error,
+    meta,
+    limit,
+    search,
+    isModalOpen,
+    handleSearch,
+    openModal,
+    closeModal,
+    handleDelete,
+    handleToggleStatus,
+    changePage,
+    changeLimit,
+  } = useDepartures(packageId);
 
   if (loading) return <Loader />;
   if (error) message.error(error);
@@ -84,9 +51,7 @@ const DepartureTable: React.FC = () => {
               <PackageTabs />
               <Button
                 className="flex w-fit items-center gap-1 rounded-md bg-black px-2 py-1 text-white hover:!bg-black hover:!text-white dark:bg-white dark:text-black"
-                onClick={() => {
-                  setIsModalOpen(true);
-                }}
+                onClick={openModal}
               >
                 <PlusIcon />
                 <span>Create</span>
@@ -94,14 +59,14 @@ const DepartureTable: React.FC = () => {
             </div>
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <Entry
-                onChange={(value) => setLimit(Number(value))}
                 value={limit}
+                onChange={(val) => changeLimit(Number(val))}
                 total={meta?.totalItems}
               />
               <Search
-                placeholder="Search package..."
+                placeholder="Search departure..."
                 search={search}
-                onChange={handleSearch}
+                onChange={(e) => handleSearch(e.target.value)}
               />
             </div>
           </div>
@@ -118,7 +83,7 @@ const DepartureTable: React.FC = () => {
                     Start date
                   </th>
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
-                    end date
+                    End date
                   </th>
                   <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
                     Days
@@ -129,27 +94,20 @@ const DepartureTable: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
-                {items && items?.length > 0 ? (
-                  items?.map((item: DepartureItem, index) => (
-                    <tr key={item?.id}>
+                {items && items.length > 0 ? (
+                  items.map((item, index) => (
+                    <tr key={item.id}>
                       <td className="px-6 py-4">{index + 1}</td>
-                      <td className="px-6 py-4">{item?.startDate}</td>
-                      <td className="px-6 py-4">{item?.endDate}</td>
-                      <td className="px-6 py-4">{item?.days}</td>
+                      <td className="px-6 py-4">{item.startDate}</td>
+                      <td className="px-6 py-4">{item.endDate}</td>
+                      <td className="px-6 py-4">{item.days}</td>
                       <td className="px-6 py-4">
                         <div className="flex items-center space-x-2">
                           <Popconfirm
                             title="Delete the Departure"
                             description="Are you sure to delete this departure?"
                             onCancel={() => message.error("Cancelled")}
-                            onConfirm={() =>
-                              dispatch(
-                                deleteDeparture({
-                                  packageId: Number(id),
-                                  departureId: Number(item?.id),
-                                }),
-                              )
-                            }
+                            onConfirm={() => handleDelete(item.id)}
                             okText="Yes"
                             cancelText="No"
                           >
@@ -162,17 +120,10 @@ const DepartureTable: React.FC = () => {
                           </Popconfirm>
 
                           <ToggleButton
-                            onChange={() =>
-                              dispatch(
-                                toggleDepartureStatus({
-                                  packageId: Number(id),
-                                  departureId: Number(item?.id),
-                                }),
-                              )
-                            }
-                            checked={item?.status === 1}
+                            onChange={() => handleToggleStatus(item.id)}
+                            checked={item.status === 1}
                             title={
-                              item?.status === 1 ? "Deactivate" : "Activate"
+                              item.status === 1 ? "Deactivate" : "Activate"
                             }
                           />
                         </div>
@@ -199,23 +150,23 @@ const DepartureTable: React.FC = () => {
             totalPages={meta?.totalPages}
             itemsPerPage={limit}
             totalItems={meta?.totalItems}
-            onPageChange={(page) => setPage(page)}
+            onPageChange={changePage}
           />
         </div>
       </div>
 
       {/* Create / Edit Modal */}
       <Modal
-        title={"Add Departure"}
+        title="Add Departure"
         open={isModalOpen}
-        onCancel={handleClose}
+        onCancel={closeModal}
         footer={null}
         centered
         width={800}
-        style={{ maxWidth: "90%", padding: "0" }}
+        style={{ maxWidth: "90%", padding: 0 }}
       >
         <Suspense fallback={null}>
-          <DepartureForm setIsModalOpen={setIsModalOpen} />
+          <DepartureForm onClose={closeModal} />
         </Suspense>
       </Modal>
     </>

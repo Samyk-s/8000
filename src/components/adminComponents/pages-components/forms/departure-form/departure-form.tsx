@@ -16,11 +16,7 @@ const DatePicker = dynamic(() => import("antd").then((mod) => mod.DatePicker), {
   ssr: false,
 });
 
-const DepartureForm = ({
-  setIsModalOpen,
-}: {
-  setIsModalOpen: (val: boolean) => void;
-}) => {
+const DepartureForm = ({ onClose }: { onClose: () => void }) => {
   const [form] = Form.useForm();
   const dispatch = useDispatch<AppDispatch>();
   const { id } = useParams<{ id: string }>();
@@ -46,7 +42,7 @@ const DepartureForm = ({
         createDeparture({ id: Number(id), data: payload as DepartureItem }),
       );
 
-      setIsModalOpen(false);
+      onClose();
       form.resetFields();
       message.success("Departure saved successfully!");
     } catch (error) {
