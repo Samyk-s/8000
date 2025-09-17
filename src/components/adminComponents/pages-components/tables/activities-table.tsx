@@ -10,7 +10,7 @@ import Image from "next/image";
 import { v4 as uuidv4 } from "uuid";
 import { SeoIcon, EditIcon } from "@/components/icons/icnos";
 import { PlusIcon, TrashIcon } from "@/assets/icons";
-import { Popconfirm, message } from "antd";
+import { Popconfirm } from "antd";
 import ToggleButton from "../../toggle-button/toggle-button";
 
 const ActivityTable: React.FC = () => {

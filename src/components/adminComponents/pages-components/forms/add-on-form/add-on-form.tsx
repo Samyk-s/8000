@@ -14,10 +14,10 @@ const TextEditor = dynamic(() => import("../../text-editor/text-editor"), {
 });
 
 const AddOnForm = ({
-  setIsModalOpen,
+  onClose,
   addon,
 }: {
-  setIsModalOpen: (val: boolean) => void;
+  onClose: () => void;
   addon?: AddOnItem | null;
 }) => {
   const [form] = Form.useForm();
@@ -66,7 +66,7 @@ const AddOnForm = ({
       }
 
       form.resetFields();
-      setIsModalOpen(false);
+      onClose();
     } catch (error) {
       // console.error("Failed to save addon:", error);
       message.error("Failed to save addon");

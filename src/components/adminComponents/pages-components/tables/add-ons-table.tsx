@@ -1,71 +1,41 @@
 "use client";
-import React, { Suspense, useEffect, useRef, useState } from "react";
+import React, { Suspense } from "react";
+import { useAddons } from "@/hooks/addon/useAddon";
+import Loader from "../loader/loader";
 import Entry from "../../entry/entry";
 import Search from "../../search/search";
 import Pagination from "../../pagination/pagination";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/redux-store/store/store";
 import ToggleButton from "../../toggle-button/toggle-button";
 import { PlusIcon, TrashIcon } from "@/assets/icons";
-import Loader from "../loader/loader";
 import { Button, message, Modal, Popconfirm } from "antd";
-import PackageTabs from "../../tabs/package-tabs";
 import { useParams } from "next/navigation";
 import dynamic from "next/dynamic";
-import {
-  deleteAddon,
-  fetchAddons,
-  searchAddons,
-  toggleAddonStatus,
-} from "@/redux-store/slices/addonSlice";
-import { AddOnItem } from "@/types/addOns";
+import PackageTabs from "../../tabs/package-tabs";
 import { EditIcon } from "@/components/icons/icnos";
+
 const AddOnForm = dynamic(() => import("../forms/add-on-form/add-on-form"));
 
 const AddOnsTable: React.FC = () => {
-  const { items, loading, error, meta } = useSelector(
-    (state: RootState) => state?.addons,
-  );
-  const dispatch = useDispatch<AppDispatch>();
   const { id } = useParams<{ id: string }>();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedAddon, setSelectedAddon] = useState<AddOnItem | null>(null);
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState<number>(10);
-  const [search, setSearch] = useState("");
-  const debounceRef = useRef<NodeJS.Timeout | null>(null);
+  const packageId = Number(id);
 
-  useEffect(() => {
-    dispatch(
-      fetchAddons({
-        id: Number(id),
-        params: { limit, page },
-      }),
-    );
-  }, [dispatch, id, limit, page]);
-
-  // Close modal
-  const handleClose = () => {
-    setIsModalOpen(false);
-    setSelectedAddon(null);
-  };
-
-  // search addons
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearch(value);
-
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-
-    debounceRef.current = setTimeout(() => {
-      dispatch(
-        searchAddons({
-          id: Number(id),
-          params: { limit, page, search: value },
-        }),
-      );
-    }, 300);
-  };
+  const {
+    items,
+    loading,
+    error,
+    meta,
+    limit,
+    search,
+    selectedAddon,
+    isModalOpen,
+    handleSearch,
+    openModal,
+    closeModal,
+    handleDelete,
+    handleToggleStatus,
+    changePage,
+    changeLimit,
+  } = useAddons(packageId);
 
   if (loading) return <Loader />;
   if (error) message.error(error);
@@ -80,10 +50,7 @@ const AddOnsTable: React.FC = () => {
               <PackageTabs />
               <Button
                 className="flex w-fit items-center gap-1 rounded-md bg-black px-2 py-1 text-white hover:!bg-black hover:!text-white dark:bg-white dark:text-black"
-                onClick={() => {
-                  setSelectedAddon(null);
-                  setIsModalOpen(true);
-                }}
+                onClick={() => openModal()}
               >
                 <PlusIcon />
                 <span>Create</span>
@@ -91,14 +58,16 @@ const AddOnsTable: React.FC = () => {
             </div>
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <Entry
-                onChange={(value) => setLimit(Number(value))}
                 value={limit}
+                onChange={(value: string | number) =>
+                  changeLimit(Number(value))
+                }
                 total={meta?.totalItems}
               />
               <Search
                 placeholder="Search package..."
                 search={search}
-                onChange={handleSearch}
+                onChange={(e) => handleSearch(e.target.value)}
               />
             </div>
           </div>
@@ -124,38 +93,25 @@ const AddOnsTable: React.FC = () => {
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
                 {items && items.length > 0 ? (
-                  items.map((item: AddOnItem, index: number) => (
+                  items.map((item, index) => (
                     <tr key={item.id}>
                       <td className="px-6 py-4">{index + 1}</td>
                       <td className="px-6 py-4">{item.title}</td>
                       <td className="px-6 py-4">{item.price}</td>
                       <td className="px-6 py-4">
                         <div className="flex items-center space-x-2">
-                          {/* Edit Button */}
                           <button
                             className="rounded p-1 text-blue-600 hover:bg-blue-50 hover:text-blue-900"
                             title="Edit AddOn"
-                            onClick={() => {
-                              setSelectedAddon(item);
-                              setIsModalOpen(true);
-                            }}
+                            onClick={() => openModal(item)}
                           >
                             <EditIcon />
                           </button>
-
-                          {/* Delete */}
                           <Popconfirm
                             title="Delete the Addon"
                             description="Are you sure to delete this addon?"
                             onCancel={() => message.error("Cancelled")}
-                            onConfirm={() =>
-                              dispatch(
-                                deleteAddon({
-                                  packageId: Number(id),
-                                  addonId: Number(item.id),
-                                }),
-                              )
-                            }
+                            onConfirm={() => handleDelete(item.id)}
                             okText="Yes"
                             cancelText="No"
                           >
@@ -166,17 +122,8 @@ const AddOnsTable: React.FC = () => {
                               <TrashIcon />
                             </button>
                           </Popconfirm>
-
-                          {/* Toggle Status */}
                           <ToggleButton
-                            onChange={() =>
-                              dispatch(
-                                toggleAddonStatus({
-                                  packageId: Number(id),
-                                  addonId: Number(item.id),
-                                }),
-                              )
-                            }
+                            onChange={() => handleToggleStatus(item.id)}
                             checked={item.status === 1}
                             title={
                               item.status === 1 ? "Deactivate" : "Activate"
@@ -206,7 +153,7 @@ const AddOnsTable: React.FC = () => {
             totalPages={meta?.totalPages}
             itemsPerPage={limit}
             totalItems={meta?.totalItems}
-            onPageChange={(page) => setPage(page)}
+            onPageChange={changePage}
           />
         </div>
       </div>
@@ -215,14 +162,14 @@ const AddOnsTable: React.FC = () => {
       <Modal
         title={selectedAddon ? "Edit Addon" : "Add Addon"}
         open={isModalOpen}
-        onCancel={handleClose}
+        onCancel={closeModal}
         footer={null}
         centered
         width={800}
-        style={{ maxWidth: "90%", padding: "0" }}
+        style={{ maxWidth: "90%", padding: 0 }}
       >
         <Suspense fallback={null}>
-          <AddOnForm setIsModalOpen={setIsModalOpen} addon={selectedAddon} />
+          <AddOnForm onClose={closeModal} addon={selectedAddon} />
         </Suspense>
       </Modal>
     </>

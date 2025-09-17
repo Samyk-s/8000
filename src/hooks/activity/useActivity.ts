@@ -17,7 +17,7 @@ export const useActivity = () => {
   );
 
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState<number>(1);
+  const [limit, setLimit] = useState<number>(10);
   const [search, setSearch] = useState("");
 
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
