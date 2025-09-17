@@ -6,11 +6,12 @@ import {
   fetchBooking,
   searchBooking,
   deleteBooking,
+  fetchBookingById,
 } from "@/redux-store/slices/bookinSlice";
 
 export const useBooking = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { items, loading, error, meta } = useSelector(
+  const { items, loading, error, meta, booking } = useSelector(
     (state: RootState) => state.bookings
   );
 
@@ -56,6 +57,9 @@ export const useBooking = () => {
     },
     [dispatch]
   );
+  const getBookingByid = async (id: number) => {
+    await dispatch(fetchBookingById(id))
+  }
 
   return {
     items,
@@ -73,5 +77,7 @@ export const useBooking = () => {
     handleOpenModal,
     handleCloseModal,
     handleDelete,
+    booking,
+    getBookingByid
   };
 };

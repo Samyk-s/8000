@@ -2,16 +2,13 @@
 
 import React from "react";
 import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/redux-store/store/store";
-import { fetchBookingById } from "@/redux-store/slices/bookinSlice";
+import { useBooking } from "@/hooks/booking/useBooking";
 
 const BookingView = ({ id }: { id: number }) => {
-  const { booking } = useSelector((state: RootState) => state.bookings);
-  const dispatch = useDispatch<AppDispatch>();
+  const { booking, getBookingByid } = useBooking();
   useEffect(() => {
-    dispatch(fetchBookingById(id));
-  }, [dispatch, id]);
+    getBookingByid(Number(id));
+  }, [id]);
 
   return (
     <div className="w-full max-w-6xl overflow-y-auto rounded-lg bg-white">
