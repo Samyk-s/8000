@@ -19,6 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { ReviewItem } from "@/types/packge-review";
 
 const AllReviewTable: React.FC = () => {
   const {
@@ -83,7 +84,7 @@ const AllReviewTable: React.FC = () => {
               </TableHeader>
               <TableBody className="divide-y divide-gray-200 bg-white">
                 {items && items.length > 0 ? (
-                  items.map((item, index) => (
+                  items.map((item: ReviewItem, index: number) => (
                     <TableRow key={item.id}>
                       <TableCell className="px-6 py-4">{index + 1}</TableCell>
                       <TableCell className="px-6 py-4">
