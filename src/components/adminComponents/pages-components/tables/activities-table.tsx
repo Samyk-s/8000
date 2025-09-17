@@ -1,74 +1,37 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
-import { EditIcon, GalleryIcon, SeoIcon } from "@/components/icons/icnos";
+import React from "react";
+import { EditIcon, SeoIcon } from "@/components/icons/icnos";
 import Image from "next/image";
 import Link from "next/link";
 import Entry from "../../entry/entry";
 import Search from "../../search/search";
 import Pagination from "../../pagination/pagination";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/redux-store/store/store";
 import ToggleButton from "../../toggle-button/toggle-button";
 import { PlusIcon, TrashIcon } from "@/assets/icons";
 import { v4 as uuidv4 } from "uuid";
-
-import {
-  deletePage,
-  fetchPages,
-  getPageByType,
-  searchPages,
-  togglePageStatus,
-} from "@/redux-store/slices/pageSlice";
 import { PageItem } from "@/types/page";
 import Loader from "../loader/loader";
-import { message, Popconfirm } from "antd";
-import { PageType } from "@/types/enum/enum";
+import { Popconfirm } from "antd";
+import { useActivityPages } from "@/hooks/activity/useActivityPages";
 
 const ActivityTable: React.FC = () => {
-  const { items, loading, error, meta } = useSelector(
-    (state: RootState) => state?.pages,
-  );
-  const dispatch = useDispatch<AppDispatch>();
-  const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState<number>(10);
-  const debounceRef = useRef<NodeJS.Timeout | null>(null);
-  // call api for getting packages
-  useEffect(() => {
-    dispatch(
-      getPageByType({
-        search: PageType.ACTIVITIES,
-        page: page,
-        limit: limit,
-      }),
-    );
-  }, [dispatch, page, limit]);
+  const {
+    items,
+    loading,
+    setLimit,
+    setPage,
+    search,
+    handleDeletePage,
+    handleSearch,
+    handleToggleStatus,
+    limit,
+    meta,
+  } = useActivityPages({ initialLimit: 10 });
 
-  // search page
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearch(value);
-
-    // Clear previous timeout
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
-    }
-
-    // Set new timeout
-    debounceRef.current = setTimeout(async () => {
-      await dispatch(
-        searchPages({
-          params: { limit, page, search: value, type: PageType.ACTIVITIES },
-        }),
-      );
-    }, 300); // 300ms debounce
-  };
   if (loading) {
     return <Loader />;
   }
-  if (error) {
-    message.error(error);
-  }
+
   return (
     <>
       <div className="min-h-screen p-1">
@@ -92,7 +55,7 @@ const ActivityTable: React.FC = () => {
               <Search
                 placeholder="Search pages..."
                 search={search}
-                onChange={handleSearch}
+                onChange={(e) => handleSearch(e.target.value)}
               />
             </div>
           </div>
@@ -181,7 +144,7 @@ const ActivityTable: React.FC = () => {
                           <Popconfirm
                             title="Delete Page"
                             description="Are you sure you want to delete this page?"
-                            onConfirm={() => dispatch(deletePage(item?.id))}
+                            onConfirm={() => handleDeletePage(item?.id)}
                             okText="Yes"
                             cancelText="No"
                           >
@@ -193,15 +156,9 @@ const ActivityTable: React.FC = () => {
                             </button>
                           </Popconfirm>
                           <ToggleButton
-                            onChange={() => {
-                              dispatch(togglePageStatus(item?.id));
-                            }}
+                            onChange={() => handleToggleStatus(item?.id)}
                             checked={item?.status === 1 ? true : false}
-                            title={
-                              item?.status === 1
-                                ? "Deactive Package"
-                                : "Active Package"
-                            }
+                            title={item?.status === 1 ? "Deactive " : "Active "}
                           />
                         </div>
                       </td>
