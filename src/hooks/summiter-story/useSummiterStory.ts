@@ -7,12 +7,13 @@ import {
   searchchSummitterStories,
   deleteSummitterStory,
   toggleSummitterStory,
+  fetchSummitterStoryById,
 } from "@/redux-store/slices/storySlice";
 import { message } from "antd";
 
 export const useSummitterStory = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { items, loading, error, meta } = useSelector(
+  const { items, loading, error, meta, currentStory } = useSelector(
     (state: RootState) => state.stories
   );
 
@@ -53,6 +54,9 @@ export const useSummitterStory = () => {
     }, 300);
   };
 
+  const getStory = async (id: number) => {
+    await dispatch(fetchSummitterStoryById(Number(id)));
+  }
   // Show error message if any
   if (error) message.error(error);
 
@@ -68,5 +72,7 @@ export const useSummitterStory = () => {
     handleSearch,
     handleDelete,
     handleToggle,
+    currentStory,
+    getStory
   };
 };

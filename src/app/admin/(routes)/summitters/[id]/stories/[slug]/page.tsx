@@ -2,6 +2,7 @@
 import Breadcrumbs from "@/components/adminComponents/beadcrumb/bedcrumb";
 import SummiterStoryForm from "@/components/adminComponents/pages-components/forms/summiter-story-form/summitter-story-form";
 import Loader from "@/components/adminComponents/pages-components/loader/loader";
+import { useSummitterStory } from "@/hooks/summiter-story/useSummiterStory";
 import { fetchSummitterStoryById } from "@/redux-store/slices/storySlice";
 import { AppDispatch, RootState } from "@/redux-store/store/store";
 import { Card } from "antd";
@@ -11,13 +12,10 @@ import { useDispatch, useSelector } from "react-redux";
 
 const EditSummiterStory = () => {
   const { id, slug } = useParams();
-  const dispatch = useDispatch<AppDispatch>();
-  const { loading, currentStory } = useSelector(
-    (state: RootState) => state.stories,
-  );
+  const { loading, currentStory, getStory } = useSummitterStory();
   useEffect(() => {
-    dispatch(fetchSummitterStoryById(Number(slug)));
-  }, [id, slug, dispatch]);
+    getStory(Number(slug));
+  }, [id, slug]);
 
   if (loading) return <Loader />;
   return (
