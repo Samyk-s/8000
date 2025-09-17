@@ -12,7 +12,7 @@ export const fetchPages = createAsyncThunk<{ items: PageItem[]; meta: Meta }, Pa
   "pages/fetchPages",
   async (params: Params, { rejectWithValue }) => {
     try {
-      const res = await pageApi.getPages(params);
+      const res = await pageApi.getPageByType(params);
       return res;
     } catch (err: any) {
       return rejectWithValue(err.message);
