@@ -14,7 +14,7 @@ const EditTestimonialPage = () => {
 
   useEffect(() => {
     if (id) getTestimonial(Number(id));
-  }, [id]);
+  }, [id, getTestimonial]);
 
   if (loading) return <Loader />;
 
