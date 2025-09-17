@@ -4,13 +4,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux-store/store/store";
 import {
   fetchPackages,
+  getPacakgeById,
   searchPackages,
   togglePackageStatus,
 } from "@/redux-store/slices/packageSlice";
 
 export const usePackage = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { items, loading, error, meta } = useSelector(
+  const { items, loading, error, meta, currentPackage } = useSelector(
     (state: RootState) => state.packges
   );
 
@@ -51,6 +52,10 @@ export const usePackage = () => {
   // Pagination handlers
   const changePage = useCallback((newPage: number) => setPage(newPage), []);
   const changeLimit = useCallback((newLimit: number) => setLimit(newLimit), []);
+  // get packge by id
+  const getPackage = async (id: number) => {
+    await dispatch(getPacakgeById(id))
+  }
 
   return {
     items,
@@ -66,5 +71,7 @@ export const usePackage = () => {
     changeLimit,
     setLimit,
     setPage,
+    currentPackage,
+    getPackage
   };
 };
