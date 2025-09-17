@@ -1,93 +1,17 @@
 "use client";
-import React, { useState } from "react";
-import { Form, Input, Button, Row, Col, message, Upload } from "antd";
-import Loader from "../../loader/loader";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/redux-store/store/store";
-import { createReview } from "@/redux-store/slices/reviewSlice";
-import { useParams, useRouter } from "next/navigation";
+import React from "react";
+import { Form, Input, Button, Row, Col, Upload } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import TextArea from "antd/es/input/TextArea";
-import resourceApi from "@/lib/api/resourceApi";
-import { MediaFile } from "@/types/utils-type";
+import Loader from "../../loader/loader";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux-store/store/store";
+import { useReviewForm } from "@/hooks/review/useReviewForm";
 
 const ReviewForm = () => {
-  const [form] = Form.useForm();
-  const dispatch = useDispatch<AppDispatch>();
-  const { id } = useParams<{ id: string }>();
+  const { form, fileList, uploading, setFileList, handleFileUpload, onFinish } =
+    useReviewForm();
   const { loading } = useSelector((state: RootState) => state.itineraries);
-
-  const [fileList, setFileList] = useState<any[]>([]);
-  const [file, setFile] = useState<MediaFile | null>(null);
-  const [uploading, setUploading] = useState(false);
-  const router = useRouter();
-
-  // Handle file upload
-  const handleFileUpload = async (rawFile: File) => {
-    const formData = new FormData();
-    formData.append("file", rawFile);
-
-    try {
-      setUploading(true);
-      const res: MediaFile = await resourceApi.createResource(formData);
-      setUploading(false);
-
-      if (res) {
-        setFile(res);
-        setFileList([
-          {
-            uid: res.uid,
-            name: res.name,
-            status: "done",
-            url: res.url,
-          },
-        ]);
-        message.success("File uploaded successfully!");
-      } else {
-        message.error("File upload failed");
-      }
-    } catch (error) {
-      // console.error(error);
-      setUploading(false);
-      message.error("File upload failed");
-    }
-  };
-
-  const onFinish = async (values: any) => {
-    if (!file) {
-      message.error("Please upload an image before submitting");
-      return;
-    }
-
-    const payload = {
-      fullName: values.fullName,
-      email: values.email,
-      country: values.country,
-      rating: Number(values.rating),
-      image: {
-        uid: file.uid,
-        name: file.name,
-        url: file.url,
-        alt: file.alt,
-        type: file.type,
-        size: file.size,
-      },
-      shortTitle: values.shortTitle,
-      review: values.review,
-    };
-
-    dispatch(
-      createReview({
-        id: Number(id),
-        data: payload,
-      }),
-    )
-      .unwrap()
-      .then(() => {
-        router.back();
-      });
-    form.resetFields();
-  };
 
   if (loading) return <Loader />;
 
@@ -101,7 +25,6 @@ const ReviewForm = () => {
         onFinish={onFinish}
       >
         <Row gutter={16}>
-          {/* Full Name */}
           <Col xs={24} md={12}>
             <Form.Item
               label={
@@ -114,7 +37,6 @@ const ReviewForm = () => {
             </Form.Item>
           </Col>
 
-          {/* Email */}
           <Col xs={24} md={12}>
             <Form.Item
               label={<span className="uppercase dark:text-white">Email</span>}
@@ -125,7 +47,6 @@ const ReviewForm = () => {
             </Form.Item>
           </Col>
 
-          {/* Country */}
           <Col xs={24} md={12}>
             <Form.Item
               label={<span className="uppercase dark:text-white">Country</span>}
@@ -136,7 +57,6 @@ const ReviewForm = () => {
             </Form.Item>
           </Col>
 
-          {/* Short Title */}
           <Col xs={24} md={12}>
             <Form.Item
               label={
@@ -149,7 +69,6 @@ const ReviewForm = () => {
             </Form.Item>
           </Col>
 
-          {/* Image Upload */}
           <Col xs={24} md={12}>
             <Form.Item
               label="Image"
@@ -159,7 +78,7 @@ const ReviewForm = () => {
               <Upload
                 beforeUpload={(file) => {
                   handleFileUpload(file);
-                  return false; // prevent default upload
+                  return false;
                 }}
                 listType="picture"
                 accept=".jpg,.jpeg,.png,.webp"
@@ -174,7 +93,6 @@ const ReviewForm = () => {
             </Form.Item>
           </Col>
 
-          {/* Rating */}
           <Col xs={24} md={12}>
             <Form.Item
               label={<span className="uppercase dark:text-white">Rating</span>}
@@ -185,7 +103,6 @@ const ReviewForm = () => {
             </Form.Item>
           </Col>
 
-          {/* Review */}
           <Col xs={24}>
             <Form.Item
               label={<span className="uppercase dark:text-white">Review</span>}
@@ -196,7 +113,6 @@ const ReviewForm = () => {
             </Form.Item>
           </Col>
 
-          {/* Submit */}
           <Col span={24}>
             <Form.Item>
               <Button
