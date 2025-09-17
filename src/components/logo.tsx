@@ -1,16 +1,8 @@
 "use client";
-import { fetchSetting } from "@/redux-store/slices/siteSlice";
-import { AppDispatch, RootState } from "@/redux-store/store/store";
+import useSetting from "@/hooks/useSetting";
 import Image from "next/image";
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-
 export function Logo() {
-  const { item } = useSelector((state: RootState) => state.setting);
-  const dispatch = useDispatch<AppDispatch>();
-  useEffect(() => {
-    fetchSetting();
-  }, [dispatch]);
+  const { item } = useSetting();
   return (
     <div className="relative mx-auto h-20 w-30">
       <Image

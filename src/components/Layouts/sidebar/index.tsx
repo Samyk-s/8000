@@ -17,7 +17,6 @@ export function Sidebar() {
   const pathname = usePathname();
   const { setIsOpen, isOpen, isMobile, toggleSidebar } = useSidebarContext();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
-  const dispatch = useDispatch<AppDispatch>();
 
   const toggleExpanded = (title: string) => {
     setExpandedItems((prev) =>
@@ -29,9 +28,6 @@ export function Sidebar() {
     (url: string) => pathname === url || pathname.startsWith(url + "/"),
     [pathname], // only depends on pathname
   );
-  useEffect(() => {
-    dispatch(fetchSetting());
-  }, [dispatch]);
 
   useEffect(() => {
     // Automatically expand items if any of their subpages are active
