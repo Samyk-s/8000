@@ -69,7 +69,7 @@ export function Sidebar() {
         <div className="flex h-full flex-col py-4 pl-[25px] pr-[7px]">
           <div className="relative pr-4.5">
             <Link
-              href={"/admin"}
+              href={"/admin/dashboard"}
               onClick={() => isMobile && toggleSidebar()}
               className="px-0 min-[850px]:py-0"
             >
