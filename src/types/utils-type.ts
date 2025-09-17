@@ -48,7 +48,7 @@ export interface SearchPagePayload {
   page?: number;
   limit?: number;
   search?: string,
-  type: PageType
+  type?: PageType
 }
 
 export interface SearchInquiriesParams {
