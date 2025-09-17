@@ -71,24 +71,27 @@ export const useTestimonialForm = (testimonial?: TestimonialItem) => {
       order: Number(values.order) || 0,
     };
 
+    // Include image only if it's new or changed
     if (image && (!testimonial || testimonial.image?.uid !== image.uid)) {
       payload.image = image;
+    } else {
+      // Remove image field if not changed
+
+      delete payload?.image;
     }
 
     try {
       if (testimonial?.id) {
-        // console.log("payload", payload)
         await dispatch(updateTestimonial({ id: testimonial.id, values: payload })).unwrap();
-
       } else {
         await dispatch(createTestimonial({ values: payload })).unwrap();
-
       }
       router.push("/admin/testimonials");
     } catch {
       message.error("Failed to save testimonial");
     }
   };
+
 
   return {
     form,

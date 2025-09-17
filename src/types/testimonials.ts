@@ -5,7 +5,7 @@ export interface TestimonialPayload {
   country: string;
   description: string;
   order: number;
-  image: MediaFile;
+  image?: MediaFile;
 
 }
 
