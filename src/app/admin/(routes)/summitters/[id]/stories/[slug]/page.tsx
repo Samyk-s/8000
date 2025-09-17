@@ -15,7 +15,7 @@ const EditSummiterStory = () => {
   const { loading, currentStory, getStory } = useSummitterStory();
   useEffect(() => {
     getStory(Number(slug));
-  }, [id, slug]);
+  }, [id, slug, getStory]);
 
   if (loading) return <Loader />;
   return (

@@ -80,7 +80,7 @@ export const useInquiry = () => {
 
   const getInquiryById = useCallback((id: number) => {
     dispatch(getInquiry(id))
-  }, []);
+  }, [dispatch]);
 
   return {
     items,

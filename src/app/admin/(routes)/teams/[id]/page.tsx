@@ -15,7 +15,7 @@ const EditTeam = () => {
     if (id) {
       getTeamByid(Number(id));
     }
-  }, [id]);
+  }, [id, getTeamByid]);
   if (loading) return <Loader />;
   return (
     <div className="flex flex-col gap-3">

@@ -54,9 +54,12 @@ export const useSummitterStory = () => {
     }, 300);
   };
 
-  const getStory = async (id: number) => {
-    await dispatch(fetchSummitterStoryById(Number(id)));
-  }
+  const getStory = useCallback(
+    async (id: number) => {
+      await dispatch(fetchSummitterStoryById(id));
+    },
+    [dispatch] // dependency array
+  );
   // Show error message if any
   if (error) message.error(error);
 

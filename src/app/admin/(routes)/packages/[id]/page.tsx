@@ -20,7 +20,7 @@ const EditPackage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   useEffect(() => {
     getPackage(Number(id));
-  }, [id]);
+  }, [id, getPackage]);
   if (loading) return <Loader />;
 
   return (

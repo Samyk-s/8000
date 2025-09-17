@@ -8,7 +8,7 @@ const BookingView = ({ id }: { id: number }) => {
   const { booking, getBookingByid } = useBooking();
   useEffect(() => {
     getBookingByid(Number(id));
-  }, [id]);
+  }, [id, getBookingByid]);
 
   return (
     <div className="w-full max-w-6xl overflow-y-auto rounded-lg bg-white">

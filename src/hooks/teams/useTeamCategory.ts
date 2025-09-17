@@ -53,9 +53,12 @@ export const useTeamCategory = () => {
     }, 300);
   };
 
-  const getTeamCategoryById = async (id: number) => {
-    await dispatch(getTeamCategory(id))
-  }
+  const getTeamCategoryById = useCallback(
+    (id: number) => {
+      dispatch(getTeamCategory(id));
+    },
+    [dispatch]
+  );
   if (error) message.error(error);
 
   return {

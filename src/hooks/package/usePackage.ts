@@ -52,10 +52,8 @@ export const usePackage = () => {
   // Pagination handlers
   const changePage = useCallback((newPage: number) => setPage(newPage), []);
   const changeLimit = useCallback((newLimit: number) => setLimit(newLimit), []);
-  // get packge by id
-  const getPackage = async (id: number) => {
-    await dispatch(getPacakgeById(id))
-  }
+  const getPackage = useCallback((id: number) => dispatch(getPacakgeById(id)), [dispatch]);
+
 
   return {
     items,

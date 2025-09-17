@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux-store/store/store";
 import {
@@ -43,11 +43,27 @@ export const usePage = () => {
   };
 
   // Actions
-  const handleDelete = (id: number) => dispatch(deletePage(id));
-  const handleToggleStatus = (id: number) => dispatch(togglePageStatus(id));
-  const getPageByid = async (id: number) => {
-    await dispatch(getPageById(id))
-  }
+
+  const handleDelete = useCallback(
+    (id: number) => {
+      dispatch(deletePage(id));
+    },
+    [dispatch]
+  );
+
+  const handleToggleStatus = useCallback(
+    (id: number) => {
+      dispatch(togglePageStatus(id));
+    },
+    [dispatch]
+  );
+
+  const getPageByid = useCallback(
+    async (id: number) => {
+      await dispatch(getPageById(id));
+    },
+    [dispatch]
+  );
 
   return {
     items,

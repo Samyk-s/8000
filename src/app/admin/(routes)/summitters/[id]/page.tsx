@@ -3,20 +3,16 @@ import Breadcrumbs from "@/components/adminComponents/beadcrumb/bedcrumb";
 import SummiterForm from "@/components/adminComponents/pages-components/forms/summitter-form/summitter-form";
 import Loader from "@/components/adminComponents/pages-components/loader/loader";
 import { useSummitter } from "@/hooks/summitter/useSummiter";
-import { AppDispatch } from "@/redux-store/store/store";
 import { SummitterItem } from "@/types/summitter";
 import { Card } from "antd";
 import { useParams } from "next/navigation";
 import React, { useEffect } from "react";
-import { useDispatch } from "react-redux";
-
 const SummitterEditPage = () => {
   const { id } = useParams();
-  const dispatch = useDispatch<AppDispatch>();
   const { loading, summitter, getSummitter } = useSummitter();
   useEffect(() => {
     getSummitter(Number(id));
-  }, [dispatch, id]);
+  }, [id, getSummitter]);
 
   if (loading) return <Loader />;
   return (

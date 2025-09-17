@@ -52,9 +52,12 @@ export const useTestimonials = () => {
       dispatch(searchTestimonials({ params: { page, limit, search: value } }));
     }, 300);
   };
-  const getTestimonial = async (id: number) => {
-    await dispatch(getTestimonialById(id))
-  }
+  const getTestimonial = useCallback(
+    async (id: number) => {
+      await dispatch(getTestimonialById(id));
+    },
+    [dispatch] // dependency array
+  );
   if (error) message.error(error);
 
   return {

@@ -53,9 +53,13 @@ export const useTeams = () => {
     }, 300);
   };
 
-  const getTeamByid = async (id: number) => {
-    await dispatch(getTeam(id))
-  }
+  const getTeamByid = useCallback(
+    (id: number) => {
+      dispatch(getTeam(id));
+    },
+    [dispatch]
+  );
+
 
   if (error) message.error(error);
 

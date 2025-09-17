@@ -15,7 +15,7 @@ const EditTeamCategory = () => {
     if (id) {
       getTeamCategoryById(Number(id));
     }
-  }, [id]);
+  }, [id, getTeamCategoryById]);
 
   if (loading) return <Loader />;
 

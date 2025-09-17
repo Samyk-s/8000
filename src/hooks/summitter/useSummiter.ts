@@ -64,9 +64,12 @@ export const useSummitter = () => {
     }
   };
 
-  const getSummitter = async (id: number) => {
-    await dispatch(fetchSummiterById(id))
-  }
+  const getSummitter = useCallback(
+    async (id: number) => {
+      await dispatch(fetchSummiterById(id));
+    },
+    [dispatch]
+  );
 
   if (error) message.error(error);
 

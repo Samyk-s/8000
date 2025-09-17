@@ -25,7 +25,7 @@ const EditPage = () => {
 
   useEffect(() => {
     getPageByid(Number(id));
-  }, [id]);
+  }, [id, getPageByid]);
 
   if (loading) return <Loader />;
   return (
