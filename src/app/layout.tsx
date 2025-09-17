@@ -13,11 +13,17 @@ import { Providers } from "./providers";
 
 export const metadata: Metadata = {
   title: {
-    template: `%s ${process.env.NEXT_PUBLIC_APP_NAME!}`,
     default: process.env.NEXT_PUBLIC_APP_NAME!,
+    template: `%s | ${process.env.NEXT_PUBLIC_APP_NAME!}`,
   },
   description:
     "Next.js admin dashboard toolkit with 200+ templates, UI components, and integrations for fast dashboard development.",
+  icons: {
+    icon: "/images/favicon.ico",
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
 };
 
 export default function RootLayout({ children }: PropsWithChildren) {
