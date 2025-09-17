@@ -7,12 +7,13 @@ import {
   searchTeamCategory,
   deleteTeamCategory,
   toggleTeamCategory,
+  getTeamCategory,
 } from "@/redux-store/slices/teamCategorySlice";
 import { message } from "antd";
 
 export const useTeamCategory = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { items, loading, error, meta } = useSelector(
+  const { items, loading, error, meta, teamCategory } = useSelector(
     (state: RootState) => state.teamsCategory
   );
 
@@ -52,6 +53,9 @@ export const useTeamCategory = () => {
     }, 300);
   };
 
+  const getTeamCategoryById = async (id: number) => {
+    await dispatch(getTeamCategory(id))
+  }
   if (error) message.error(error);
 
   return {
@@ -66,5 +70,7 @@ export const useTeamCategory = () => {
     handleSearch,
     handleDelete,
     handleToggle,
+    teamCategory,
+    getTeamCategoryById
   };
 };

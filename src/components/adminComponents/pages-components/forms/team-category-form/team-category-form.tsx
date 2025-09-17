@@ -1,61 +1,23 @@
 "use client";
-import React, { useEffect } from "react";
+import React from "react";
 import { Form, Input, Button, Row, Col } from "antd";
 import dynamic from "next/dynamic";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/redux-store/store/store";
-import {
-  createTeamCategory,
-  updateTeamCategory,
-} from "@/redux-store/slices/teamCategorySlice";
-import { TeamCategoryPayload, TeamCatgoryItem } from "@/types/teams";
-import { useRouter } from "next/navigation";
 import Loader from "../../loader/loader";
+import { TeamCatgoryItem } from "@/types/teams";
+import { useTeamCategoryForm } from "@/hooks/teams/useTeamCategoryForm";
 
 const TextEditor = dynamic(() => import("../../text-editor/text-editor"), {
   ssr: false,
 });
 
 interface TeamCategoryFormProps {
-  teamCategory?: TeamCatgoryItem; // Optional for edit mode
+  teamCategory?: TeamCatgoryItem;
 }
 
 const TeamCategoryForm: React.FC<TeamCategoryFormProps> = ({
   teamCategory,
 }) => {
-  const [form] = Form.useForm();
-  const dispatch = useDispatch<AppDispatch>();
-  const router = useRouter();
-  const { loading } = useSelector((state: RootState) => state.teamsCategory);
-  // console.log(teamCategory, "sddsfskf");
-  useEffect(() => {
-    if (teamCategory) {
-      form.setFieldsValue({
-        ...teamCategory,
-        order: teamCategory.order?.toString(),
-      });
-    }
-  }, [teamCategory, form]);
-
-  const onFinish = (values: TeamCategoryPayload) => {
-    const payload = { ...values, order: Number(values?.order) };
-
-    if (teamCategory?.id) {
-      // UPDATE
-      dispatch(updateTeamCategory({ id: teamCategory.id, values: payload }))
-        .unwrap()
-        .then(() => {
-          router.back();
-        });
-    } else {
-      // CREATE
-      dispatch(createTeamCategory({ values: payload }))
-        .unwrap()
-        .then(() => {
-          router.back();
-        });
-    }
-  };
+  const { form, loading, onFinish } = useTeamCategoryForm(teamCategory);
 
   if (loading) return <Loader />;
 
