@@ -60,7 +60,17 @@ const SettingForm: React.FC<SettingFormProps> = ({ setting }) => {
             <Form.Item
               label="Email"
               name="email"
-              rules={[{ required: true }, { type: "email" }]}
+              rules={[
+                { required: true, message: "Email is required" },
+                {
+                  type: "email",
+                  message: "Please enter a valid email address",
+                },
+                {
+                  pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: "Invalid email format",
+                },
+              ]}
             >
               <Input placeholder="example@mail.com" />
             </Form.Item>
@@ -70,14 +80,47 @@ const SettingForm: React.FC<SettingFormProps> = ({ setting }) => {
             <Form.Item
               label="Phone Number"
               name="phone"
-              rules={[{ required: true }]}
+              rules={[
+                { required: true, message: "Phone number is required" },
+                {
+                  pattern: /^\+?[0-9]{7,15}$/,
+                  message: "Please enter a valid phone number (+9779800000000)",
+                },
+              ]}
             >
               <Input placeholder="+977 9812345678" />
             </Form.Item>
           </Col>
 
           <Col xs={24} md={12} lg={8}>
-            <Form.Item label="Alternate Phone Number" name="alt_phone">
+            <Form.Item
+              label="Phone Number"
+              name="phone"
+              rules={[
+                { required: true, message: "Phone number is required" },
+                {
+                  pattern: /^(\+?\d{1,3}[- ]?)?\d{10}$/,
+                  message:
+                    "Invalid phone number. Include 10 digits, with or without country code",
+                },
+              ]}
+            >
+              <Input placeholder="+977 9812345678" />
+            </Form.Item>
+          </Col>
+
+          <Col xs={24} md={12} lg={8}>
+            <Form.Item
+              label="Alternate Phone Number"
+              name="alt_phone"
+              rules={[
+                {
+                  pattern: /^(\+?\d{1,3}[- ]?)?\d{10}$/,
+                  message:
+                    "Invalid phone number. Include 10 digits, with or without country code",
+                },
+              ]}
+            >
               <Input placeholder="+977 9812345678" />
             </Form.Item>
           </Col>
@@ -97,7 +140,7 @@ const SettingForm: React.FC<SettingFormProps> = ({ setting }) => {
             <Form.Item
               label="Twitter/X Link"
               name="twitter"
-              rules={[{ type: "url" }]}
+              rules={[{ type: "url", message: "It should be link" }]}
             >
               <Input placeholder="https://twitter.com/" />
             </Form.Item>
@@ -106,7 +149,7 @@ const SettingForm: React.FC<SettingFormProps> = ({ setting }) => {
             <Form.Item
               label="Facebook Link"
               name="facebook"
-              rules={[{ type: "url" }]}
+              rules={[{ type: "url", message: "It should be link" }]}
             >
               <Input placeholder="https://www.facebook.com/" />
             </Form.Item>
@@ -115,7 +158,7 @@ const SettingForm: React.FC<SettingFormProps> = ({ setting }) => {
             <Form.Item
               label="Instagram Link"
               name="instagram"
-              rules={[{ type: "url" }]}
+              rules={[{ type: "url", message: "It should be link" }]}
             >
               <Input placeholder="https://instagram.com/" />
             </Form.Item>
@@ -133,7 +176,7 @@ const SettingForm: React.FC<SettingFormProps> = ({ setting }) => {
             <Form.Item
               label="TikTok Link"
               name="tik_tok"
-              rules={[{ type: "url" }]}
+              rules={[{ type: "url", message: "It should be link" }]}
             >
               <Input placeholder="https://www.tiktok.com/" />
             </Form.Item>
@@ -144,7 +187,7 @@ const SettingForm: React.FC<SettingFormProps> = ({ setting }) => {
             <Form.Item
               label="Map Link"
               name="map_link"
-              rules={[{ type: "url" }]}
+              rules={[{ type: "url", message: "It should be link" }]}
             >
               <TextArea rows={4} placeholder="Enter map link" />
             </Form.Item>

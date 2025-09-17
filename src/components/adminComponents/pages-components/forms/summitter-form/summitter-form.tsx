@@ -95,6 +95,10 @@ const SummiterForm: React.FC<SummiterFormProps> = ({ summitter }) => {
               rules={[
                 { required: true, message: "Email is required" },
                 { type: "email", message: "Please enter a valid email" },
+                {
+                  pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: "Invalid email format",
+                },
               ]}
             >
               <Input type="email" />

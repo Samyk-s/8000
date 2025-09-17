@@ -26,7 +26,14 @@ const AccountForm = () => {
             <Form.Item
               label="Email"
               name="email"
-              rules={[{ required: true }, { type: "email" }]}
+              rules={[
+                { required: true, message: "Email is required" },
+                { type: "email" },
+                {
+                  pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: "Invalid email format",
+                },
+              ]}
             >
               <Input placeholder="example@mail.com" />
             </Form.Item>
@@ -36,7 +43,13 @@ const AccountForm = () => {
             <Form.Item
               label="Phone Number"
               name="phone"
-              rules={[{ required: true }]}
+              rules={[
+                { required: true, message: "Phone number is required" },
+                {
+                  pattern: /^\+?[0-9]{7,15}$/,
+                  message: "Please enter a valid phone number (+9779800000000)",
+                },
+              ]}
             >
               <Input placeholder="+977 9812345678" />
             </Form.Item>

@@ -79,7 +79,13 @@ const TeamForm: React.FC<TeamFormProps> = ({ team }) => {
           <Form.Item
             label="Phone"
             name="phoneNo"
-            rules={[{ required: true, message: "Phone is required" }]}
+            rules={[
+              { required: true, message: "Phone is required" },
+              {
+                pattern: /^\+?[0-9]{7,15}$/,
+                message: "Please enter a valid phone number (+9779800000000)",
+              },
+            ]}
           >
             <Input />
           </Form.Item>
@@ -87,27 +93,47 @@ const TeamForm: React.FC<TeamFormProps> = ({ team }) => {
 
         {/* SOCIAL LINKS */}
         <Col xs={24} md={12}>
-          <Form.Item label="Facebook" name="fbLink">
+          <Form.Item
+            label="Facebook"
+            name="fbLink"
+            rules={[{ type: "url", message: "It should be link" }]}
+          >
             <Input />
           </Form.Item>
         </Col>
         <Col xs={24} md={12}>
-          <Form.Item label="Instagram" name="instagramLink">
+          <Form.Item
+            label="Instagram"
+            name="instagramLink"
+            rules={[{ type: "url", message: "It should be link" }]}
+          >
             <Input />
           </Form.Item>
         </Col>
         <Col xs={24} md={12}>
-          <Form.Item label="Twitter" name="twitter">
+          <Form.Item
+            label="Twitter"
+            name="twitter"
+            rules={[{ type: "url", message: "It should be link" }]}
+          >
             <Input />
           </Form.Item>
         </Col>
         <Col xs={24} md={12}>
-          <Form.Item label="LinkedIn" name="linkedIn">
+          <Form.Item
+            label="LinkedIn"
+            name="linkedIn"
+            rules={[{ type: "url", message: "It should be link" }]}
+          >
             <Input />
           </Form.Item>
         </Col>
         <Col xs={24} md={12}>
-          <Form.Item label="YouTube" name="youtube">
+          <Form.Item
+            label="YouTube"
+            name="youtube"
+            rules={[{ type: "url", message: "It should be link" }]}
+          >
             <Input />
           </Form.Item>
         </Col>

@@ -41,7 +41,13 @@ const ReviewForm = () => {
             <Form.Item
               label={<span className="uppercase dark:text-white">Email</span>}
               name="email"
-              rules={[{ required: true, message: "Email is required" }]}
+              rules={[
+                { required: true, message: "Email is required" },
+                {
+                  pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: "Invalid email format",
+                },
+              ]}
             >
               <Input type="email" className="bg-transparent" />
             </Form.Item>
