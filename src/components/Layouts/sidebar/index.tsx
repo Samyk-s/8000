@@ -9,9 +9,6 @@ import { NAV_DATA } from "./data";
 import { ArrowLeftIcon, ChevronUp } from "./icons";
 import { MenuItem } from "./menu-item";
 import { useSidebarContext } from "./sidebar-context";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "@/redux-store/store/store";
-import { fetchSetting } from "@/redux-store/slices/siteSlice";
 
 export function Sidebar() {
   const pathname = usePathname();
