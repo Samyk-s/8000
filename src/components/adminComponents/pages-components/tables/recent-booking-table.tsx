@@ -1,14 +1,15 @@
 "use client";
-import React from "react";
+import React, { Suspense } from "react";
 import { BookingItem } from "@/types/booking";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { EyeIcon, EditIcon } from "@/components/icons/icnos";
 import Loader from "../loader/loader";
 import { Modal, Typography } from "antd";
 import Link from "next/link";
-import BookingView from "../../view/booking-view";
+const BookingView = dynamic(() => import("../../view/booking-view"));
 import { BookingStatus } from "@/types/enum/enum";
 import { useBooking } from "@/hooks/booking/useBooking";
+import dynamic from "next/dynamic";
 const RecentBookingTable: React.FC = () => {
   const {
     items,
@@ -164,7 +165,11 @@ const RecentBookingTable: React.FC = () => {
         style={{ maxWidth: "90%", padding: 0 }}
         title="Inquiry Details"
       >
-        {selectedId > 0 && <BookingView id={selectedId} />}
+        {selectedId > 0 && (
+          <Suspense fallback={<Loader />}>
+            <BookingView id={selectedId} />
+          </Suspense>
+        )}
       </Modal>
     </>
   );

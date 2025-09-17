@@ -1,17 +1,18 @@
 "use client";
-import React from "react";
+import React, { Suspense } from "react";
 import { useBooking } from "@/hooks/booking/useBooking";
 import Loader from "../loader/loader";
 import Search from "../../search/search";
 import Entry from "../../entry/entry";
 import Pagination from "../../pagination/pagination";
-import BookingView from "../../view/booking-view";
+const BookingView = dynamic(() => import("../../view/booking-view"));
 import { EyeIcon, EditIcon, TrashIcon } from "@/components/icons/icnos";
 import { AffiliationIcon } from "@/components/Layouts/sidebar/icons";
 import { Modal, Popconfirm, message } from "antd";
 import Link from "next/link";
 import { formatDate } from "@/utils/bookingUtils";
 import { ViewedBadge } from "@/components/ui/StatusBadge";
+import dynamic from "next/dynamic";
 
 const BookingTable: React.FC = () => {
   const {
@@ -184,7 +185,11 @@ const BookingTable: React.FC = () => {
         style={{ maxWidth: "90%", padding: 0 }}
         title="Inquiry Details"
       >
-        {selectedId > 0 && <BookingView id={selectedId} />}
+        {selectedId > 0 && (
+          <Suspense fallback={<Loader />}>
+            <BookingView id={selectedId} />
+          </Suspense>
+        )}
       </Modal>
     </>
   );

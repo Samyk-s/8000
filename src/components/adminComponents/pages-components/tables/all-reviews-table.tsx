@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { Suspense } from "react";
 import { Popconfirm, Modal } from "antd";
 import { TrashIcon } from "@/assets/icons";
 import Entry from "../../entry/entry";
@@ -7,9 +7,10 @@ import Pagination from "../../pagination/pagination";
 import Search from "../../search/search";
 import ToggleButton from "../../toggle-button/toggle-button";
 import Loader from "../loader/loader";
-import ReviewView from "../../view/review-view";
+const ReviewView = dynamic(() => import("../../view/review-view"));
 import { useAllReviews } from "@/hooks/review/useAllReviews";
 import { ViewIcon } from "@/components/icons/icnos";
+import dynamic from "next/dynamic";
 
 const AllReviewTable: React.FC = () => {
   const {
@@ -145,7 +146,9 @@ const AllReviewTable: React.FC = () => {
         style={{ maxWidth: "90%", padding: 0 }}
         title="Review Details"
       >
-        <ReviewView reviewId={reviewId} />
+        <Suspense fallback={<Loader />}>
+          <ReviewView reviewId={reviewId} />
+        </Suspense>
       </Modal>
     </>
   );
