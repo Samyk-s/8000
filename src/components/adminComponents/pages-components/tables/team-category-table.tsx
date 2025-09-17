@@ -1,201 +1,158 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
-import { EditIcon } from "@/components/icons/icnos";
+import React from "react";
+import { Popconfirm } from "antd";
+import { TrashIcon, PlusIcon } from "@/assets/icons";
 import Link from "next/link";
 import Entry from "../../entry/entry";
-import Search from "../../search/search";
 import Pagination from "../../pagination/pagination";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/redux-store/store/store";
+import Search from "../../search/search";
 import ToggleButton from "../../toggle-button/toggle-button";
-import { PlusIcon, TrashIcon } from "@/assets/icons";
-import { v4 as uuidv4 } from "uuid";
-import Loader from "../loader/loader";
-import { message, Popconfirm } from "antd";
-import { TeamCatgoryItem } from "@/types/teams";
-import {
-  deleteTeamCategory,
-  fetchTeamsCategories,
-  searchTeamCategory,
-  toggleTeamCategory,
-} from "@/redux-store/slices/teamCategorySlice";
 import TeamTabs from "../../tabs/team-tab";
+import Loader from "../loader/loader";
+import { useTeamCategory } from "@/hooks/teams/useTeamCategory";
+import { EditIcon } from "@/components/icons/icnos";
 
 const TeamCategoryTable: React.FC = () => {
-  const { items, loading, error, meta } = useSelector(
-    (state: RootState) => state?.teamsCategory,
-  );
-  const dispatch = useDispatch<AppDispatch>();
-  const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState<number>(10);
-  const debounceRef = useRef<NodeJS.Timeout | null>(null);
-  // call api for getting packages
-  useEffect(() => {
-    dispatch(
-      fetchTeamsCategories({
-        params: {
-          limit,
-          page,
-        },
-      }),
-    );
-  }, [dispatch, page, limit]);
+  const {
+    items,
+    loading,
+    meta,
+    page,
+    limit,
+    search,
+    setPage,
+    setLimit,
+    handleSearch,
+    handleDelete,
+    handleToggle,
+  } = useTeamCategory();
 
-  // search page
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearch(value);
+  if (loading) return <Loader />;
 
-    // Clear previous timeout
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
-    }
-
-    // Set new timeout
-    debounceRef.current = setTimeout(async () => {
-      await dispatch(
-        searchTeamCategory({
-          params: { limit, page, search: value },
-        }),
-      );
-    }, 300); // 300ms debounce
-  };
-  if (loading) {
-    return <Loader />;
-  }
-  if (error) {
-    message.error(error);
-  }
   return (
-    <>
-      <div className="min-h-screen p-1">
-        <div className="rounded-lg bg-white text-gray-700 shadow-sm dark:bg-[#020D1A] dark:text-white">
-          <div className="flex flex-col gap-3 border-b border-gray-200 p-6">
-            <div className="flex justify-center md:justify-between">
-              <TeamTabs />
-              <Link
-                href={"/admin/teams/categories/create"}
-                className="flex w-fit items-center gap-1 rounded-md bg-black px-2 py-1 text-white dark:bg-white dark:text-black"
-              >
-                <PlusIcon />
-                <span>Create</span>
-              </Link>
-            </div>
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <Entry
-                onChange={(value) => setLimit(Number(value))}
-                value={limit}
-                total={meta?.totalItems}
-              />
-              <Search
-                placeholder="Search pages..."
-                search={search}
-                onChange={handleSearch}
-              />
-            </div>
+    <div className="min-h-screen p-1">
+      <div className="rounded-lg bg-white text-gray-700 shadow-sm dark:bg-[#020D1A] dark:text-white">
+        {/* Header */}
+        <div className="flex flex-col gap-3 border-b border-gray-200 p-6">
+          <div className="flex justify-center md:justify-between">
+            <TeamTabs />
+            <Link
+              href={"/admin/teams/categories/create"}
+              className="flex w-fit items-center gap-1 rounded-md bg-black px-2 py-1 text-white dark:bg-white dark:text-black"
+            >
+              <PlusIcon />
+              <span>Create</span>
+            </Link>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead
-                style={{ backgroundColor: "oklch(37.9% 0.146 265.522)" }}
-                className="text-white"
-              >
-                <tr>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
-                    S.N.
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
-                    Name
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
-                    Slug
-                  </th>
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <Entry
+              value={limit}
+              onChange={(val) => setLimit(Number(val))}
+              total={meta?.totalItems}
+            />
+            <Search
+              placeholder="Search categories..."
+              search={search}
+              onChange={(e) => handleSearch(e.target.value)}
+            />
+          </div>
+        </div>
 
-                  <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 bg-white dark:bg-[#020D1A]">
-                {items && items?.length > 0 ? (
-                  items?.map((item: TeamCatgoryItem, index) => (
-                    <tr key={uuidv4()}>
-                      <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900 dark:text-white">
-                        {index + 1}
-                      </td>
-
-                      <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900 dark:text-white">
-                        {item?.name}
-                      </td>
-                      <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900 dark:text-white">
-                        {item?.slug}
-                      </td>
-
-                      <td className="whitespace-nowrap px-6 py-4 text-base font-medium dark:text-white">
-                        <div className="flex items-center space-x-2">
-                          <Link
-                            href={`/admin/teams/categories/${item?.id}`}
-                            title="Edit Category"
+        {/* Table */}
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead
+              style={{ backgroundColor: "oklch(37.9% 0.146 265.522)" }}
+              className="text-white"
+            >
+              <tr>
+                <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  S.N.
+                </th>
+                <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  Name
+                </th>
+                <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  Slug
+                </th>
+                <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200 bg-white dark:bg-[#020D1A]">
+              {items && items.length > 0 ? (
+                items.map((item, index) => (
+                  <tr key={item.id}>
+                    <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900 dark:text-white">
+                      {index + 1}
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900 dark:text-white">
+                      {item.name}
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4 text-base text-gray-900 dark:text-white">
+                      {item.slug}
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4 text-base font-medium dark:text-white">
+                      <div className="flex items-center space-x-2">
+                        <Link
+                          href={`/admin/teams/categories/${item.id}`}
+                          title="Edit Category"
+                        >
+                          <EditIcon />
+                        </Link>
+                        <Popconfirm
+                          title="Delete the Category"
+                          description="Are you sure to delete this category?"
+                          onConfirm={() => handleDelete(item.id)}
+                          okText="Yes"
+                          cancelText="No"
+                        >
+                          <button
+                            className="rounded p-1 text-red-600 hover:bg-red-50 hover:text-red-900"
+                            title="Delete Category"
                           >
-                            <EditIcon />
-                          </Link>
-                          <Popconfirm
-                            title="Delete the Category"
-                            description="Are you sure to delete this category?"
-                            onCancel={() => message.error("Cancelled")}
-                            onConfirm={() =>
-                              dispatch(deleteTeamCategory(Number(item?.id)))
-                            }
-                            okText="Yes"
-                            cancelText="No"
-                          >
-                            <button
-                              className="rounded p-1 text-red-600 hover:bg-red-50 hover:text-red-900"
-                              title="Delete Team"
-                            >
-                              <TrashIcon />
-                            </button>
-                          </Popconfirm>
-                          <ToggleButton
-                            onChange={() => {
-                              dispatch(toggleTeamCategory(item?.id));
-                            }}
-                            checked={item?.status === 1 ? true : false}
-                            title={
-                              item?.status === 1
-                                ? "Deactive Category"
-                                : "Active Category"
-                            }
-                          />
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td
-                      colSpan={7}
-                      className="px-6 py-8 text-center text-base text-gray-500"
-                    >
-                      No Pages found matching your search criteria.
+                            <TrashIcon />
+                          </button>
+                        </Popconfirm>
+                        <ToggleButton
+                          onChange={() => handleToggle(item.id)}
+                          checked={item.status === 1}
+                          title={
+                            item.status === 1
+                              ? "Deactivate Category"
+                              : "Activate Category"
+                          }
+                        />
+                      </div>
                     </td>
                   </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-          <Pagination
-            currentPage={meta?.currentPage}
-            totalPages={meta?.totalPages}
-            itemsPerPage={limit}
-            totalItems={meta?.totalItems}
-            onPageChange={(page) => setPage(page)}
-          />
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan={4}
+                    className="px-6 py-8 text-center text-base text-gray-500"
+                  >
+                    No categories found matching your search criteria.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
+
+        {/* Pagination */}
+        <Pagination
+          currentPage={meta?.currentPage || 1}
+          totalPages={meta?.totalPages || 1}
+          itemsPerPage={limit}
+          totalItems={meta?.totalItems || 0}
+          onPageChange={setPage}
+        />
       </div>
-    </>
+    </div>
   );
 };
 
