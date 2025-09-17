@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux-store/store/store";
 import { getPageById } from "@/redux-store/slices/pageSlice";
 import Breadcrumbs from "@/components/adminComponents/beadcrumb/bedcrumb";
+import { usePage } from "@/hooks/page/usePage";
 const PageForm = dynamic(
   () =>
     import(
@@ -20,12 +21,11 @@ const PageForm = dynamic(
 
 const EditPage = () => {
   const { id } = useParams<{ id: string }>();
-  const dispatch = useDispatch<AppDispatch>();
-  const { loading, page } = useSelector((state: RootState) => state.pages);
+  const { loading, currentPage, getPageByid } = usePage();
 
   useEffect(() => {
-    dispatch(getPageById(Number(id)));
-  }, [id, dispatch]);
+    getPageByid(Number(id));
+  }, [id]);
 
   if (loading) return <Loader />;
   return (
@@ -42,7 +42,7 @@ const EditPage = () => {
         <div className="flex flex-col gap-3">
           <PageTabs id={id as string} />
           <Suspense fallback={"loading..."}>
-            <PageForm page={page as PageItem} />
+            <PageForm page={currentPage as PageItem} />
           </Suspense>
         </div>
       </Card>

@@ -7,12 +7,13 @@ import {
   searchPages,
   deletePage,
   togglePageStatus,
+  getPageById,
 } from "@/redux-store/slices/pageSlice";
 import { PageType } from "@/types/enum/enum";
 
 export const usePage = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { items, loading, error, meta } = useSelector((state: RootState) => state.pages);
+  const { items, loading, error, meta, page: currentPage } = useSelector((state: RootState) => state.pages);
 
   const [search, setSearch] = useState("");
   const [page, setPage] = useState<number>(1);
@@ -44,6 +45,9 @@ export const usePage = () => {
   // Actions
   const handleDelete = (id: number) => dispatch(deletePage(id));
   const handleToggleStatus = (id: number) => dispatch(togglePageStatus(id));
+  const getPageByid = async (id: number) => {
+    await dispatch(getPageById(id))
+  }
 
   return {
     items,
@@ -58,5 +62,7 @@ export const usePage = () => {
     handleSearch,
     handleDelete,
     handleToggleStatus,
+    currentPage,
+    getPageByid
   };
 };
