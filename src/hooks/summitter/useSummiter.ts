@@ -7,13 +7,14 @@ import {
   searchSummitters,
   deleteSummiter,
   toggleSummiter,
+  fetchSummiterById,
 } from "@/redux-store/slices/summiterSlice";
 import summittterApi from "@/lib/api/summitterApi";
 import { message } from "antd";
 
 export const useSummitter = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { items, loading, error, meta } = useSelector(
+  const { items, loading, error, meta, summitter } = useSelector(
     (state: RootState) => state.summiter
   );
 
@@ -63,6 +64,10 @@ export const useSummitter = () => {
     }
   };
 
+  const getSummitter = async (id: number) => {
+    await dispatch(fetchSummiterById(id))
+  }
+
   if (error) message.error(error);
 
   return {
@@ -78,5 +83,7 @@ export const useSummitter = () => {
     handleDelete,
     handleToggle,
     handleSendCertificate,
+    summitter,
+    getSummitter
   };
 };
