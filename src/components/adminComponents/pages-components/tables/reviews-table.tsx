@@ -50,7 +50,6 @@ const ReviewTable: React.FC = () => {
               <Link
                 href={`/admin/packages/${id}/review/create-review`}
                 className="flex w-fit items-center gap-1 rounded-md bg-black px-2 py-1 text-white hover:!bg-black hover:!text-white dark:bg-white dark:text-black"
-                onClick={() => openModal()}
               >
                 <PlusIcon />
                 <span>Create</span>
