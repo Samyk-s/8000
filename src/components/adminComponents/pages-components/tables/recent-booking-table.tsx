@@ -10,15 +10,15 @@ import BookingView from "../../view/booking-view";
 import { BookingStatus } from "@/types/enum/enum";
 import { useBooking } from "@/hooks/booking/useBooking";
 const RecentBookingTable: React.FC = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedId, setSelectedId] = useState(0);
-  const { items, loading } = useBooking();
+  const {
+    items,
+    loading,
 
-  // Open modal handler
-  const handleOpenModal = useCallback((id: number) => {
-    setSelectedId(id);
-    setIsModalOpen(true);
-  }, []);
+    selectedId,
+    isModalOpen,
+    handleOpenModal,
+    handleCloseModal,
+  } = useBooking();
 
   const formatTimeAgo = (date: string | Date) => {
     const now = new Date();
@@ -49,12 +49,6 @@ const RecentBookingTable: React.FC = () => {
     }
     return `${years}y ago`;
   };
-
-  // Close modal handler
-  const handleCloseModal = useCallback(() => {
-    setIsModalOpen(false);
-    setSelectedId(0);
-  }, []);
 
   if (loading) return <Loader />;
   return (
