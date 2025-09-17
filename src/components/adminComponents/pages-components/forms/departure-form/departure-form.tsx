@@ -1,15 +1,11 @@
 "use client";
-
 import React from "react";
-import { Form, Button, Row, Col, message } from "antd";
+import { Form, Button, Row, Col } from "antd";
 import Loader from "../../loader/loader";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/redux-store/store/store";
-import { useParams } from "next/navigation";
-import dayjs from "dayjs";
-import { createDeparture } from "@/redux-store/slices/departureSlice";
-import { DepartureItem } from "@/types/departure";
 import dynamic from "next/dynamic";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux-store/store/store";
+import { useDepartureForm } from "@/hooks/departure/useDepartureForm";
 
 // Dynamically import DatePicker to prevent SSR issues
 const DatePicker = dynamic(() => import("antd").then((mod) => mod.DatePicker), {
@@ -17,39 +13,8 @@ const DatePicker = dynamic(() => import("antd").then((mod) => mod.DatePicker), {
 });
 
 const DepartureForm = ({ onClose }: { onClose: () => void }) => {
-  const [form] = Form.useForm();
-  const dispatch = useDispatch<AppDispatch>();
-  const { id } = useParams<{ id: string }>();
+  const { form, onFinish, disablePastDates } = useDepartureForm(onClose);
   const { loading } = useSelector((state: RootState) => state.itineraries);
-
-  // Disable past dates
-  const disablePastDates = (current: dayjs.Dayjs) => {
-    return current && current < dayjs().startOf("day");
-  };
-
-  const onFinish = async (values: any) => {
-    try {
-      const payload = {
-        startDate: values.startDate
-          ? dayjs(values.startDate).format("YYYY-MM-DD")
-          : null,
-        endDate: values.endDate
-          ? dayjs(values.endDate).format("YYYY-MM-DD")
-          : null,
-      };
-
-      await dispatch(
-        createDeparture({ id: Number(id), data: payload as DepartureItem }),
-      );
-
-      onClose();
-      form.resetFields();
-      message.success("Departure saved successfully!");
-    } catch (error) {
-      // console.error("Failed to save departure:", error);
-      message.error("Failed to save departure");
-    }
-  };
 
   if (loading) return <Loader />;
 
@@ -63,7 +28,6 @@ const DepartureForm = ({ onClose }: { onClose: () => void }) => {
         onFinish={onFinish}
       >
         <Row gutter={16}>
-          {/* START DATE */}
           <Col xs={24} md={12}>
             <Form.Item
               label={
@@ -76,7 +40,6 @@ const DepartureForm = ({ onClose }: { onClose: () => void }) => {
             </Form.Item>
           </Col>
 
-          {/* END DATE */}
           <Col xs={24} md={12}>
             <Form.Item
               label={
@@ -102,7 +65,6 @@ const DepartureForm = ({ onClose }: { onClose: () => void }) => {
             </Form.Item>
           </Col>
 
-          {/* SUBMIT */}
           <Col span={24}>
             <Form.Item>
               <Button
