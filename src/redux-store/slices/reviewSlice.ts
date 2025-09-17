@@ -153,9 +153,9 @@ export const searchReviews = createAsyncThunk<
 export const searchReviewsBypackage = createAsyncThunk<
   { items: ReviewItem[]; meta: Meta },
   FetchPackagePayload
->("reviews/searchReviewsPackages", async ({ params }, { rejectWithValue }) => {
+>("reviews/searchReviewsPackages", async ({ id, params }, { rejectWithValue }) => {
   try {
-    const res = await reviewApi.searchReviews(params);
+    const res = await reviewApi.searchReviewsByPackageId(id, params);
     return res;
   } catch (err: any) {
     return rejectWithValue(err.message);
