@@ -105,10 +105,10 @@ export const useTeamForm = (team?: TeamItem) => {
     try {
       if (team?.id) {
         await dispatch(updateTeam({ id: team.id, values: payload })).unwrap();
-        message.success("Team updated successfully!");
+
       } else {
         await dispatch(createTeam({ values: payload })).unwrap();
-        message.success("Team created successfully!");
+
       }
       router.back();
     } catch {
