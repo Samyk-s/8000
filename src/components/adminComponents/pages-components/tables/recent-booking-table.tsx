@@ -1,33 +1,18 @@
 "use client";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { BookingItem } from "@/types/booking";
-import { StatusBadge, ViewedBadge } from "@/components/ui/StatusBadge";
-import { EyeIcon, EditIcon, TrashIcon } from "@/components/icons/icnos";
-import { AppDispatch, RootState } from "@/redux-store/store/store";
-import { useDispatch, useSelector } from "react-redux";
+import { StatusBadge } from "@/components/ui/StatusBadge";
+import { EyeIcon, EditIcon } from "@/components/icons/icnos";
 import Loader from "../loader/loader";
 import { Modal, Typography } from "antd";
-import { fetchBooking } from "@/redux-store/slices/bookinSlice";
 import Link from "next/link";
 import BookingView from "../../view/booking-view";
 import { BookingStatus } from "@/types/enum/enum";
+import { useBooking } from "@/hooks/booking/useBooking";
 const RecentBookingTable: React.FC = () => {
-  const { items, loading, error, meta } = useSelector(
-    (state: RootState) => state?.bookings,
-  );
-  const dispatch = useDispatch<AppDispatch>();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedId, setSelectedId] = useState(0);
-
-  const debounceRef = useRef<NodeJS.Timeout | null>(null);
-
-  useEffect(() => {
-    dispatch(
-      fetchBooking({
-        params: { page: 1, limit: 10 },
-      }),
-    );
-  }, [dispatch]);
+  const { items, loading } = useBooking();
 
   // Open modal handler
   const handleOpenModal = useCallback((id: number) => {
