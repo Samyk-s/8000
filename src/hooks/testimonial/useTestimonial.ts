@@ -7,12 +7,13 @@ import {
   searchTestimonials,
   deleteTestimonial,
   toggleTestimonialStatus,
+  getTestimonialById,
 } from "@/redux-store/slices/testimonialSlice";
 import { message } from "antd";
 
 export const useTestimonials = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { items, loading, error, meta } = useSelector(
+  const { items, loading, error, meta, testimonial } = useSelector(
     (state: RootState) => state.testimonials
   );
 
@@ -51,7 +52,9 @@ export const useTestimonials = () => {
       dispatch(searchTestimonials({ params: { page, limit, search: value } }));
     }, 300);
   };
-
+  const getTestimonial = async (id: number) => {
+    await dispatch(getTestimonialById(id))
+  }
   if (error) message.error(error);
 
   return {
@@ -66,5 +69,7 @@ export const useTestimonials = () => {
     handleSearch,
     handleDelete,
     handleToggle,
+    testimonial,
+    getTestimonial
   };
 };

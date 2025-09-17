@@ -1,19 +1,10 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { Form, Input, Button, Row, Col, Upload, message } from "antd";
+import React from "react";
+import { Form, Input, Button, Row, Col, Upload } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import dynamic from "next/dynamic";
-import resourceApi from "@/lib/api/resourceApi";
-import { MediaFile } from "@/types/utils-type";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/redux-store/store/store";
-import { useRouter } from "next/navigation";
-import Loader from "../../loader/loader";
-import {
-  createTestimonial,
-  updateTestimonial,
-} from "@/redux-store/slices/testimonialSlice";
-import { TestimonialPayload, TestimonialItem } from "@/types/testimonials";
+import { TestimonialItem } from "@/types/testimonials";
+import { useTestimonialForm } from "@/hooks/testimonial/useTestimonialForm";
 
 const TextEditor = dynamic(() => import("../../text-editor/text-editor"), {
   ssr: false,
@@ -24,88 +15,17 @@ interface TestimonialFormProps {
 }
 
 const TestimonialForm: React.FC<TestimonialFormProps> = ({ testimonial }) => {
-  const [form] = Form.useForm();
-  const [uploading, setUploading] = useState(false);
-  const [image, setImage] = useState<MediaFile | null>(
-    testimonial?.image || null,
-  );
+  const {
+    form,
+    image,
+    setImage,
+    uploading,
+    loading,
+    handleFileUpload,
+    onFinish,
+  } = useTestimonialForm(testimonial);
 
-  const dispatch = useDispatch<AppDispatch>();
-  const router = useRouter();
-  const { loading } = useSelector((state: RootState) => state.testimonials);
-
-  // Pre-fill form on edit
-  useEffect(() => {
-    if (testimonial) {
-      form.setFieldsValue({
-        name: testimonial.name,
-        country: testimonial.country,
-        order: testimonial.order,
-        description: testimonial.description,
-        image: testimonial.image,
-      });
-      setImage(testimonial.image || null);
-    }
-  }, [testimonial, form]);
-
-  // Upload handler
-  const handleFileUpload = async (
-    rawFile: File,
-    setter: (file: MediaFile) => void,
-  ) => {
-    const formData = new FormData();
-    formData.append("file", rawFile);
-    try {
-      setUploading(true);
-      const res = await resourceApi.createResource(formData);
-      setUploading(false);
-      if (res) {
-        setter(res);
-        message.success("File uploaded successfully!");
-      } else {
-        message.error("File upload failed");
-      }
-    } catch (error) {
-      setUploading(false);
-      message.error("File upload failed");
-    }
-    return false; // prevent auto upload
-  };
-
-  // Submit handler
-  const onFinish = (values: TestimonialPayload) => {
-    // CREATE: require image
-    if (!testimonial && !image) {
-      message.error("Please upload an image before submitting");
-      return;
-    }
-
-    const payload: TestimonialPayload = {
-      ...values,
-      order: Number(values.order) || 0,
-    };
-
-    // Only include image if it's new or updated
-    if (image && (!testimonial || testimonial.image?.uid !== image.uid)) {
-      payload.image = image;
-    }
-
-    if (testimonial?.id) {
-      // Update mode
-      dispatch(updateTestimonial({ id: testimonial.id, values: payload })).then(
-        () => {
-          router.push("/admin/testimonials");
-        },
-      );
-    } else {
-      // Create mode
-      dispatch(createTestimonial({ values: payload })).then(() => {
-        router.push("/admin/testimonials");
-      });
-    }
-  };
-
-  if (loading) return <Loader />;
+  if (loading) return null;
 
   return (
     <Form
@@ -149,13 +69,7 @@ const TestimonialForm: React.FC<TestimonialFormProps> = ({ testimonial }) => {
               maxCount={1}
               fileList={
                 image
-                  ? [
-                      {
-                        uid: image.uid,
-                        name: image.name,
-                        url: image.url,
-                      },
-                    ]
+                  ? [{ uid: image.uid, name: image.name, url: image.url }]
                   : []
               }
               onRemove={() => setImage(null)}
