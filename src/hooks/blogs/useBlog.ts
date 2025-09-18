@@ -1,14 +1,14 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { AppDispatch, RootState } from "@/redux-store/store/store";
-import { fetchBlogs, deleteBlog, toggleBlogStatus } from "@/redux-store/slices/blogSlice";
+import { fetchBlogs, deleteBlog, toggleBlogStatus, getBlogById } from "@/redux-store/slices/blogSlice";
 import { BlogCategory } from "@/types/enum/enum";
 
 export const useBlog = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { items, loading, error, meta } = useSelector((state: RootState) => state.blogs);
+  const { items, loading, error, meta, blog } = useSelector((state: RootState) => state.blogs);
 
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(10);
@@ -16,15 +16,22 @@ export const useBlog = () => {
 
   const searchParams = useSearchParams();
   const router = useRouter();
+  const pathname = usePathname();
 
   // Sync category with query params
+  // useBlog.ts
   useEffect(() => {
-    const type = searchParams.get("type") || BlogCategory.NEWS_AND_EVENTS;
-    setCategory(type);
-    if (!searchParams.get("type")) {
-      router.replace(`/admin/blogs?type=${type}`);
+    // Only sync query params if we are on the blogs list page
+    if (pathname === "/admin/blogs") {
+      const type = searchParams.get("type") || BlogCategory.NEWS_AND_EVENTS;
+      setCategory(type);
+
+      if (!searchParams.get("type")) {
+        router.replace(`/admin/blogs?type=${type}`);
+      }
     }
   }, [router, searchParams]);
+
 
   // Fetch blogs when page, limit, or category changes
   useEffect(() => {
@@ -41,6 +48,9 @@ export const useBlog = () => {
   // Actions
   const handleDelete = (id: number) => dispatch(deleteBlog(id));
   const handleToggleStatus = (id: number) => dispatch(toggleBlogStatus(id));
+  const getBlog = useCallback((id: number) => {
+    dispatch(getBlogById(id))
+  }, [dispatch])
 
   return {
     items,
@@ -55,5 +65,7 @@ export const useBlog = () => {
     setCategory,
     handleDelete,
     handleToggleStatus,
+    getBlog,
+    blog
   };
 };

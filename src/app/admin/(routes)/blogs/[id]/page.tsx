@@ -1,21 +1,18 @@
 "use client";
 import Breadcrumbs from "@/components/adminComponents/beadcrumb/bedcrumb";
 import BlogForm from "@/components/adminComponents/pages-components/forms/blog-form/blog-form";
-import { getBlogById } from "@/redux-store/slices/blogSlice";
-import { AppDispatch, RootState } from "@/redux-store/store/store";
+import { useBlog } from "@/hooks/blogs/useBlog";
 import { BlogItem } from "@/types/blog";
 import { Card } from "antd";
 import { useParams } from "next/navigation";
 import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
 
 const EditBlogsPage = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  const { blog } = useSelector((state: RootState) => state.blogs);
+  const { blog, getBlog } = useBlog();
   const { id } = useParams();
   useEffect(() => {
-    dispatch(getBlogById(Number(id)));
-  }, [id, dispatch]);
+    getBlog(Number(id));
+  }, [id, getBlog]);
   return (
     <div className="flex flex-col gap-3">
       <Breadcrumbs
