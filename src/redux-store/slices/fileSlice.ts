@@ -26,7 +26,7 @@ export const searchFile = createAsyncThunk<
 >("files/searchFiles", async ({ params }, { rejectWithValue }) => {
   try {
     const res = await fileApi.searchFile(params);
-    console.log(res, "res")
+    // console.log(res, "res")
     return res;
   } catch (err: any) {
     return rejectWithValue(err.message);

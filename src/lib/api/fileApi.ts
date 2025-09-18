@@ -50,7 +50,7 @@ class FileApi {
   }
   async searchFile(params: FileParams) {
     try {
-      const res = await api.get(`/files/search?keword=${params?.search}&file_of=${params?.file_of}&related_id=${params?.related_id}&type=${params?.type}&page=${params?.page}&limit=${params?.limit}`)
+      const res = await api.get(`/files/search?keyword=${params?.search}&file_of=${params?.file_of}&related_id=${params?.related_id}&type=${params?.type}&page=${params?.page}&limit=${params?.limit}`)
       return res.data
     } catch (error) {
       throw error
