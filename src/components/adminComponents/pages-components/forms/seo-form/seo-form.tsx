@@ -1,140 +1,27 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { Form, Input, Button, Row, Col, Upload, message } from "antd";
+import React from "react";
+import { Form, Input, Button, Row, Col, Upload } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import dynamic from "next/dynamic";
-import seoApi from "@/lib/api/seoApi";
-import { MediaFile } from "@/types/utils-type";
 import Loader from "../../loader/loader";
-import resourceApi from "@/lib/api/resourceApi";
-import { useRouter } from "next/navigation";
+import { useSeo } from "@/hooks/useSeo";
 
 const TextEditor = dynamic(() => import("../../text-editor/text-editor"), {
   ssr: false,
 });
 
 const SeoForm = ({ id, type }: { id: string; type: string }) => {
-  const [form] = Form.useForm();
-  const [loading, setLoading] = useState(false);
-  const [fileList, setFileList] = useState<any[]>([]);
-  const [file, setFile] = useState<MediaFile | null>(null);
-  const [uploading, setUploading] = useState(false);
-  const [seoId, setSeoId] = useState<Number | null>();
-  const router = useRouter();
+  const {
+    form,
+    loading,
+    fileList,
+    uploading,
+    setFileList,
+    handleFileUpload,
+    onFinish,
+  } = useSeo(id, type);
 
-  // ================= Handle file upload =================
-  const handleFileUpload = async (rawFile: File) => {
-    const formData = new FormData();
-    formData.append("file", rawFile);
-
-    try {
-      setUploading(true);
-      const res = await resourceApi.createResource(formData);
-      setUploading(false);
-
-      if (res) {
-        setFile(res);
-        setFileList([
-          {
-            uid: res.uid,
-            name: res?.name,
-            status: "done",
-            url: res?.url,
-          },
-        ]);
-        message.success("File uploaded successfully!");
-        router.back();
-      } else {
-        message.error("File upload failed");
-      }
-    } catch (error) {
-      // console.error(error);
-      setUploading(false);
-      message.error("File upload failed");
-    }
-  };
-
-  // ================= Fetch SEO by ID =================
-  useEffect(() => {
-    async function fetchSeoById() {
-      setLoading(true);
-      try {
-        const res = await seoApi.getSeo(type, Number(id));
-        setSeoId(res?.id);
-        // message.success(res?.id);
-
-        form.setFieldsValue({
-          title: res.title,
-          keywords: res.keywords,
-          description: res.description,
-          image: res.image
-            ? [
-                {
-                  uid: res.image.uid,
-                  name: res.image.name,
-                  url: res.image.url,
-                  status: "done",
-                },
-              ]
-            : [],
-        });
-
-        // Keep old image in fileList state
-        if (res.image) {
-          setFileList([
-            {
-              uid: res.image.uid,
-              name: res.image.name,
-              url: res.image.url,
-              status: "done",
-            },
-          ]);
-        }
-      } catch (error) {
-        // console.error("Failed to fetch SEO:", error);
-        message.error("Failed to load SEO data");
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchSeoById();
-  }, [id, type, form]);
-
-  // ================= Submit =================
-  const onFinish = async (values: any) => {
-    try {
-      // Determine if image changed
-      let payload: any = {
-        title: values.title,
-        keywords: values.keywords,
-        description: values.description,
-      };
-
-      // Only include image if a new file is uploaded
-      if (file) {
-        payload.image = {
-          uid: file.uid,
-          name: file.name,
-          url: file.url,
-          alt: values.alt || file.name,
-          type: "image",
-          size: file.size,
-        };
-      }
-
-      // console.log("Final SEO Payload:", payload);
-      await seoApi.updateSeo(Number(seoId), payload);
-      message.success("SEO updated successfully");
-    } catch (error) {
-      // console.error("Failed to update SEO:", error);
-      message.error("Failed to update SEO");
-    }
-  };
-
-  // ================= Render =================
-  if (loading) {
-    return <Loader />;
-  }
+  if (loading) return <Loader />;
 
   return (
     <div className="h-full dark:bg-[#020D1A]">
@@ -180,7 +67,7 @@ const SeoForm = ({ id, type }: { id: string; type: string }) => {
               rules={[
                 {
                   validator: (_, value) =>
-                    (value && value.length > 0) || file
+                    (value && value.length > 0) || fileList.length > 0
                       ? Promise.resolve()
                       : Promise.reject(new Error("Image is required")),
                 },
@@ -189,7 +76,7 @@ const SeoForm = ({ id, type }: { id: string; type: string }) => {
               <Upload
                 beforeUpload={(file) => {
                   handleFileUpload(file);
-                  return false; // prevent default upload
+                  return false;
                 }}
                 listType="picture"
                 accept=".jpg,.jpeg,.png,.webp"
