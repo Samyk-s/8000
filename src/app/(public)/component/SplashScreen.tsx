@@ -5,20 +5,20 @@ import Image from "next/image";
 import { motion, useAnimation } from "framer-motion";
 
 export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
-  const controls = useAnimation();
+  const ropeGroup = useAnimation();
   const leftPanel = useAnimation();
   const rightPanel = useAnimation();
 
   useEffect(() => {
     async function sequence() {
-      // Rope pulls up
-      controls.start({
+      // Rope + logo pull up
+      ropeGroup.start({
         y: "-120vh",
         opacity: 0,
         transition: { duration: 2.5, ease: "easeInOut" },
       });
 
-      // Start panels slightly before rope finishes
+      // Panels slide
       setTimeout(() => {
         leftPanel.start({
           x: "-100%",
@@ -28,13 +28,13 @@ export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
           x: "100%",
           transition: { duration: 1.2, ease: "easeInOut" },
         });
-      }, 1800); // overlap starts here
+      }, 1800);
 
-      // Remove splash after panels are gone
+      // Remove splash
       setTimeout(() => onFinish(), 3000);
     }
     sequence();
-  }, [controls, leftPanel, rightPanel, onFinish]);
+  }, [ropeGroup, leftPanel, rightPanel, onFinish]);
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 overflow-hidden">
@@ -42,26 +42,26 @@ export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
       <motion.div
         initial={{ x: 0 }}
         animate={leftPanel}
-        className="absolute top-0 left-0 w-1/2 h-full bg-black"
+        className="absolute top-0 left-0 w-1/2 h-full bg-gray-800"
       />
       <motion.div
         initial={{ x: 0 }}
         animate={rightPanel}
-        className="absolute top-0 right-0 w-1/2 h-full bg-black"
+        className="absolute top-0 right-0 w-1/2 h-full bg-gray-800"
       />
 
-      {/* Rope + Logo */}
+      {/* Rope + Knot + Logo (all animate together) */}
       <motion.div
-        animate={controls}
+        animate={ropeGroup}
         className="flex flex-col items-center relative z-10"
       >
         {/* Rope */}
-        <div className="w-[6px] h-screen bg-white rounded-full" />
+        <div className="w-[6px] h-screen bg-[#00278F] rounded-full" />
 
-        {/* Knot (dot) */}
-        <div className="w-5 h-5 bg-white rounded-full -mt-2 shadow-md" />
+        {/* Knot */}
+        <div className="w-5 h-5 bg-[#00278F] rounded-full -mt-2 shadow-md" />
 
-        {/* Logo */}
+        {/* Logo (follows rope’s movement) */}
         <Image
           src="/images/weblogo.png"
           alt="Logo"

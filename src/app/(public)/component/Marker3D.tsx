@@ -3,18 +3,20 @@
 import React, { useState } from "react";
 import { Text, Html } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import { FaMapMarkerAlt } from "react-icons/fa"; // 📍 location icon
+import { TbMountain } from "react-icons/tb";
 
 export default function Marker3D({
   position,
   index,
+  label,
   color,
-  onClick,
+  onHoverChange,
 }: {
   position: [number, number, number];
   index: number;
+  label: string;
   color?: string;
-  onClick?: () => void;
+  onHoverChange?: (isHovered: boolean) => void;
 }) {
   const [hovered, setHovered] = useState(false);
   const [scale, setScale] = useState(1);
@@ -27,42 +29,48 @@ export default function Marker3D({
 
   return (
     <group position={position} scale={scale}>
-      {/* 📍 Location Icon */}
+      {/* 🏔️ Icon */}
       <Html
         center
-        distanceFactor={8} // controls size relative to camera distance
+        distanceFactor={8}
         style={{
-          pointerEvents: "none", // let clicks pass through
+          pointerEvents: "none",
           transform: "translateY(-10px)",
         }}
       >
-        <FaMapMarkerAlt
-          size={28}
-          color={hovered ? (color || "#ff4444") : (color || "red")}
-          style={{ filter: "drop-shadow(0 0 4px rgba(0,0,0,0.7))" }}
+        <TbMountain
+          size={30}
+          color={hovered ? (color || "red") : (color || "#000")}
+          style={{ filter: "drop-shadow(0 0 5px rgba(255,255,255,0.6))" }}
         />
       </Html>
 
-      {/* Transparent clickable sphere (so you can still interact in 3D) */}
+      {/* Invisible hover hitbox */}
       <mesh
-        onClick={onClick}
-        onPointerOver={() => setHovered(true)}
-        onPointerOut={() => setHovered(false)}
-        visible={false} // invisible but still interactive
-      >
-        <sphereGeometry args={[0.3, 16, 16]} />
-        <meshBasicMaterial transparent opacity={0} />
-      </mesh>
+  onPointerOver={() => {
+    setHovered(true);
+    onHoverChange?.(true); // only open
+  }}
+  onPointerOut={() => {
+    setHovered(false);
+    // ❌ don’t call onHoverChange(false) here → prevents flicker
+  }}
+  visible={false}
+>
+  <sphereGeometry args={[0.6, 16, 16]} /> {/* a bit larger hitbox */}
+  <meshBasicMaterial transparent opacity={0} />
+</mesh>
 
-      {/* 🏷️ Number Label */}
+
+      {/* Label just above icon */}
       <Text
-        position={[0, -0.6, 0]}
-        fontSize={0.18}
-        color="white"
+        position={[0, 0.45, 0]}
+        fontSize={0.2}
+        color="black"
         anchorX="center"
         anchorY="middle"
       >
-        {index + 1}
+        {label}
       </Text>
     </group>
   );

@@ -50,14 +50,18 @@ function ShootingStars() {
 // 🌍 SceneContent
 function SceneContent({
   markers,
-  onMarkerClick,
+  onMarkerHover,
   isAutoRotate,
   controlsRef,
   defaultTarget,
   isNight,
 }: {
   markers: Marker[];
-  onMarkerClick: (desc: string, pos: [number, number, number]) => void;
+  onMarkerHover: (
+    desc: string,
+    pos: [number, number, number],
+    isHovered: boolean
+  ) => void;
   isAutoRotate: boolean;
   controlsRef: React.MutableRefObject<any>;
   defaultTarget: THREE.Vector3;
@@ -117,11 +121,17 @@ function SceneContent({
         <Everest />
         {markers.map((m, i) => (
           <Marker3D
-            key={`${m.label}-${i}`}
-            index={i}
-            position={m.position}
-            onClick={() => onMarkerClick(m.description, m.position)}
-          />
+  key={`${m.label}-${i}`}
+  index={i}
+  label={m.label}
+  position={m.position}
+  onHoverChange={(isHovered) => {
+    if (isHovered) {
+      onMarkerHover(m.description, m.position, true); // show popup
+    }
+  }}
+/>
+
         ))}
       </Suspense>
 
@@ -219,8 +229,8 @@ function RotationWatcher({
     accumulated.current += Math.abs(delta);
 
     if (accumulated.current >= 360) {
-      onToggleDayNight();      // flip 🌞 ↔ 🌙
-      accumulated.current = 0; // reset
+      onToggleDayNight(); // flip 🌞 ↔ 🌙
+      accumulated.current = 0;
     }
 
     lastAngle.current = deg;
@@ -232,10 +242,14 @@ function RotationWatcher({
 // 🚀 Main SceneCanvas
 export default function SceneCanvas({
   markers,
-  onMarkerClick,
+  onMarkerHover,
 }: {
   markers: Marker[];
-  onMarkerClick: (desc: string, pos: [number, number, number]) => void;
+  onMarkerHover: (
+    desc: string,
+    pos: [number, number, number],
+    isHovered: boolean
+  ) => void;
 }) {
   const [isAutoRotate, setIsAutoRotate] = useState(true);
   const [isNight, setIsNight] = useState(false);
@@ -254,7 +268,7 @@ export default function SceneCanvas({
     >
       <SceneContent
         markers={markers}
-        onMarkerClick={onMarkerClick}
+        onMarkerHover={onMarkerHover}
         isAutoRotate={isAutoRotate}
         controlsRef={controlsRef}
         defaultTarget={defaultTarget}

@@ -5,33 +5,50 @@ import SceneCanvas from "./component/SceneCanvas";
 import { markers } from "./component/markers";
 import SplashScreen from "./component/SplashScreen";
 import MarkerPopup from "./component/MarkerPopup";
+import Image from "next/image";
 
 export default function Page() {
   const [showSplash, setShowSplash] = useState(true);
-  const [activeMarker, setActiveMarker] = useState<string | null>(null);
+  const [activeMarker, setActiveMarker] = useState<{
+    description: string;
+    position: [number, number, number];
+  } | null>(null);
 
   return (
     <div className="w-full h-screen relative">
-      {/* 🎨 Scene is ALWAYS mounted */}
-      <SceneCanvas markers={markers} onMarkerClick={setActiveMarker} />
+      {/* 🎨 Scene */}
+      <SceneCanvas
+        markers={markers}
+        onMarkerHover={(desc, pos, isHovered) => {
+          if (isHovered) {
+            setActiveMarker({ description: desc, position: pos });
+          } else {
+            setActiveMarker(null);
+          }
+        }}
+      />
 
-      {/* 🚀 Splash Overlay (on top of scene) */}
-      {showSplash && (
-        <SplashScreen onFinish={() => setShowSplash(false)} />
-      )}
+      {/* 🚀 Splash Overlay */}
+      {showSplash && <SplashScreen onFinish={() => setShowSplash(false)} />}
 
       {/* 📌 Marker Popup */}
       {activeMarker && !showSplash && (
-        <MarkerPopup
-          description={activeMarker}
-          title="Mt. Everest — 14 Peaks"
-          subtitle="Sagarmāthā • Chomolungma"
-          elevation="8,848 m"
-          location="27.9881° N, 86.9250° E"
-          temp="-25°C"
-          wind="34 km/h"
-          onClose={() => setActiveMarker(null)}
-        />
+  <MarkerPopup onClose={() => setActiveMarker(null)} />
+)}
+
+
+      {/* 🖼️ Logo */}
+      {!showSplash && (
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[9999]">
+          <Image
+            src="/images/weblogo.png"
+            alt="Website Logo"
+            width={140}
+            height={40}
+            className="object-contain"
+            priority
+          />
+        </div>
       )}
     </div>
   );
