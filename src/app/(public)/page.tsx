@@ -11,7 +11,7 @@ export default function Page() {
   const [showSplash, setShowSplash] = useState(true);
   const [activeMarker, setActiveMarker] = useState<{
     description: string;
-    position: [number, number, number];
+    screenPos: { x: number; y: number };
   } | null>(null);
 
   return (
@@ -19,9 +19,9 @@ export default function Page() {
       {/* 🎨 Scene */}
       <SceneCanvas
         markers={markers}
-        onMarkerHover={(desc, pos, isHovered) => {
+        onMarkerHover={(desc, screenPos, isHovered) => {
           if (isHovered) {
-            setActiveMarker({ description: desc, position: pos });
+            setActiveMarker({ description: desc, screenPos });
           } else {
             setActiveMarker(null);
           }
@@ -33,9 +33,12 @@ export default function Page() {
 
       {/* 📌 Marker Popup */}
       {activeMarker && !showSplash && (
-  <MarkerPopup onClose={() => setActiveMarker(null)} />
-)}
-
+        <MarkerPopup
+          description={activeMarker.description}
+          screenPos={activeMarker.screenPos}
+          onClose={() => setActiveMarker(null)}
+        />
+      )}
 
       {/* 🖼️ Logo */}
       {!showSplash && (

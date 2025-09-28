@@ -59,7 +59,7 @@ function SceneContent({
   markers: Marker[];
   onMarkerHover: (
     desc: string,
-    pos: [number, number, number],
+    screenPos: { x: number; y: number },
     isHovered: boolean
   ) => void;
   isAutoRotate: boolean;
@@ -67,6 +67,16 @@ function SceneContent({
   defaultTarget: THREE.Vector3;
   isNight: boolean;
 }) {
+  const { camera } = useThree();
+
+  function projectToScreen(pos: [number, number, number]) {
+    const vector = new THREE.Vector3(...pos).project(camera);
+    return {
+      x: (vector.x * 0.5 + 0.5) * window.innerWidth,
+      y: (-vector.y * 0.5 + 0.5) * window.innerHeight,
+    };
+  }
+
   useEffect(() => {
     if (controlsRef.current) {
       controlsRef.current.target.copy(defaultTarget);
@@ -98,7 +108,10 @@ function SceneContent({
           {/* 🌙 Moon */}
           <mesh position={[50, 80, -100]}>
             <sphereGeometry args={[8, 32, 32]} />
-            <meshStandardMaterial emissive={"#fdfbd3"} emissiveIntensity={1.5} />
+            <meshStandardMaterial
+              emissive={"#fdfbd3"}
+              emissiveIntensity={1.5}
+            />
           </mesh>
           <ShootingStars />
         </>
@@ -121,17 +134,15 @@ function SceneContent({
         <Everest />
         {markers.map((m, i) => (
           <Marker3D
-  key={`${m.label}-${i}`}
-  index={i}
-  label={m.label}
-  position={m.position}
-  onHoverChange={(isHovered) => {
-    if (isHovered) {
-      onMarkerHover(m.description, m.position, true); // show popup
-    }
-  }}
-/>
-
+            key={m.label}
+            index={i}
+            label={m.label}
+            position={m.position}
+            onHoverChange={(isHovered) => {
+              const screenPos = projectToScreen(m.position);
+              onMarkerHover(m.description, screenPos, isHovered);
+            }}
+          />
         ))}
       </Suspense>
 
@@ -181,7 +192,9 @@ function EarthLikeZoom({
 
       const point = lastTargetRef.current || defaultTarget;
       const controls = controlsRef.current;
-      const dir = new THREE.Vector3().subVectors(point, camera.position).normalize();
+      const dir = new THREE.Vector3()
+        .subVectors(point, camera.position)
+        .normalize();
 
       if (event.deltaY < 0) {
         camera.position.addScaledVector(dir, 2);
@@ -247,7 +260,7 @@ export default function SceneCanvas({
   markers: Marker[];
   onMarkerHover: (
     desc: string,
-    pos: [number, number, number],
+    screenPos: { x: number; y: number },
     isHovered: boolean
   ) => void;
 }) {

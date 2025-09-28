@@ -10,7 +10,7 @@ interface EverestProps {
 
 export default function Everest({ onLoaded }: EverestProps) {
   // 🔥 Make sure file is in public/models/everest_model.glb
-  const { scene } = useGLTF("/models/everest_model.glb");
+  const { scene } = useGLTF("/models/mountainrange_model.glb");
   const ref = useRef<THREE.Group>(null);
 
   useEffect(() => {
