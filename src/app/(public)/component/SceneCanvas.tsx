@@ -270,15 +270,18 @@ export default function SceneCanvas({
   const defaultTarget = new THREE.Vector3(0, 0, 0);
 
   return (
-    <Canvas
-      shadows
-      camera={{ position: [0, 10, 24], fov: 50 }}
-      gl={{
-        toneMapping: THREE.ACESFilmicToneMapping,
-        outputColorSpace: THREE.SRGBColorSpace,
-      }}
-      onClick={() => setIsAutoRotate(false)}
-    >
+   <Canvas
+  shadows
+  camera={{ position: [0, 10, 24], fov: 50 }}
+  gl={{
+    toneMapping: THREE.ACESFilmicToneMapping,
+    outputColorSpace: THREE.SRGBColorSpace,
+    alpha: true, // transparent canvas
+  }}
+  style={{ background: "transparent" }}
+  onClick={() => setIsAutoRotate(false)}
+>
+
       <SceneContent
         markers={markers}
         onMarkerHover={onMarkerHover}

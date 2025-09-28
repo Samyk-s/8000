@@ -38,16 +38,16 @@ export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 overflow-hidden">
-      {/* Panels */}
+      {/* Panels with sky-blue gradient */}
       <motion.div
         initial={{ x: 0 }}
         animate={leftPanel}
-        className="absolute top-0 left-0 w-1/2 h-full bg-gray-800"
+        className="absolute top-0 left-0 w-1/2 h-full bg-gradient-to-tr from-sky-300 to-sky-500"
       />
       <motion.div
         initial={{ x: 0 }}
         animate={rightPanel}
-        className="absolute top-0 right-0 w-1/2 h-full bg-gray-800"
+        className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-bl from-sky-300 to-sky-500"
       />
 
       {/* Rope + Knot + Logo (all animate together) */}
@@ -56,12 +56,12 @@ export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
         className="flex flex-col items-center relative z-10"
       >
         {/* Rope */}
-        <div className="w-[6px] h-screen bg-[#00278F] rounded-full" />
+        <div className="w-[6px] h-screen bg-white rounded-full" />
 
         {/* Knot */}
-        <div className="w-5 h-5 bg-[#00278F] rounded-full -mt-2 shadow-md" />
+        <div className="w-5 h-5 bg-white rounded-full -mt-2 shadow-md" />
 
-        {/* Logo (follows rope’s movement) */}
+        {/* Logo */}
         <Image
           src="/images/weblogo.png"
           alt="Logo"

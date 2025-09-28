@@ -15,21 +15,27 @@ export default function Page() {
   } | null>(null);
 
   return (
-    <div className="w-full h-screen relative">
-      {/* 🎨 Scene */}
-      <SceneCanvas
-        markers={markers}
-        onMarkerHover={(desc, screenPos, isHovered) => {
-          if (isHovered) {
-            setActiveMarker({ description: desc, screenPos });
-          } else {
-            setActiveMarker(null);
-          }
-        }}
-      />
+    <div className="w-full h-screen relative bg-black">
+      {/* 🎨 Scene always rendered in background */}
+      <div className="absolute inset-0 z-0">
+        <SceneCanvas
+          markers={markers}
+          onMarkerHover={(desc, screenPos, isHovered) => {
+            if (isHovered) {
+              setActiveMarker({ description: desc, screenPos });
+            } else {
+              setActiveMarker(null);
+            }
+          }}
+        />
+      </div>
 
-      {/* 🚀 Splash Overlay */}
-      {showSplash && <SplashScreen onFinish={() => setShowSplash(false)} />}
+      {/* 🚀 Splash Overlay (on top of scene) */}
+      {showSplash && (
+        <div className="absolute inset-0 z-50">
+          <SplashScreen onFinish={() => setShowSplash(false)} />
+        </div>
+      )}
 
       {/* 📌 Marker Popup */}
       {activeMarker && !showSplash && (
