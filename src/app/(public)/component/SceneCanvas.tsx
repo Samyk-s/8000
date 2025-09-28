@@ -2,7 +2,7 @@
 
 import React, { Suspense, useRef, useState, useEffect } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { OrbitControls, Sky, Stars } from "@react-three/drei";
+import { OrbitControls, Sky, Stars, PerspectiveCamera } from "@react-three/drei";
 import * as THREE from "three";
 import Everest from "./Everest";
 import Marker3D from "./Marker3D";
@@ -270,17 +270,19 @@ export default function SceneCanvas({
   const defaultTarget = new THREE.Vector3(0, 0, 0);
 
   return (
-   <Canvas
-  shadows
-  camera={{ position: [0, 10, 24], fov: 50 }}
-  gl={{
-    toneMapping: THREE.ACESFilmicToneMapping,
-    outputColorSpace: THREE.SRGBColorSpace,
-    alpha: true, // transparent canvas
-  }}
-  style={{ background: "transparent" }}
-  onClick={() => setIsAutoRotate(false)}
->
+    <Canvas
+      shadows
+      dpr={[1, 2]}
+      gl={{
+        toneMapping: THREE.ACESFilmicToneMapping,
+        outputColorSpace: THREE.SRGBColorSpace,
+        alpha: true,
+      }}
+      style={{ background: "transparent" }}
+      onClick={() => setIsAutoRotate(false)}
+    >
+      {/* ✅ Typed PerspectiveCamera */}
+      <PerspectiveCamera makeDefault fov={50} position={[0, 10, 24]} />
 
       <SceneContent
         markers={markers}

@@ -1,12 +1,14 @@
-// src/app/(public)/component/SceneWrapper.tsx
 "use client";
 
 import React, { useState } from "react";
-import SceneCanvas from "./SceneCanvas";
+import dynamic from "next/dynamic";
 import { markers } from "./markers";
 import SplashScreen from "./SplashScreen";
 import MarkerPopup from "./MarkerPopup";
 import Image from "next/image";
+
+// 🚀 load SceneCanvas only on client
+const SceneCanvas = dynamic(() => import("./SceneCanvas"), { ssr: false });
 
 export default function SceneWrapper() {
   const [showSplash, setShowSplash] = useState(true);
@@ -17,7 +19,6 @@ export default function SceneWrapper() {
 
   return (
     <div className="w-full h-screen relative bg-black">
-      {/* 🎨 Scene always rendered in background */}
       <div className="absolute inset-0 z-0">
         <SceneCanvas
           markers={markers}
@@ -31,14 +32,12 @@ export default function SceneWrapper() {
         />
       </div>
 
-      {/* 🚀 Splash Overlay */}
       {showSplash && (
         <div className="absolute inset-0 z-50">
           <SplashScreen onFinish={() => setShowSplash(false)} />
         </div>
       )}
 
-      {/* 📌 Marker Popup */}
       {activeMarker && !showSplash && (
         <MarkerPopup
           description={activeMarker.description}
@@ -47,7 +46,6 @@ export default function SceneWrapper() {
         />
       )}
 
-      {/* 🖼️ Logo */}
       {!showSplash && (
         <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[9999]">
           <Image
