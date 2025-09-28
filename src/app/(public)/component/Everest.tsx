@@ -9,7 +9,6 @@ interface EverestProps {
 }
 
 export default function Everest({ onLoaded }: EverestProps) {
-  // 🔥 Make sure file is in public/models/everest_model.glb
   const { scene } = useGLTF("/models/mountainrange_model.glb");
   const ref = useRef<THREE.Group>(null);
 
@@ -17,20 +16,24 @@ export default function Everest({ onLoaded }: EverestProps) {
     if (!ref.current) return;
 
     try {
-      // Compute bounding box for scaling + centering
       const box = new THREE.Box3().setFromObject(ref.current);
       const size = new THREE.Vector3();
       const center = new THREE.Vector3();
       box.getSize(size);
       box.getCenter(center);
 
-      const maxDim = Math.max(size.x, size.y, size.z);
-      const scale = 10 / maxDim;
+      console.log("📏 Everest bounding box:", size);
+
+      // ✅ Scale by height only (so it's always consistent)
+      const desiredHeight = 10; // tweak until it looks good in your scene
+      const scale = desiredHeight / size.y;
 
       ref.current.scale.setScalar(scale);
+
+      // ✅ Recenter around origin
       ref.current.position.sub(center.multiplyScalar(scale));
 
-      console.log("✅ Everest model loaded and scaled");
+      console.log("✅ Everest scaled to height:", desiredHeight);
 
       if (onLoaded) onLoaded();
     } catch (err) {
@@ -41,5 +44,4 @@ export default function Everest({ onLoaded }: EverestProps) {
   return <primitive ref={ref} object={scene} />;
 }
 
-// ✅ Preload model (so Suspense knows about it early)
-useGLTF.preload("/models/everest_model.glb");
+useGLTF.preload("/models/mountainrange_model.glb");
