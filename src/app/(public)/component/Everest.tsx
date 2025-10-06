@@ -8,8 +8,11 @@ interface EverestProps {
   onLoaded?: () => void;
 }
 
+// ✅ Declare it here (top level)
+const modelUrl = `${process.env.NEXT_PUBLIC_BASE_PATH || ""}/models/mountainrange_model.glb`;
+
 export default function Everest({ onLoaded }: EverestProps) {
-  const { scene } = useGLTF("/models/mountainrange_model.glb");
+  const { scene } = useGLTF(modelUrl);
   const ref = useRef<THREE.Group>(null);
 
   useEffect(() => {
@@ -24,18 +27,21 @@ export default function Everest({ onLoaded }: EverestProps) {
 
       console.log("📏 Everest bounding box:", size);
 
-      // ✅ Scale by height only (so it's always consistent)
-      const desiredHeight = 10; // tweak until it looks good in your scene
+      if (size.y === 0) {
+        console.warn("⚠️ Model bounding box invalid — likely failed to load");
+        ref.current.scale.setScalar(1);
+        return;
+      }
+
+      const desiredHeight = 10;
       const scale = desiredHeight / size.y;
 
       ref.current.scale.setScalar(scale);
-
-      // ✅ Recenter around origin
       ref.current.position.sub(center.multiplyScalar(scale));
 
       console.log("✅ Everest scaled to height:", desiredHeight);
 
-      if (onLoaded) onLoaded();
+      onLoaded?.();
     } catch (err) {
       console.error("❌ Error processing Everest model:", err);
     }
@@ -44,4 +50,5 @@ export default function Everest({ onLoaded }: EverestProps) {
   return <primitive ref={ref} object={scene} />;
 }
 
-useGLTF.preload("/models/mountainrange_model.glb");
+// ✅ preload using the same constant
+useGLTF.preload(modelUrl);

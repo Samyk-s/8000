@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import {
@@ -23,13 +23,6 @@ export default function MarkerPopup({
 }) {
   const [isHovered, setIsHovered] = useState(false);
 
-  useEffect(() => {
-    if (!isHovered) {
-      const t = setTimeout(() => onClose(), 150);
-      return () => clearTimeout(t);
-    }
-  }, [isHovered, onClose]);
-
   return (
     <AnimatePresence>
       <motion.div
@@ -46,7 +39,10 @@ export default function MarkerPopup({
           zIndex: 9999,
         }}
         onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
+        onMouseLeave={() => {
+          setIsHovered(false);
+          onClose(); // close only when user leaves popup
+        }}
         className="group relative w-[clamp(300px,46vw,520px)] rounded-2xl
                    border border-cyan-400/60 bg-white/10 backdrop-blur-xl p-5
                    text-[#001a5f] shadow-[0_0_20px_rgba(0,209,255,0.6)]"
@@ -60,9 +56,7 @@ export default function MarkerPopup({
 
         {/* Content */}
         <div className="relative z-10">
-          <h2 className="text-lg font-bold mb-3">
-            Mt. Everest | 8848.86m | Nepal
-          </h2>
+          <h2 className="text-lg font-bold mb-3">{description}</h2>
 
           <div className="flex gap-6">
             <ul className="text-sm space-y-2 flex-1">
@@ -104,12 +98,12 @@ export default function MarkerPopup({
             </div>
           </div>
 
-          {/* 🚀 View More with green glow (static) */}
+          {/* 🚀 View More button */}
           <div className="mt-5 flex justify-end">
             <motion.button
               whileHover={{
                 scale: 1.08,
-                boxShadow: "0 0 22px rgba(34, 197, 94, 0.55)", // ✅ green glow
+                boxShadow: "0 0 22px rgba(34, 197, 94, 0.55)",
               }}
               whileTap={{ scale: 0.95 }}
               type="button"
