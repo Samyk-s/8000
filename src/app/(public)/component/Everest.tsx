@@ -6,18 +6,13 @@ import * as THREE from "three";
 
 interface EverestProps {
   onLoaded?: () => void;
-  /** Show axes for quick debug (red=X, green=Y, blue=Z) */
   debugAxes?: boolean;
 }
 
-// ✅ Always load directly from /models/... (public folder)
+// ✅ Load from public/models/
 const modelUrl = "/models/mountainrange_model.glb";
 
-/**
- * If your model was exported from SketchUp (Z-up coordinate system),
- * set NEXT_PUBLIC_SKETCHUP_ZUP=true in your .env
- * to rotate it to match the normal Y-up space.
- */
+// ✅ Detect if SketchUp (Z-up)
 const SKETCHUP_ZUP =
   String(process.env.NEXT_PUBLIC_SKETCHUP_ZUP || "").toLowerCase() === "true";
 
@@ -30,56 +25,55 @@ export default function Everest({ onLoaded, debugAxes = false }: EverestProps) {
     if (!group) return;
 
     try {
-      // Insert the GLTF scene into our wrapper group
       group.clear();
       group.add(scene);
 
-      // Rotate only if the model was exported as Z-up (SketchUp default)
-      if (SKETCHUP_ZUP) {
-        group.rotation.set(-Math.PI / 2, 0, 0); // rotate 90° around X
-      } else {
-        group.rotation.set(0, 0, 0);
-      }
+      // 🔁 Rotate if needed
+      if (SKETCHUP_ZUP) group.rotation.set(-Math.PI / 2, 0, 0);
+      else group.rotation.set(0, 0, 0);
 
-      // Compute the bounding box for scaling + centering
+      // 🧮 Compute bounding box
       const box = new THREE.Box3().setFromObject(group);
       const size = new THREE.Vector3();
       const center = new THREE.Vector3();
       box.getSize(size);
       box.getCenter(center);
 
-      console.log("📦 Everest bbox size:", size);
+      console.log("📦 Everest bbox:", { size, center });
 
       if (size.y === 0) {
-        console.warn("⚠️ Invalid bbox (model may not have loaded yet)");
+        console.warn("⚠️ Model may not have loaded yet.");
         return;
       }
 
-      // Normalize the height for consistency
+      // ⚖️ Scale model so height ≈ 10
       const desiredHeight = 10;
       const scale = desiredHeight / size.y;
       group.scale.setScalar(scale);
 
-      // Recenter around origin
-group.position.sub(center.multiplyScalar(scale));
-group.position.y -= size.y * 0.02 * scale;
+      // 🧍‍♂️ Recenter model to world origin
+      // Ensure bottom of mountain sits exactly at y = 0
+      group.position.x -= center.x * scale;
+      group.position.z -= center.z * scale;
+      group.position.y -= (center.y - size.y / 2) * scale;
+
+      // 🧩 Optional debug axes
       if (debugAxes) {
         const axes = new THREE.AxesHelper(10);
         group.add(axes);
       }
 
       console.log(
-        `✅ Everest ready (rotated=${SKETCHUP_ZUP ? "Z-up→Y-up" : "none"}, height=${desiredHeight})`
+        `✅ Everest aligned. Height=${desiredHeight}, bottom grounded at Y=0`
       );
 
       onLoaded?.();
-    } catch (e) {
-      console.error("❌ Everest setup error:", e);
+    } catch (err) {
+      console.error("❌ Everest setup error:", err);
     }
   }, [scene, onLoaded, debugAxes]);
 
   return <group ref={groupRef} />;
 }
 
-// ✅ Preload using the same exact path
 useGLTF.preload(modelUrl);

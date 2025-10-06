@@ -46,7 +46,7 @@ export default function Marker3D({
     setGroundedPos([p.x, p.y + 0.1, p.z]);
   } else {
     // Fallback: lower a fixed small amount (handles Vercel height diff)
-    setGroundedPos([position[0], position[1] - 0.6, position[2]]);
+setGroundedPos(position);  // fallback to original position cleanly
   }
 }, [position, scene]);
 
@@ -89,7 +89,7 @@ export default function Marker3D({
       </Text>
 
       {/* 🏔️ Icon */}
-      <group scale={iconScale}>
+<group position={groundedPos}>  // ✅ remove -0.8 or offsets
         <Html center distanceFactor={8} style={{ pointerEvents: "none" }}>
           <TbMountain
             size={30}
