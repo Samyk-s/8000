@@ -61,8 +61,8 @@ export default function Everest({ onLoaded, debugAxes = false }: EverestProps) {
       group.scale.setScalar(scale);
 
       // Recenter around origin
-      group.position.sub(center.multiplyScalar(scale));
-
+group.position.sub(center.multiplyScalar(scale));
+group.position.y -= size.y * 0.02 * scale;
       if (debugAxes) {
         const axes = new THREE.AxesHelper(10);
         group.add(axes);

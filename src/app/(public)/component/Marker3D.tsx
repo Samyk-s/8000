@@ -32,17 +32,23 @@ export default function Marker3D({
   const { camera, size, scene } = useThree();
 
   // 🧭 Raycast downwards to find ground
-  useEffect(() => {
-    const raycaster = new THREE.Raycaster();
-    raycaster.set(new THREE.Vector3(...position), new THREE.Vector3(0, -1, 0));
-    const hits = raycaster.intersectObjects(scene.children, true);
-    if (hits.length > 0) {
-      const p = hits[0].point;
-      setGroundedPos([p.x, p.y + 0.2, p.z]);
-    } else {
-      setGroundedPos(position);
-    }
-  }, [position, scene]);
+ useEffect(() => {
+  const raycaster = new THREE.Raycaster();
+  const origin = new THREE.Vector3(...position);
+  const direction = new THREE.Vector3(0, -1, 0);
+  raycaster.set(origin, direction);
+
+  const hits = raycaster.intersectObjects(scene.children, true);
+
+  if (hits.length > 0) {
+    const p = hits[0].point;
+    // Place just a bit above surface
+    setGroundedPos([p.x, p.y + 0.1, p.z]);
+  } else {
+    // Fallback: lower a fixed small amount (handles Vercel height diff)
+    setGroundedPos([position[0], position[1] - 0.6, position[2]]);
+  }
+}, [position, scene]);
 
   useFrame(() => {
     const target = hovered ? 1.4 : 1;
