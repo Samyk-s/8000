@@ -252,6 +252,47 @@ function RotationWatcher({
   return null;
 }
 
+// 🧭 Debug helper — click to log coordinates
+function DebugClickLogger() {
+  const { camera, gl, scene } = useThree();
+  const raycaster = new THREE.Raycaster();
+  const mouse = new THREE.Vector2();
+  const sphereRef = useRef<THREE.Mesh>(null);
+
+  useEffect(() => {
+    function onClick(event: MouseEvent) {
+      const rect = gl.domElement.getBoundingClientRect();
+      mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(scene.children, true);
+
+      if (intersects.length > 0) {
+        const point = intersects[0].point;
+        console.log(
+          `📍 Marker position: [${point.x.toFixed(2)}, ${point.y.toFixed(2)}, ${point.z.toFixed(2)}]`
+        );
+
+        if (sphereRef.current) {
+          sphereRef.current.position.copy(point);
+          sphereRef.current.visible = true;
+        }
+      }
+    }
+
+    gl.domElement.addEventListener("click", onClick);
+    return () => gl.domElement.removeEventListener("click", onClick);
+  }, [camera, gl, scene]);
+
+  return (
+    <mesh ref={sphereRef} visible={false}>
+      <sphereGeometry args={[0.1, 16, 16]} />
+      <meshStandardMaterial color="lime" emissive="lime" emissiveIntensity={2} />
+    </mesh>
+  );
+}
+
 // 🚀 Main SceneCanvas
 export default function SceneCanvas({
   markers,
@@ -281,7 +322,7 @@ export default function SceneCanvas({
       style={{ background: "transparent" }}
       onClick={() => setIsAutoRotate(false)}
     >
-      {/* ✅ Typed PerspectiveCamera */}
+      {/* ✅ Camera */}
       <PerspectiveCamera makeDefault fov={50} position={[0, 10, 24]} />
 
       <SceneContent
@@ -292,11 +333,15 @@ export default function SceneCanvas({
         defaultTarget={defaultTarget}
         isNight={isNight}
       />
+
       <EarthLikeZoom controlsRef={controlsRef} defaultTarget={defaultTarget} />
       <RotationWatcher
         controlsRef={controlsRef}
         onToggleDayNight={() => setIsNight((prev) => !prev)}
       />
+
+      {/* 🧭 Click anywhere to log coordinates */}
+      <DebugClickLogger />
     </Canvas>
   );
 }
