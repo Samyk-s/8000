@@ -65,7 +65,7 @@ export default function Marker3D({
   };
 
   return (
-    <group position={groundedPos}>
+<group position={[groundedPos[0], groundedPos[1] - 0.8, groundedPos[2]]}>
       {/* 🏷️ Text ABOVE the icon */}
       <Text
         ref={textRef}
